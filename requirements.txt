@@ -1,0 +1,10 @@
+# HTTP & API
+google-api-python-client>=2.0.0
+python-dotenv>=1.0.0
+requests>=2.31.0
+
+# Data handling
+pandas>=2.0.0
+
+# Scheduling (optional)
+schedule>=1.2.0
