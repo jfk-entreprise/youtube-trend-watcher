@@ -1,0 +1,257 @@
+========================================================================
+  RAPPORT D'EXPERIMENTATION — STRATEGIES API YOUTUBE DATA v3
+  Genere le   : 2026-07-02 18:29:55
+  Mots-cles   : IA, Business, Argent, Histoire, Technologie
+  Fenetre     : 7 jours (strategies C & E)
+  Region      : FR  |  Langue : fr
+  Max resultats par mot-cle : 20
+========================================================================
+
+------------------------------------------------------------------------
+  STRATEGIE A  —  Pertinence YouTube (baseline)
+  order=relevance | sans filtre de date ni de durée
+------------------------------------------------------------------------
+
+  METRIQUES
+  Volume total                           99 videos
+  Format Shorts (≤ 60s)                  17 videos (17%)
+  Duree moyenne                          22m17s
+  Vues moyennes                          5.4M
+  Vues medianes                          100.4k
+  Age moyen des videos                   226.9 jours
+
+  TOP 10 VIDEOS PAR VUES
+   1. [  360.6M] [  3m12s] [2106j]  Tiësto - The Business (Official Music Video)
+   2. [   92.9M] [  3m23s] [1126j]  DYSTINCT - Business ft. Naza (prod. YAM & Unle…
+   3. [   17.3M] [  2m45s] [136j]  La Rvfleuze - Argent Sale | A COLORS SHOW
+   4. [   13.7M] [  1m00s] [926j]  J'ai Dépensé TOUT L'argent D'Elon Musk
+   5. [    5.2M] [  3m17s] [491j]  TIMAR - IA
+   6. [    5.0M] [    58s] [315j]  JE TESTE DES TECHNOLOGIES 1 ÉTOILE 😱 (iPad, té…
+   7. [    4.9M] [ 53m05s] [256j]  ON TESTE 50 TECHNOLOGIES OUBLIÉES (certaines s…
+   8. [    4.8M] [1h11m11s] [2959j]  🎧Recevoir de l'argent inattendu en 24 heures -…
+   9. [    4.3M] [ 44m17s] [703j]  Comment blanchir de l'argent ?
+  10. [    4.1M] [     9s] [330j]  Pourquoi tout le monde kiffe les bébés ? #baby…
+
+  AVANTAGES
+    + Reflète le classement algorithmique natif de YouTube
+    + Diversité maximale : mélange de formats et de créateurs
+    + Capture des contenus populaires toutes périodes confondues
+
+  INCONVENIENTS
+    - Mélange contenus récents et anciens (parfois plusieurs années)
+    - L'algorithme de pertinence YouTube est opaque et variable
+    - Faible contrôle sur la distribution temporelle des résultats
+    - Peu adapté à la détection de tendances actuelles
+
+------------------------------------------------------------------------
+  STRATEGIE B  —  Tri par popularité (viewCount)
+  order=viewCount | sans filtre de date
+------------------------------------------------------------------------
+
+  METRIQUES
+  Volume total                           100 videos
+  Format Shorts (≤ 60s)                  49 videos (49%)
+  Duree moyenne                          5m29s
+  Vues moyennes                          68.9M
+  Vues medianes                          36.1M
+  Age moyen des videos                   1345.7 jours
+
+  TOP 10 VIDEOS PAR VUES
+   1. [  605.5M] [    25s] [503j]  Reach the Money, Win $10,000
+   2. [  463.0M] [  2m24s] [3291j]  La Granja de mi tío Zenón | A Jugar
+   3. [  408.7M] [  4m09s] [6224j]  50 Cent - Ayo Technology (Official Music Video…
+   4. [  360.6M] [  3m12s] [2106j]  Tiësto - The Business (Official Music Video)
+   5. [  331.3M] [    16s] [1004j]  What am I? A vampire? Or….
+   6. [  324.7M] [    29s] [763j]  Sprinting with More and More Money
+   7. [  247.7M] [    13s] [1497j]  This is future technology 2d animation #shorts
+   8. [  194.8M] [  1m00s] [444j]  Notebook Making in Small Industries  | Low-Cos…
+   9. [  181.0M] [     8s] [1083j]  Samsung S22Ultra screen quality display. #Sams…
+  10. [  155.3M] [ 23m04s] [159j]  $1 vs $1,000,000,000 Futuristic Tech!
+
+  AVANTAGES
+    + Retourne directement les vidéos au plus fort impact sur le sujet
+    + Vues élevées = signal de qualité et d'intérêt public validé
+    + Idéal pour cartographier les créateurs dominants d'une niche
+    + Benchmark solide pour calibrer un seuil de viralité
+
+  INCONVENIENTS
+    - Biaisé vers les contenus anciens (plus de temps pour accumuler des vues)
+    - Rate totalement les vidéos virales naissantes (< 48h)
+    - Sur-représente le contenu 'evergreen' au détriment des tendances
+    - Peu utile pour un système de détection précoce
+
+------------------------------------------------------------------------
+  STRATEGIE C  —  Récence stricte — 7 derniers jours
+  publishedAfter=7j | order=date (méthode la plus proche de la collecte actuelle)
+------------------------------------------------------------------------
+
+  METRIQUES
+  Volume total                           98 videos
+  Format Shorts (≤ 60s)                  59 videos (60%)
+  Duree moyenne                          9m54s
+  Vues moyennes                          2.0k
+  Vues medianes                          664
+  Age moyen des videos                   0.1 jours
+
+  TOP 10 VIDEOS PAR VUES
+   1. [   36.2k] [ 14m28s] [  0j]  J'ai Été Transférée Chez les Filles Que Toute…
+   2. [   24.6k] [5h24m30s] [  0j]  Class 12th Business Studies - BACKLOG MARATHON…
+   3. [   20.0k] [ 31m29s] [  0j]  6 New Bikes At The Tour de France | GCN Tech S…
+   4. [   18.9k] [5h42m47s] [  0j]  2nd July 2026 : Zee Business Live | Share Mark…
+   5. [   10.6k] [  1m20s] [  0j]  Quel est ta musique IA préféré ? 😂
+   6. [    5.8k] [  1m01s] [  0j]  8754141821❤️ #family #comedy #happy #love #vir…
+   7. [    5.7k] [    21s] [  0j]  La voiture miniature la plus étrange de l'hist…
+   8. [    4.6k] [  1m00s] [  0j]  🤨 Olise est un vrai joueur de foot ou une IA ?…
+   9. [    4.5k] [    56s] [  0j]  #business
+  10. [    3.8k] [    13s] [  0j]  Technology😁
+
+  AVANTAGES
+    + Garantit la fraîcheur absolue du contenu collecté (≤ 7 jours)
+    + Capture les tendances et sujets en cours de discussion
+    + Adapté à un monitoring hebdomadaire régulier
+    + Idéal comme flux d'entrée d'un pipeline de détection
+
+  INCONVENIENTS
+    - Vues faibles : les vidéos n'ont pas eu le temps de se propager
+    - Difficile de distinguer viral de banal à si court terme
+    - Nécessite des collectes répétées pour suivre la courbe de croissance
+
+------------------------------------------------------------------------
+  STRATEGIE D  —  Shorts uniquement (≤ 60 secondes)
+  videoDuration=short (< 4min API) | filtrage post-API ≤ 60s | order=relevance
+------------------------------------------------------------------------
+
+  METRIQUES
+  Volume total                           47 videos
+  Format Shorts (≤ 60s)                  47 videos (100%)
+  Duree moyenne                          31s
+  Vues moyennes                          4.1M
+  Vues medianes                          492.8k
+  Age moyen des videos                   591.4 jours
+
+  TOP 10 VIDEOS PAR VUES
+   1. [  112.4M] [     9s] [269j]  Powering 5 Buzzer With Mini BLDC Drone Motor #…
+   2. [   22.2M] [    19s] [249j]  Dried Fruit Genius Business Idea! 🍉
+   3. [   13.7M] [  1m00s] [926j]  J'ai Dépensé TOUT L'argent D'Elon Musk
+   4. [    6.4M] [    19s] [1247j]  Des fois j'abuse avec la technologie
+   5. [    5.6M] [  1m00s] [817j]  Je vole l'argent de Mr Beast 💵
+   6. [    5.0M] [    58s] [315j]  JE TESTE DES TECHNOLOGIES 1 ÉTOILE 😱 (iPad, té…
+   7. [    4.1M] [     9s] [330j]  Pourquoi tout le monde kiffe les bébés ? #baby…
+   8. [    3.0M] [    40s] [825j]  Combien j’ai réussi à économiser grâce au défi…
+   9. [    2.4M] [  1m00s] [951j]  Il aurait attaqué une petite fille ?  😯#histoi…
+  10. [    2.2M] [     0s] [ 18j]  Bloomberg Business News Live
+
+  AVANTAGES
+    + Cible le format le plus viral de YouTube en 2025-2026
+    + Les Shorts bénéficient d'un flux algorithmique dédié et massif
+    + Boucle de lecture automatique = métriques d'engagement très élevées
+    + Données propres : durée précisément bornée et vérifiable
+
+  INCONVENIENTS
+    - Exclut tout le contenu long-format potentiellement viral
+    - Volume très réduit après filtrage strict à 60 secondes
+    - Le paramètre API 'short' couvre jusqu'à 4 min — filtrage additionnel indispensable
+    - Pertinence fragilisée si les mots-clés sont peu représentés en Shorts
+
+------------------------------------------------------------------------
+  STRATEGIE E  —  Hybride — Récent + Populaire + Court
+  publishedAfter=7j | order=viewCount | videoDuration=short | filtrage ≤ 60s
+------------------------------------------------------------------------
+
+  METRIQUES
+  Volume total                           60 videos
+  Format Shorts (≤ 60s)                  60 videos (100%)
+  Duree moyenne                          30s
+  Vues moyennes                          2.6M
+  Vues medianes                          2.0M
+  Age moyen des videos                   4.9 jours
+
+  TOP 10 VIDEOS PAR VUES
+   1. [   13.2M] [    36s] [  5j]  I swapped my keyboard’s WASD with a joystick..…
+   2. [    9.2M] [     4s] [  6j]  Vijay's fictional scorecard 🔥
+   3. [    6.7M] [    37s] [  5j]  #vendingmachine
+   4. [    6.5M] [    40s] [  4j]  they made it a business 😂💗 #zombieforsale #kdr…
+   5. [    6.5M] [    36s] [  6j]  ‎Originally priced around $1.5 million, the Me…
+   6. [    6.4M] [    25s] [  4j]  Samosa Business🤣 #funny #viral #foryou #foryou…
+   7. [    6.0M] [    22s] [  6j]  🍉 He bought the competition... then raised the…
+   8. [    5.9M] [    52s] [  6j]  What ones your favourite?! 🤔🤣 should we do a p…
+   9. [    5.9M] [    37s] [  6j]  ‎Originally priced around $1.5 million, the Me…
+  10. [    5.4M] [    21s] [  5j]  Billionaire Kid Hands Out Money 😂
+
+  AVANTAGES
+    + Signal combiné le plus fort pour détecter la viralité naissante
+    + Récent (≤ 7j) + déjà en traction = vidéo en phase de percée
+    + Format court = diffusion algorithmique maximisée
+    + Meilleur ratio signal/bruit pour un moteur de détection de tendances
+
+  INCONVENIENTS
+    - Triple filtre = volume de résultats potentiellement très faible
+    - Risque de retours vides pour des mots-clés de niche peu représentés en Shorts
+    - Le tri par vues sur 7j peut encore favoriser les créateurs établis
+    - Nécessite un corpus de mots-clés élargi pour compenser le faible yield
+
+========================================================================
+  TABLEAU COMPARATIF — SYNTHESE
+========================================================================
+
+  Strat.   Videos   Shorts  %Shorts   DureeMoy    VuesMoy    VuesMed    AgeMoy
+  ------------------------------------------------------------------------
+  A            99       17      17%     22m17s       5.4M     100.4k    226.9j
+  B           100       49      49%      5m29s      68.9M      36.1M   1345.7j
+  C            98       59      60%      9m54s       2.0k        664      0.1j
+  D            47       47     100%        31s       4.1M     492.8k    591.4j
+  E            60       60     100%        30s       2.6M       2.0M      4.9j
+
+========================================================================
+  RECOMMANDATION FINALE
+========================================================================
+
+  Question : Quelle strategie constitue la meilleure base technique
+  pour construire notre futur moteur de detection de videos virales ?
+
+  REPONSE : STRATEGIE E (Hybride) — couplée a la Strategie C
+------------------------------------------------------------------------
+
+  Justification
+  ─────────────
+  La Strategie E génère le signal le plus precisement calibre pour
+  detecter une video en phase de viralisation :
+    • Recente (≤ 7j)  → on capture la fenêtre d'acceleration
+    • En traction (viewCount)  → deja validee par l'audience
+    • Format Short (≤ 60s)  → diffusion algorithmique maximale
+
+  Cependant, son triple filtre produit peu de resultats par mot-cle.
+  Elle doit donc être couplée à la Strategie C (flux large) pour
+  constituer un pipeline complet :
+
+    PHASE 1 — Collecte large (Strategie C)
+      Capture le flux hebdomadaire complet (tous formats, ≤ 7j)
+      → Alimente un historique de reference pour le scoring
+
+    PHASE 2 — Detection de percees (Strategie E)
+      Isole les videos deja en traction, recentes, au format viral
+      → Produit les alertes du moteur de detection
+
+    PHASE 3 — Score de viralite composite (evolution future)
+      Croissance des vues / age × facteur format
+      Necessite des collectes repetees — Strategie C comme base
+
+  Recommandations operationnelles
+  ───────────────────────────────
+    1. Elargir le corpus a 15-20 mots-cles pour compenser le faible
+       yield de la Strategie E.
+    2. Executer la Strategie C en collecte quotidienne (surveillance).
+    3. Executer la Strategie E en collecte bi-quotidienne (alertes).
+    4. Conserver la Strategie B pour des audits mensuels de niche.
+
+  Tableau de correspondance cas d'usage / strategie
+  ───────────────────────────────────────────────────
+  Cas d'usage                                      Strategie recommandee
+  ──────────────────────────────────────────────── ──────────────────────
+  Detection precoce (viralite naissante)           E (Hybride)
+  Monitoring regulier du flux hebdomadaire         C (Recence 7j)
+  Cartographie des acteurs dominants d'une niche   B (Popularite)
+  Exploration / audit initial d'un sujet           A (Pertinence)
+  Recherche Shorts viraux exclusivement            D (Shorts)
+
+========================================================================

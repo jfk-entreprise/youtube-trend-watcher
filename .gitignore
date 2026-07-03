@@ -40,3 +40,6 @@ Thumbs.db
 # Logs
 *.log
 logs/
+
+# Données collectées (ne pas versionner le CSV)
+data/*.csv

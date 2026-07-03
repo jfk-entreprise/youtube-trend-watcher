@@ -1,0 +1,65 @@
+======================================================================
+  RAPPORT D'ANALYSE — YouTube Trend Watcher
+  Fichier : C:\dev\youtube-trend-watcher\data\videos.csv
+  Généré  : 2026-07-01 22:30:44 UTC
+======================================================================
+
+VUE D'ENSEMBLE
+----------------------------------------------------------------------
+  Snapshots totaux          : 99
+  Vidéos uniques            : 99
+  Chaînes uniques           : 99
+  Durée moyenne             : 9m36s
+  Shorts (≤ 60 s)           : 58
+  Vidéos longues (≥ 20 min) : 8
+  Âge moyen des vidéos      : 0.2 jours
+
+TOP 20 — VIDÉOS PAR NOMBRE DE VUES
+----------------------------------------------------------------------
+   1.       43,261 vues  '¡EL CHAVO Y DON RAMÓN INTENTARON PESCAR, PERO ESTE FUE '  [IA]
+   2.       36,812 vues  "🌸 Une magnifique histoire d'amour, de sacrifice et de l"  [Histoire]
+   3.       24,704 vues  '1st July 2026 : Zee Business Live | Share Market Live U'  [Business]
+   4.        9,875 vues  'Día 3 | Qué es un IA Hero y cómo convertirte en uno'  [IA]
+   5.        9,130 vues  'Un meurtre brutal et un suspect… trahi par la technolog'  [Technologie]
+   6.        7,106 vues  'Millionen Business mit faltbare Garagen 🤑'  [Business]
+   7.        6,687 vues  'Elle donne son dernier argent à une inconnue #viralshor'  [Argent]
+   8.        5,197 vues  "L'Histoire de la Coupe du Monde, de l'Origine jusqu'en "  [Histoire]
+   9.        5,051 vues  '#business 🔥🎉Introducing the "VitaWear SmartBand," a nex'  [Business]
+  10.        4,714 vues  "L'IA nous rend-elle bêtes ? | Les idées larges | ARTE"  [IA]
+  11.        4,478 vues  'Ils savaient que l’Histoire les jugerait.'  [Histoire]
+  12.        3,730 vues  "L'HOMME ET L'ARGENT I EPISODE 14 I SÉRIE CONGOLAISE I N"  [Argent]
+  13.        3,668 vues  '\u200b¿Grabar y transcribir reuniones con IA en un clic? Des'  [IA]
+  14.        2,768 vues  "BRUNO GACCIO HUMILIE ÉLISABETH LÉVY EN RAPPELANT L'HIST"  [Histoire]
+  15.        2,366 vues  'Comment Lancer un Business Solo avec Claude IA en 30 jo'  [Business]
+  16.        2,260 vues  '30 questions en une minute #yomidenzel #motivation #bus'  [Business]
+  17.        2,140 vues  'Meta shares jump after company announces new cloud infr'  [Business]
+  18.        2,110 vues  '5 High-Demand Business Ideas | Start With ZERO Money 20'  [Business]
+  19.        2,087 vues  "Mais qu'est-il arrivé à l'Argent de Gabriel Attal ?"  [Argent]
+  20.        1,998 vues  'Tech News Nothing এবং RCB-র যৌথ স্মার্টফোন, Samsung M47'  [Technologie]
+
+TOP 10 — CHAÎNES LES PLUS REPRÉSENTÉES
+----------------------------------------------------------------------
+   1.   1 vidéo(s)  ImpactaNews
+   2.   1 vidéo(s)  FRANCE 24
+   3.   1 vidéo(s)  𝐒𝐃𝐌𝐮𝐬𝐢𝐜𝐌𝐚𝐭𝐡
+   4.   1 vidéo(s)  Learning Heroes
+   5.   1 vidéo(s)  Demicam | Política y Humor IA
+   6.   1 vidéo(s)  AI SAMA 
+   7.   1 vidéo(s)  Musix For You M4U
+   8.   1 vidéo(s)  videos divertidos.
+   9.   1 vidéo(s)  Ingenier-IA Musical
+  10.   1 vidéo(s)  Pablo Roldán
+
+RÉPARTITION PAR MOT-CLÉ
+----------------------------------------------------------------------
+  IA               20  ( 20.2%)  ##########
+  Business         20  ( 20.2%)  ##########
+  Argent           20  ( 20.2%)  ##########
+  Technologie      20  ( 20.2%)  ##########
+  Histoire         19  ( 19.2%)  #########
+
+ANOMALIES DÉTECTÉES
+----------------------------------------------------------------------
+  [DURÉE ZÉRO]   'U in ur own lane minding ur business got them stalking tf ou' (video_id=aPHMvPDCO90)
+
+======================================================================

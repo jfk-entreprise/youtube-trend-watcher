@@ -1,0 +1,201 @@
+========================================================================
+  VIRALITY ENGINE v2 — RAPPORT D'ANALYSE (Time Engine)
+  Généré le         : 2026-07-02 21:28:49
+  Vidéos uniques    : 194
+  Avec historique   : 0 vidéos (≥ 2 snapshots)
+  Avec accélération : 0 vidéos (≥ 3 snapshots)
+  Score moyen       : 10.15  |  Max : 16.12
+  Top N affiché     : 20
+========================================================================
+
+  CRITÈRES & POIDS DU SCORE COMPOSITE
+------------------------------------------------------------------------
+  Critère                    Poids  Description
+  ───────────────────────── ──────  ───────────────────────────────────
+  velocity                    ×1.0  Vues/jour depuis publication (log)
+  engagement                  ×0.5  (Likes + commentaires) / vues (log)
+  format                      ×0.3  Bonus Short ≤ 60s
+  source                      ×0.2  Bonus vidéo trending (chart=mostPopular)
+  growth_velocity             ×2.0  Vues/heure mesurées entre snapshots (log) [temporel]
+  acceleration                ×1.5  Accélération de croissance (Δvues/h)/h [≥ 3 snapshots]
+
+  RÉPARTITION DES SOURCES
+------------------------------------------------------------------------
+  keyword         98 vidéos (51%)
+  trending        96 vidéos (49%)
+
+  ANALYSE TEMPORELLE
+------------------------------------------------------------------------
+  Aucun historique disponible — un seul snapshot par vidéo.
+  Le moteur opère en mode statique (Sprint 4).
+  Relancez test_agents.py pour accumuler des snapshots supplémentaires.
+  Les critères temporels (growth_velocity, acceleration) sont prêts
+  et s'activeront automatiquement dès le prochain cycle de collecte.
+
+========================================================================
+  TOP 20 — VIDÉOS AU PLUS FORT POTENTIEL VIRAL
+========================================================================
+
+  #01  ▸ Score : 16.12  [1 snap]
+       Kenji & Kaze Lost Everything! (Brawl Stars Animation)
+       Chaîne    : Brawl Stars
+       Vues      : 2.1M        Durée : 1m10s    
+       Âge pub.  : 0.6j  Source : trending    Mot-clé : FR
+       Détail    : velocity:15.13  engagement:0.79  format:0.00  source:0.20  growth_velocity:0.00  acceleration:0.00
+       ↳ https://youtu.be/A6g3ozZQQQ0
+
+  #02  ▸ Score : 15.97  [1 snap]
+       BABYMONSTER - 'I LIKE IT' M/V TEASER
+       Chaîne    : BABYMONSTER
+       Vues      : 1.7M        Durée : 41s        [SHORT]
+       Âge pub.  : 1.3j  Source : trending    Mot-clé : FR
+       Détail    : velocity:14.10  engagement:1.37  format:0.30  source:0.20  growth_velocity:0.00  acceleration:0.00
+       ↳ https://youtu.be/7a5lmW-oIR0
+
+  #03  ▸ Score : 15.52  [1 snap]
+       WERWULF - Official Trailer [HD] - Only In Theaters Christmas
+       Chaîne    : Focus Features
+       Vues      : 9.8M        Durée : 2m15s    
+       Âge pub.  : 3.4j  Source : trending    Mot-clé : US
+       Détail    : velocity:14.88  engagement:0.44  format:0.00  source:0.20  growth_velocity:0.00  acceleration:0.00
+       ↳ https://youtu.be/cmjpadVj-Vk
+
+  #04  ▸ Score : 15.35  [1 snap]
+       The Dumbest Spots in Meccha Chameleon That Somehow Work
+       Chaîne    : SMii7Y
+       Vues      : 3.3M        Durée : 38m53s   
+       Âge pub.  : 2.1j  Source : trending    Mot-clé : US
+       Détail    : velocity:14.26  engagement:0.88  format:0.00  source:0.20  growth_velocity:0.00  acceleration:0.00
+       ↳ https://youtu.be/aBV80RTgSNQ
+
+  #05  ▸ Score : 15.00  [1 snap]
+       Joe | Official Trailer
+       Chaîne    : Druski
+       Vues      : 3.9M        Durée : 2m44s    
+       Âge pub.  : 3.8j  Source : trending    Mot-clé : US
+       Détail    : velocity:13.83  engagement:0.97  format:0.00  source:0.20  growth_velocity:0.00  acceleration:0.00
+       ↳ https://youtu.be/Js7PKsarC5Q
+
+  #06  ▸ Score : 14.96  [1 snap]
+       ANIMAL HOSPITAL
+       Chaîne    : Flamingo
+       Vues      : 676.3k      Durée : 25m39s   
+       Âge pub.  : 0.7j  Source : trending    Mot-clé : US
+       Détail    : velocity:13.72  engagement:1.04  format:0.00  source:0.20  growth_velocity:0.00  acceleration:0.00
+       ↳ https://youtu.be/mZTAjVrL0LE
+
+  #07  ▸ Score : 14.78  [1 snap]
+       The Odyssey | Official Countdown Trailer
+       Chaîne    : Universal Pictures
+       Vues      : 1.3M        Durée : 2m31s    
+       Âge pub.  : 1.4j  Source : trending    Mot-clé : US
+       Détail    : velocity:13.79  engagement:0.80  format:0.00  source:0.20  growth_velocity:0.00  acceleration:0.00
+       ↳ https://youtu.be/AyIZ9tiiN8I
+
+  #08  ▸ Score : 14.59  [1 snap]
+       YOU WILL DECIDE MY FATE
+       Chaîne    : Markiplier
+       Vues      : 587.4k      Durée : 4h52m05s 
+       Âge pub.  : 0.8j  Source : trending    Mot-clé : US
+       Détail    : velocity:13.49  engagement:0.91  format:0.00  source:0.20  growth_velocity:0.00  acceleration:0.00
+       ↳ https://youtu.be/r0QIuf8WsXw
+
+  #09  ▸ Score : 14.32  [1 snap]
+       Meccha Chameleon (dunk's view)
+       Chaîne    : videogamedunkey
+       Vues      : 561.2k      Durée : 3m45s    
+       Âge pub.  : 1.1j  Source : trending    Mot-clé : US
+       Détail    : velocity:13.16  engagement:0.96  format:0.00  source:0.20  growth_velocity:0.00  acceleration:0.00
+       ↳ https://youtu.be/SUX7eY1p-fM
+
+  #10  ▸ Score : 14.30  [1 snap]
+       🔴LIVE | SAND: RAIDERS OF SOPHIE w/ GIMMICK & COCONUT | WACKADOODLE
+       Chaîne    : TheBurntPeanut
+       Vues      : 442.3k      Durée : 7h24m05s 
+       Âge pub.  : 0.6j  Source : trending    Mot-clé : US
+       Détail    : velocity:13.57  engagement:0.52  format:0.00  source:0.20  growth_velocity:0.00  acceleration:0.00
+       ↳ https://youtu.be/4l-kyZmt2Ec
+
+  #11  ▸ Score : 14.13  [1 snap]
+       SINDIKA - NOUCHI IN PARIS Ft AMEKA ZRAI & TRK (Official Music Vide
+       Chaîne    : Sindika
+       Vues      : 597.4k      Durée : 2m56s    
+       Âge pub.  : 1.2j  Source : trending    Mot-clé : FR
+       Détail    : velocity:13.10  engagement:0.83  format:0.00  source:0.20  growth_velocity:0.00  acceleration:0.00
+       ↳ https://youtu.be/srdMV4QOHW0
+
+  #12  ▸ Score : 14.05  [1 snap]
+       Pratfall - We Finally Reached The Bottom
+       Chaîne    : VanossGaming
+       Vues      : 364.1k      Durée : 23m38s   
+       Âge pub.  : 0.9j  Source : trending    Mot-clé : US
+       Détail    : velocity:12.92  engagement:0.93  format:0.00  source:0.20  growth_velocity:0.00  acceleration:0.00
+       ↳ https://youtu.be/aYtfrnZO5vg
+
+  #13  ▸ Score : 14.05  [1 snap]
+       We Got Locked Inside a Haunted Prison... Roblox Demonology!
+       Chaîne    : ItsFunneh
+       Vues      : 433.1k      Durée : 42m13s   
+       Âge pub.  : 1.1j  Source : trending    Mot-clé : US
+       Détail    : velocity:12.92  engagement:0.93  format:0.00  source:0.20  growth_velocity:0.00  acceleration:0.00
+       ↳ https://youtu.be/4XBNxWA0_34
+
+  #14  ▸ Score : 14.04  [1 snap]
+       LES MAPS CUSTOM SONT INCROYABLES (Meccha Chameleon)
+       Chaîne    : SQUEEZIE GAMING
+       Vues      : 1.5M        Durée : 48m27s   
+       Âge pub.  : 3.2j  Source : trending    Mot-clé : FR
+       Détail    : velocity:13.05  engagement:0.80  format:0.00  source:0.20  growth_velocity:0.00  acceleration:0.00
+       ↳ https://youtu.be/WxpKtcDKC8A
+
+  #15  ▸ Score : 13.90  [1 snap]
+       it followed me home..
+       Chaîne    : Calvin
+       Vues      : 361.4k      Durée : 58m12s   
+       Âge pub.  : 1.1j  Source : trending    Mot-clé : US
+       Détail    : velocity:12.70  engagement:1.00  format:0.00  source:0.20  growth_velocity:0.00  acceleration:0.00
+       ↳ https://youtu.be/gZffCLyx5dU
+
+  #16  ▸ Score : 13.87  [1 snap]
+       J’ai dépensé 8 435 711 € pour être le Plus Rapide sur Évasion de C
+       Chaîne    : Unchained_Off
+       Vues      : 433.7k      Durée : 24m10s   
+       Âge pub.  : 1.3j  Source : trending    Mot-clé : FR
+       Détail    : velocity:12.74  engagement:0.93  format:0.00  source:0.20  growth_velocity:0.00  acceleration:0.00
+       ↳ https://youtu.be/3FtZ8BFU-Z0
+
+  #17  ▸ Score : 13.86  [1 snap]
+       Noah Has A Secret…
+       Chaîne    : CaseOh
+       Vues      : 381.8k      Durée : 1h14m43s 
+       Âge pub.  : 1.0j  Source : trending    Mot-clé : US
+       Détail    : velocity:12.88  engagement:0.79  format:0.00  source:0.20  growth_velocity:0.00  acceleration:0.00
+       ↳ https://youtu.be/HgiHN2_WCpw
+
+  #18  ▸ Score : 13.83  [1 snap]
+       Me and SMii7Y found the best Meccha Chameleon strategy...
+       Chaîne    : Kryoz
+       Vues      : 392.0k      Durée : 46m06s   
+       Âge pub.  : 1.1j  Source : trending    Mot-clé : US
+       Détail    : velocity:12.80  engagement:0.83  format:0.00  source:0.20  growth_velocity:0.00  acceleration:0.00
+       ↳ https://youtu.be/iCMZckFK1II
+
+  #19  ▸ Score : 13.62  [1 snap]
+       Honest Trailers | Idiocracy
+       Chaîne    : Screen Junkies
+       Vues      : 572.1k      Durée : 6m40s    
+       Âge pub.  : 2.2j  Source : trending    Mot-clé : US
+       Détail    : velocity:12.47  engagement:0.95  format:0.00  source:0.20  growth_velocity:0.00  acceleration:0.00
+       ↳ https://youtu.be/gSgBTb3wmMI
+
+  #20  ▸ Score : 13.53  [1 snap]
+       Don Omar - Dale Don Dale (Lyric Video)
+       Chaîne    : MacheteMusicVEVO
+       Vues      : 1.4M        Durée : 3m33s    
+       Âge pub.  : 2.7j  Source : trending    Mot-clé : FR
+       Détail    : velocity:13.18  engagement:0.16  format:0.00  source:0.20  growth_velocity:0.00  acceleration:0.00
+       ↳ https://youtu.be/4ubjZcyxzBY
+
+========================================================================
+  FIN DU RAPPORT
+========================================================================
