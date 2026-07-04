@@ -16,6 +16,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
+    # Les secrets Supabase sont déclarés au niveau du job pour être hérités
+    # par toutes les étapes. Sans cela, build_storage() ignore Supabase dans
+    # les étapes qui n'ont pas leur propre bloc env: (run_virality, generate_report).
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+
     steps:
       # ── Environnement ──────────────────────────────────────────────────────────
 
@@ -55,8 +62,6 @@ jobs:
       - name: "Étape 1/3 — Collecte multi-agents (test_agents.py)"
         env:
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
           echo "▶ Lancement de la collecte YouTube (KeywordAgent + TrendingAgent)"
           python scripts/test_agents.py
