@@ -1,0 +1,19 @@
+{
+  "subject": "Split screen: left side traditional gamer on PC with post-its, right side VR gamer with data overlays",
+  "scene_description": "Split screen composition, fond noir profond. À gauche : un bureau modeste avec un écran d'ordinateur, des post-its jaunes collés sur le moniteur et le mur, une souris filaire, lumière tamisée bleutée. Le joueur est penché, concentré mais tendu. À droite : espace futuriste ouvert, éclairage néon bleu électrique et violet, des lignes lumineuses animées traversent l'écran. Le joueur VR est debout, casque sur les yeux, mains tenant des contrôleurs invisibles, des graphiques et données holographiques flottent autour de lui en couleurs vives. Ambiance high-tech et propre. Motif de l'IA représenté par des particules lumineuses. Pas de fenêtre, pas de décor supplémentaire.",
+  "style": "Cinematic, photorealistic, HDR, 8K, vertical 9:16, color grading bleu/violet, volumetric lighting, realistic textures, subsurface scattering, depth of field léger, glow des éléments néon.",
+  "prompt": "Generate a vertical 9:16 split screen image. Left side: a young man in a white t-shirt sitting at a computer desk with yellow post-it notes on the monitor, focused but frustrated expression, dim blue light. Right side: a confident man with a VR headset standing in a dark room with neon blue and purple lights, surrounded by floating holographic data charts and graphs, smiling. Both sides have a black background. The overall mood is futuristic and hopeful.",
+  "negative_prompt": "Cartoon, illustration, 3D render, low quality, blurry, messy details, cluttered background, multiple people, text on screen, watermarks, lens flare, fish-eye, distortion, asymmetrical split uneven, post-its blocking face, ugly VR headset, dark shadows losing details., logo, signature, deformed, distorted anatomy, extra limbs, low resolution, painting, oversaturated colors, horizontal crop, incorrect aspect ratio, plastic skin, jpeg artifacts",
+  "metadata": {
+    "goal": "Montrer le contraste entre l'entraînement traditionnel solitaire et l'entraînement assisté par IA, et suggérer que ce dernier est l'avenir inévitable.",
+    "emotion": "Espoir et détermination pour le futur, avec une pointe de nostalgie pour le passé.",
+    "characters": [
+      "Le joueur humain : jeune homme d'une vingtaine d'années, visage expressif, bouche ouverte, yeux écarquillés de surprise, sourcils levés. Cheveux bruns en désordre, t-shirt blanc décontracté. Assis devant un écran d'ordinateur, mains positionnées sur le clavier.",
+      "Pro gamer VR : homme de 25-30 ans, sourire confiant, regard concentré mais joyeux. Cheveux courts bruns, barbe légère. Porte un casque VR noir et blanc, un t-shirt technique ajusté sombre. Entouré de données holographiques flottantes."
+    ],
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "time_ms": 12760,
+    "cost_usd": 0.003412
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "shot_type": "Close-Up",
+  "camera_angle": "Eye Level",
+  "lens": "35mm",
+  "composition": "Center Composition",
+  "depth_of_field": "shallow depth of field, subject in sharp focus, background blurred",
+  "lighting_style": "Neon",
+  "color_palette": "Electric Blue + Violet + Black",
+  "focal_point": "Subscribe button",
+  "visual_priority": [
+    "Subscribe button",
+    "Neon glow lines",
+    "Floating links"
+  ],
+  "thumbnail_moment": "Subscribe button pulses with neon light, surrounded by floating animated links",
+  "cinematic_goal": "Create a direct, engaging call-to-action that feels like a natural pause, not a hard sell, using neon accents to maintain visual energy",
+  "metadata": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "time_ms": 2349,
+    "cost_usd": 0.00093
+  }
+}

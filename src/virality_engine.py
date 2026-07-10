@@ -14,16 +14,16 @@ Comportement adaptatif selon la disponibilité des données historiques :
 Extensibilité : sous-classer ScoringCriterion, brancher sur la liste du constructeur.
 """
 
-import csv
 import logging
 import math
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
 from src.models import VideoSnapshot
+from src.utils import parse_dt, age_days as _age_days, fmt_duration as _fmt_dur, fmt_views as _fmt_views, csv_snapshots_to_timelines
 
 logger = logging.getLogger(__name__)
 
@@ -88,8 +88,8 @@ class VideoTimeline:
         first = self.snapshots[0]
         last = self.snapshots[-1]
 
-        t0 = _parse_dt(first.collected_at)
-        t1 = _parse_dt(last.collected_at)
+        t0 = parse_dt(first.collected_at)
+        t1 = parse_dt(last.collected_at)
         hours_total = max((t1 - t0).total_seconds() / 3600, 0.001)
 
         # Croissance des vues
@@ -113,7 +113,7 @@ class VideoTimeline:
         acceleration: Optional[float] = None
         if len(self.snapshots) >= 3:
             mid = self.snapshots[len(self.snapshots) // 2]
-            t_mid = _parse_dt(mid.collected_at)
+            t_mid = parse_dt(mid.collected_at)
 
             h_early = max((t_mid - t0).total_seconds() / 3600, 0.001)
             h_late = max((t1 - t_mid).total_seconds() / 3600, 0.001)
@@ -184,7 +184,7 @@ class VelocityCriterion(ScoringCriterion):
         video = timeline.latest
         if not video.view_count or video.view_count <= 0:
             return 0.0
-        age = max(_age_days(video), 0.5)
+        age = max(_age_days(video.published_at), 0.5)
         return math.log1p(video.view_count / age)
 
 
@@ -361,49 +361,9 @@ class ViralityEngine:
     # ── Chargement & regroupement ──────────────────────────────────────────────
 
     def _load_timelines(self) -> list[VideoTimeline]:
-        """Charge le CSV, reconstruit les snapshots et les groupe par video_id."""
-        if not self._csv_path.exists():
-            logger.error("Fichier CSV introuvable : %s", self._csv_path)
-            return []
-
-        buckets: dict[str, list[VideoSnapshot]] = {}
-        skipped = 0
-
-        with open(self._csv_path, newline="", encoding="utf-8") as f:
-            for row in csv.DictReader(f):
-                try:
-                    snap = VideoSnapshot(
-                        video_id=row["video_id"],
-                        title=row["title"],
-                        channel_id=row["channel_id"],
-                        channel_title=row["channel_title"],
-                        published_at=row["published_at"],
-                        description=row.get("description", ""),
-                        duration_iso=row["duration_iso"],
-                        duration_seconds=int(row["duration_seconds"] or 0),
-                        view_count=_to_int(row.get("view_count")),
-                        like_count=_to_int(row.get("like_count")),
-                        comment_count=_to_int(row.get("comment_count")),
-                        keyword=row["keyword"],
-                        source=row.get("source", "keyword"),
-                        collected_at=row["collected_at"],
-                    )
-                    buckets.setdefault(snap.video_id, []).append(snap)
-                except Exception as exc:
-                    skipped += 1
-                    logger.debug("Ligne ignorée (%s)", exc)
-
-        if skipped:
-            logger.warning("%d ligne(s) ignorée(s) lors du chargement.", skipped)
-
-        timelines = [VideoTimeline(vid_id, snaps) for vid_id, snaps in buckets.items()]
-        logger.info(
-            "%d snapshots → %d vidéos uniques (depuis %s)",
-            sum(len(tl.snapshots) for tl in timelines),
-            len(timelines),
-            self._csv_path.name,
-        )
-        return timelines
+        """Charge le CSV et groupe les snapshots en VideoTimeline par video_id."""
+        buckets = csv_snapshots_to_timelines(self._csv_path)
+        return [VideoTimeline(vid_id, snaps) for vid_id, snaps in buckets.items()]
 
     # ── Score composite ────────────────────────────────────────────────────────
 
@@ -508,7 +468,7 @@ class ViralityEngine:
         for rank, (timeline, score) in enumerate(top, 1):
             video = timeline.latest
             m = timeline.metrics
-            age = _age_days(video)
+            age = _age_days(video.published_at)
             is_short = video.duration_seconds <= 60
             breakdown = self._score_breakdown(timeline)
             breakdown_str = "  ".join(f"{k}:{v:.2f}" for k, v in breakdown.items())
@@ -550,41 +510,7 @@ class ViralityEngine:
         return "\n".join(lines)
 
 
-# ── Utilitaires (privés au module) ────────────────────────────────────────────
-
-def _parse_dt(s: str) -> datetime:
-    return datetime.fromisoformat(s.replace("Z", "+00:00"))
-
-
-def _age_days(video: VideoSnapshot) -> float:
-    try:
-        return max((datetime.now(timezone.utc) - _parse_dt(video.published_at)).total_seconds() / 86400, 0.0)
-    except Exception:
-        return 30.0
-
-
-def _to_int(value: Optional[str]) -> Optional[int]:
-    try:
-        return int(value) if value else None
-    except (TypeError, ValueError):
-        return None
-
-
-def _fmt_dur(sec: int) -> str:
-    if sec < 60:
-        return f"{sec}s"
-    m, s = divmod(sec, 60)
-    if m < 60:
-        return f"{m}m{s:02d}s"
-    h, m = divmod(m, 60)
-    return f"{h}h{m:02d}m{s:02d}s"
-
-
-def _fmt_views(n: Optional[int]) -> str:
-    if n is None:
-        return "N/A"
-    if n >= 1_000_000:
-        return f"{n / 1_000_000:.1f}M"
-    if n >= 1_000:
-        return f"{n / 1_000:.1f}k"
-    return str(n)
+# ── Note : les utilitaires (parse_dt, age_days, safe_int, fmt_duration, fmt_views)
+# sont centralisés dans src.utils pour éviter la duplication.
+# Les alias _parse_dt, _age_days, _to_int, _fmt_dur, _fmt_views sont importés
+# depuis src.utils en haut du module.

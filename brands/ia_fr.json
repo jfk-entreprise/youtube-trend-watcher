@@ -1,0 +1,46 @@
+{
+  "id": "ia_fr",
+  "name": "IA FR",
+  "description": "Chaîne sur l'Intelligence Artificielle en français — exploration, démystification et applications concrètes pour tous.",
+  "niche": "Intelligence Artificielle",
+  "target_audience": "Curieux technophiles et professionnels 20-40 ans voulant comprendre et utiliser l'IA",
+  "primary_language": "fr",
+  "tone": "Innovant",
+  "personality": "Curieux, pédagogique, fasciné par l'avenir. Vulgarise sans simplifier. Pose des questions avant de donner des réponses. Encourage l'exploration et l'expérimentation. Jamais alarmiste.",
+  "writing_style": "Questions rhétoriques, métaphores concrètes du quotidien, exemples pratiques immédiats. Structure : Question → Découverte → Implication → Expérience proposée.",
+  "emotion_level": 0.55,
+  "humor_level": 0.30,
+  "authority_level": 0.65,
+  "curiosity_level": 0.95,
+  "storytelling_level": 0.60,
+  "voice_speed": "Modéré",
+  "preferred_video_duration": 720,
+  "preferred_formats": ["Analyse", "Tutorial", "Comparaison", "Challenge"],
+  "preferred_hooks": [
+    "Et si l'IA pouvait vraiment {faire X} ?",
+    "J'ai testé {outil IA} pendant {N} jours. Voici ce qui s'est passé.",
+    "Voici ce que l'IA ne peut pas encore faire — et ça va te surprendre.",
+    "En {N} ans, {domaine} va être complètement transformé par l'IA."
+  ],
+  "preferred_cta": [
+    "Abonne-toi — je publie une analyse IA chaque semaine.",
+    "Dis-moi en commentaire quel outil IA tu utilises déjà.",
+    "Partage avec quelqu'un qui pense que l'IA ne le concerne pas."
+  ],
+  "forbidden_words": ["robot", "Skynet", "apocalypse", "remplacement", "peur", "danger", "menace"],
+  "visual_style": "Fond noir profond, lignes lumineuses animées, ambiance néon — bleu électrique et violet, futuriste mais accessible",
+  "color_palette": ["#0D0D0D", "#00D4FF", "#7B2FBE", "#FFFFFF"],
+  "typography_style": "Futuriste (Orbitron ou Exo 2), gros titres épacés, sous-titres fins, contraste fort sur fond sombre",
+  "logo_description": "Circuit imprimé stylisé formant les lettres IA, néon bleu électrique sur fond noir",
+  "thumbnail_style": "Cerveau IA ou interface futuriste + question intrigante + palette néon — ambiance laboratoire",
+  "metadata": {
+    "posting_frequency": "2x par semaine",
+    "best_posting_times": ["mercredi 08h00", "samedi 10h00"],
+    "content_pillars": ["LLM & ChatGPT", "Automatisation", "Outils IA pratiques", "Éthique IA", "Futur du travail"],
+    "platform_priority": ["YouTube", "Twitter/X", "LinkedIn"],
+    "avg_comment_type": "questions techniques, partages d'expériences outils",
+    "monetization": ["formations en ligne", "newsletters premium", "partenariats outils IA"],
+    "version": "1.0"
+  },
+  "niche_keywords": ["ia", "intelligence artificielle", "ai", "tech", "technologie", "robot", "chatgpt", "llm"]
+}

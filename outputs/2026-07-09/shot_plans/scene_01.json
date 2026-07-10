@@ -1,0 +1,23 @@
+{
+  "shot_type": "Close-Up",
+  "camera_angle": "Dutch Angle",
+  "lens": "35mm",
+  "composition": "Center Composition",
+  "depth_of_field": "shallow depth of field",
+  "lighting_style": "Neon",
+  "color_palette": "Electric Blue + Violet + Black",
+  "focal_point": "Question mark symbol",
+  "visual_priority": [
+    "Question mark symbol",
+    "Glowing lines",
+    "Deep black background"
+  ],
+  "thumbnail_moment": "A glowing question mark symbol in electric blue and violet, sharply focused against a deep black background, with animated luminous lines converging toward it, creating a sense of mystery and urgency.",
+  "cinematic_goal": "Hook the viewer instantly with a striking, curiosity-inducing visual that establishes the futuristic neon brand identity and sets a high-energy, mysterious tone for the entire video.",
+  "metadata": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "time_ms": 2633,
+    "cost_usd": 0.00087
+  }
+}

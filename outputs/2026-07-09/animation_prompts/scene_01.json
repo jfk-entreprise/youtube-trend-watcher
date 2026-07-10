@@ -1,0 +1,20 @@
+{
+  "camera_motion": "Dolly in très lent vers le casque, accentuant la profondeur de champ et l'immersion.",
+  "subject_motion": "Le casque reste immobile mais ses lumières néon pulsent doucement (cycle respiratoire). Le clavier RGB a un léger scintillement aléatoire.",
+  "environment_motion": "L'écran en arrière-plan a des lueurs de jeu animées (éclairs, mouvement flou). De la fumée légère et des particules lumineuses flottent dans l'air.",
+  "lighting_changes": "Les lumières néon du casque et du clavier augmentent légèrement en intensité pendant le dolly in, puis se stabilisent. Un léger vignettage s'estompe au fur et à mesure.",
+  "effects": "Fade-in depuis le noir (0.5s). Puis animation du texte 'Si tu t'intéresses à Gaming & Esports, regarde ça.' qui apparaît en scale up (de 0 à 100%) avec un léger effet de glow, puis se stabilise. La typographie est bold, futuriste, couleur cyan/violet.",
+  "sound_design": "Début: silence puis un souffle léger (ambiance). Au fade-in, un son de basse profonde qui monte en intensité. Quand le texte apparaît, un 'whoosh' subtil et un impact sourd. En fond, nappes synthétiques évoquant le gaming.",
+  "transition": "Fade from black (entrée). Sortie: cut sec vers la scène suivante (ou fondu enchaîné rapide si nécessaire).",
+  "duration": 9,
+  "prompt": "Cinematic close-up of a gaming headset with neon blue and purple glowing edges, resting on a mechanical RGB keyboard. The headset and keyboard are sharply in focus, while a blurry computer screen in the background displays a video game with dynamic light flashes. The scene fades in from black (0.5s). The camera performs a very slow dolly in towards the headset, enhancing depth of field. The headset's neon lights pulse gently in a breathing cycle, and the keyboard's RGB lights twinkle randomly. The screen's game lights flicker and move. Light smoke and floating luminous particles drift in the air. The neon lights intensify slightly during the dolly in, then stabilize. A subtle vignette fades out. Bold text appears with a scale-up animation (0 to 100%) and a soft glow: 'Si tu t'intéresses à Gaming & Esports, regarde ça.' The text stabilizes. The atmosphere is dark, neon, futuristic, photorealistic, 8K, vertical 9:16 format. Sound: ambient low bass swell, subtle whoosh and soft impact on text appearance, synth pads.",
+  "metadata": {
+    "goal": "Créer une immersion immédiate et un fort impact visuel pour capter l'attention du spectateur dès l'ouverture.",
+    "emotion": "Curiosité, excitation, anticipation technologique.",
+    "pace": "Lent au début (fade-in), puis dynamique (scale-up du texte) avec un rythme soutenu.",
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "time_ms": 8607,
+    "cost_usd": 0.001458
+  }
+}

@@ -1,0 +1,154 @@
+{
+  "opportunity_id": "yBy5NnLTiWQ",
+  "niche": "Gaming & Esports",
+  "brief_angle": "Histoire",
+  "script": {
+    "title": "Le jour où j'ai affronté un champion de Minecraft",
+    "hook": "J'ai perdu 47 fois d'affilée avant de comprendre.",
+    "introduction": "Je pensais connaître Minecraft. Puis j'ai rencontré quelqu'un qui m'a prouvé le contraire.",
+    "scenes": [
+      {
+        "order": 1,
+        "title": "Le défi impossible",
+        "narration": "Un joueur inconnu m'a défié en duel. J'étais confiant. J'avais des centaines d'heures de jeu.",
+        "visual_description": "Un écran de jeu Minecraft avec deux joueurs face à face, l'un confiant, l'autre masqué.",
+        "image_prompt": "Deux personnages Minecraft dans une arène, l'un souriant, l'autre mystérieux avec une cape.",
+        "animation_notes": "Zoom avant sur le joueur masqué, puis fondu vers le combat.",
+        "sound_effects": "Son d'épée qui sort, ambiance de combat.",
+        "duration_seconds": 9
+      },
+      {
+        "order": 2,
+        "title": "La première défaite",
+        "narration": "En trois secondes, j'étais mort. Je n'avais même pas vu son coup.",
+        "visual_description": "Animation rapide du personnage du narrateur qui tombe, écran rouge de mort.",
+        "image_prompt": "Écran de mort Minecraft avec le message 'Vous êtes mort' et un joueur vainqueur au loin.",
+        "animation_notes": "Ralenti sur le moment de l'impact, puis flash rouge.",
+        "sound_effects": "Bruit de dégâts, puis silence.",
+        "duration_seconds": 8
+      },
+      {
+        "order": 3,
+        "title": "L'obsession",
+        "narration": "J'ai recommencé. Encore et encore. Chaque fois, le même résultat. 47 défaites.",
+        "visual_description": "Montage rapide de 5 à 6 écrans de mort successifs, avec un compteur qui augmente.",
+        "image_prompt": "Collage d'écrans de mort Minecraft avec un compteur numérique allant de 1 à 47.",
+        "animation_notes": "Accéléré, chaque écran dure 0,5 seconde, compteur qui tourne.",
+        "sound_effects": "Bruit de clic rapide, puis battement de cœur.",
+        "duration_seconds": 9
+      },
+      {
+        "order": 4,
+        "title": "La révélation",
+        "narration": "Puis il m'a parlé. Il m'a dit une chose qui a tout changé : 'Tu ne joues pas, tu réagis.'",
+        "visual_description": "Le joueur masqué s'approche, bulle de texte apparaît avec ses paroles.",
+        "image_prompt": "Deux personnages Minecraft face à face, une bulle de texte avec 'Tu ne joues pas, tu réagis'.",
+        "animation_notes": "Zoom lent sur le visage du narrateur, puis coupe sur la bulle.",
+        "sound_effects": "Son de vent, puis voix grave et calme.",
+        "duration_seconds": 9
+      },
+      {
+        "order": 5,
+        "title": "La méthode",
+        "narration": "Il m'a appris à anticiper, à lire les mouvements, à contrôler mon rythme cardiaque.",
+        "visual_description": "Diagramme animé montrant les trajectoires d'épée, un cœur qui bat normalement puis ralentit.",
+        "image_prompt": "Schéma de combat Minecraft avec flèches et un cœur stylisé.",
+        "animation_notes": "Animation des flèches, le cœur passe de rapide à lent.",
+        "sound_effects": "Bruit de respiration profonde, épée qui siffle.",
+        "duration_seconds": 10
+      },
+      {
+        "order": 6,
+        "title": "Le premier round gagné",
+        "narration": "Après des heures, j'ai gagné un round. Un seul. Mais j'avais compris le mécanisme.",
+        "visual_description": "Le personnage du narrateur touche l'adversaire, barre de vie de l'adversaire diminue.",
+        "image_prompt": "Capture d'écran Minecraft avec le joueur qui frappe, barre de vie rouge.",
+        "animation_notes": "Ralenti sur le coup, puis la barre descend.",
+        "sound_effects": "Cri de victoire étouffé, coup d'épée.",
+        "duration_seconds": 9
+      },
+      {
+        "order": 7,
+        "title": "L'entraînement intensif",
+        "narration": "Nous avons passé trois jours à ne faire que ça. Des centaines de duels. Chaque erreur était une leçon.",
+        "visual_description": "Montage de plusieurs duels, avec le narrateur qui s'améliore visiblement (esquives, coups précis).",
+        "image_prompt": "Série d'images de combats Minecraft, le narrateur esquive et contre-attaque.",
+        "animation_notes": "Montage dynamique, coupé au rythme de la musique.",
+        "sound_effects": "Bruit d'épées qui s'entrechoquent, respiration haletante.",
+        "duration_seconds": 12
+      },
+      {
+        "order": 8,
+        "title": "Le duel final",
+        "narration": "Le dernier jour, nous avons fait un match décisif. J'ai gagné 5 à 4. Il a souri.",
+        "visual_description": "Combat intense, les deux barres de vie sont basses, le narrateur porte le coup final.",
+        "image_prompt": "Moment de combat où le narrateur frappe, barre de vie de l'adversaire vide, le gagnant lève son épée.",
+        "animation_notes": "Ralenti sur le coup final, puis fondu sur le sourire de l'adversaire.",
+        "sound_effects": "Coup final, puis silence, puis rire léger.",
+        "duration_seconds": 10
+      },
+      {
+        "order": 9,
+        "title": "L'identité dévoilée",
+        "narration": "Il a enlevé son masque. C'était un champion professionnel, vainqueur de plusieurs tournois.",
+        "visual_description": "Le joueur masqué enlève son masque, révélant un visage souriant (ou un skin connu).",
+        "image_prompt": "Personnage Minecraft enlevant son masque, dévoilant un visage stylisé ou un skin célèbre.",
+        "animation_notes": "Zoom avant sur le démasquage, puis arrêt sur image.",
+        "sound_effects": "Bruit de tissu, puis musique épique.",
+        "duration_seconds": 9
+      },
+      {
+        "order": 10,
+        "title": "La leçon",
+        "narration": "Il m'a dit : 'Le talent, c'est juste de la patience déguisée.' Depuis, je n'ai jamais perdu contre un inconnu.",
+        "visual_description": "Le narrateur et le champion se serrent la main, puis le narrateur joue seul, confiant.",
+        "image_prompt": "Deux personnages Minecraft se serrant la main, puis un joueur seul devant un écran.",
+        "animation_notes": "Fondu enchaîné entre la poignée de main et le joueur seul.",
+        "sound_effects": "Musique douce, puis bruit de clavier.",
+        "duration_seconds": 11
+      }
+    ],
+    "conclusion": "Cette expérience m'a appris que derrière chaque performance, il y a des heures de travail invisible.",
+    "call_to_action": "Et toi, quel est le jeu où tu aimerais devenir imbattable ? Dis-le en commentaire.",
+    "estimated_duration": 96,
+    "language": "fr",
+    "target_audience": "Gamers",
+    "style": "Professionnel et inspirant",
+    "metadata": {
+      "generator": "llm_v1",
+      "llm_provider": "deepseek",
+      "llm_model": "deepseek-v4-flash",
+      "angle": "Histoire",
+      "niche": "Gaming & Esports",
+      "brand_id": "business_fr",
+      "brand_name": "Business FR",
+      "opportunity_score": 0.7304,
+      "urgency": 0.963,
+      "scene_count": 10,
+      "opportunity_id": "yBy5NnLTiWQ",
+      "llm_time_ms": 36197,
+      "llm_tokens": 6328,
+      "llm_cost_usd": 0.003035
+    }
+  },
+  "heuristic_score": {
+    "hook_score": 5.0,
+    "curiosity_score": 3.5,
+    "clarity_score": 7.5,
+    "rhythm_score": 10.0,
+    "cta_score": 6.0,
+    "retention_score": 8.5,
+    "emotion_score": 3.0,
+    "originality_score": 6.0,
+    "composite_score": 49.5,
+    "details": {
+      "hook_length": 49,
+      "total_length": 1257,
+      "scene_count": 10,
+      "avg_scene_duration": 9.6,
+      "duration_seconds": 96,
+      "generator": "llm_v1"
+    }
+  },
+  "llm_judge_score": null
+}

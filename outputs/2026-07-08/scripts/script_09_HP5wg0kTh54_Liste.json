@@ -1,0 +1,177 @@
+{
+  "opportunity_id": "HP5wg0kTh54",
+  "niche": "Fr",
+  "brief_angle": "Liste",
+  "script": {
+    "title": "L'IA française : 5 révélations qui vont tout changer",
+    "hook": "L'IA française cache un secret explosif.",
+    "introduction": "Oubliez les clichés. Voici cinq faits que les médias ne vous montrent pas.",
+    "scenes": [
+      {
+        "order": 1,
+        "title": "Le budget secret",
+        "narration": "La France a alloué 5 milliards d'euros à un projet d'IA classifié. Personne n'en parle. Ce budget dépasse celui de la Silicon Valley pour la recherche fondamentale. Un secret bien gardé.",
+        "visual_description": "Animation d'un coffre-fort s'ouvrant avec des billets de 500 euros et une puce électronique.",
+        "image_prompt": "High-tech vault opening with euro banknotes and a glowing AI chip, cinematic lighting, dark background, 3D render",
+        "animation_notes": "Coffre s'ouvre lentement, lumière dorée éclaire les billets, transition rapide vers un logo IA.",
+        "sound_effects": "Gong sourd puis tintement de pièces, bruit électronique.",
+        "duration_seconds": 10
+      },
+      {
+        "order": 2,
+        "title": "La startup fantôme",
+        "narration": "Une startup parisienne inconnue a créé un modèle de langage meilleur que ChatGPT en français. Mais elle reste invisible. Pourquoi ? Les géants américains rachètent leurs talents en secret.",
+        "visual_description": "Animation de cerveaux lumineux connectés par des fils, un grand logo américain absorbe un petit logo français.",
+        "image_prompt": "Abstract brain network, small French flag inside a brain, large American flag overshadowing, neon colors, digital art",
+        "animation_notes": "Petite start-up brille, puis un filet rouge l'aspire vers un logo US, fondu.",
+        "sound_effects": "Bip de démarrage, puis son de succion et alarme.",
+        "duration_seconds": 12
+      },
+      {
+        "order": 3,
+        "title": "Le piège des brevets",
+        "narration": "La France dépose plus de brevets IA que la Chine en proportion. Mais la plupart sont dormants. Une ruse pour bloquer les concurrents. Une guerre silencieuse.",
+        "visual_description": "Animation de documents jaunis empilés, une main en armure place un cadenas sur la pile.",
+        "image_prompt": "Pile of old patent documents with French flag watermark, a robotic hand locking them, steampunk style",
+        "animation_notes": "Documents tombent un par un, cadenas se ferme, éclat lumineux.",
+        "sound_effects": "Bruit de papier froissé, clic de cadenas, bourdonnement.",
+        "duration_seconds": 11
+      },
+      {
+        "order": 4,
+        "title": "L'armée de l'ombre",
+        "narration": "Le ministère des Armées développe un système d'IA autonome pour le cybercombat. Les tests sont secrets, mais les fuites montrent une efficacité redoutable.",
+        "visual_description": "Animation d'un soldat numérique avec visière, des lignes de code défilent dans ses yeux.",
+        "image_prompt": "Cybernetic soldier with transparent visor, green code streams reflecting in eyes, dark military background, holographic maps",
+        "animation_notes": "Soldat s'anime, code défile, puis zoom sur œil lumineux.",
+        "sound_effects": "Bruits de clavier, scanner, ambiance grave.",
+        "duration_seconds": 12
+      },
+      {
+        "order": 5,
+        "title": "Le campus invisible",
+        "narration": "Un campus de recherche ultrasecret près de Grenoble forme les meilleurs ingénieurs IA du monde. Aucun article, aucune publicité. Seuls les initiés connaissent son existence.",
+        "visual_description": "Vue aérienne d'un campus futuriste caché dans une forêt, avec des toits verts et des panneaux solaires.",
+        "image_prompt": "Aerial view of a hidden futuristic campus in a dense forest, green roofs, solar panels, glass buildings, misty mountains background",
+        "animation_notes": "Caméra survole la forêt, révèle lentement le campus, effet furtif.",
+        "sound_effects": "Bruit de vent, puis murmures et cliquetis de machines.",
+        "duration_seconds": 11
+      },
+      {
+        "order": 6,
+        "title": "L'échec qui cache une réussite",
+        "narration": "Le projet 'Aladin' a été annoncé comme un échec. Mais en réalité, il a généré une percée dans l'apprentissage frugal. Un camouflage intentionnel.",
+        "visual_description": "Animation d'un génie de lampe qui sort en fumée, puis se transforme en puce électronique brillante.",
+        "image_prompt": "Genie lamp with smoke transforming into a glowing microchip, magical particles, deep blue and gold",
+        "animation_notes": "Lampe s'ouvre, fumée en forme de génie, puis se condense en puce.",
+        "sound_effects": "Bruit de magie, puis sifflement aigu, tonalité réussite.",
+        "duration_seconds": 11
+      },
+      {
+        "order": 7,
+        "title": "Le code libérateur",
+        "narration": "Un chercheur français a publié un code open source qui permet à n'importe qui de créer un assistant vocal sans internet. Adopté par des millions dans les zones isolées.",
+        "visual_description": "Animation d'un téléphone dans le désert diffusant des ondes, des lignes de code flottent autour.",
+        "image_prompt": "Smartphone in desert with glowing waves, lines of code floating like dust, sunset sky, digital nomad vibe",
+        "animation_notes": "Téléphone s'allume, ondes s'étendent, code tourbillonne.",
+        "sound_effects": "Son de notification, puis bourdonnement de serveur.",
+        "duration_seconds": 12
+      },
+      {
+        "order": 8,
+        "title": "Le signal de l'Élysée",
+        "narration": "Le président a signé un décret secret pour créer une agence nationale de l'IA. Objectif : doubler les investissements d'ici 2027. Les grandes manœuvres ont commencé.",
+        "visual_description": "Animation d'un stylo signant un document, avec le logo de l'Élysée et des courbes de croissance.",
+        "image_prompt": "Golden pen signing a decree with French presidency logo, background graph showing exponential growth, minimalist style",
+        "animation_notes": "Plume écrit, document se déroule, graphique s'élève.",
+        "sound_effects": "Bruit de plume, puis timbre de validation.",
+        "duration_seconds": 11
+      },
+      {
+        "order": 9,
+        "title": "Le chaînon manquant",
+        "narration": "Tous ces morceaux forment une stratégie unifiée. La France ne veut pas être un suiveur, mais le maître caché du jeu. Et le monde l'ignore encore.",
+        "visual_description": "Animation d'un puzzle qui s'emboîte, formant la carte de France avec un point d'interrogation lumineux.",
+        "image_prompt": "Puzzle pieces forming France map, one glowing question mark in center, cybernetic grid background, blue and red neon",
+        "animation_notes": "Pièces de puzzle volent et se placent, question mark clignote.",
+        "sound_effects": "Clics de puzzle, puis tonalité mystérieuse.",
+        "duration_seconds": 10
+      }
+    ],
+    "conclusion": "Ces cinq révélations ne sont que la pointe. L'IA française avance masquée, mais son impact sera mondial.",
+    "call_to_action": "Quel secret vous a le plus étonné ? Dites-le en commentaire.",
+    "estimated_duration": 100,
+    "language": "fr",
+    "target_audience": "Curieux technophiles et professionnels 20-40 ans voulant comprendre et utiliser l'IA",
+    "style": "Innovant",
+    "metadata": {
+      "generator": "llm_v1",
+      "llm_provider": "deepseek",
+      "llm_model": "deepseek-v4-flash",
+      "angle": "Liste",
+      "niche": "Fr",
+      "brand_id": "ia_fr",
+      "brand_name": "IA FR",
+      "opportunity_score": 0.7404,
+      "urgency": 0.917,
+      "scene_count": 9,
+      "opportunity_id": "HP5wg0kTh54",
+      "llm_time_ms": 74157,
+      "llm_tokens": 4834,
+      "llm_cost_usd": 0.006281
+    }
+  },
+  "heuristic_score": {
+    "hook_score": 6.0,
+    "curiosity_score": 5.0,
+    "clarity_score": 9.0,
+    "rhythm_score": 8.0,
+    "cta_score": 6.0,
+    "retention_score": 7.4,
+    "emotion_score": 3.0,
+    "originality_score": 5.0,
+    "composite_score": 49.4,
+    "details": {
+      "hook_length": 40,
+      "total_length": 1825,
+      "scene_count": 9,
+      "avg_scene_duration": 11.11111111111111,
+      "duration_seconds": 100,
+      "generator": "llm_v1"
+    }
+  },
+  "llm_judge_score": {
+    "hook": 8.0,
+    "curiosity": 9.0,
+    "storytelling": 8.0,
+    "rhythm": 7.0,
+    "clarity": 8.0,
+    "cta": 8.0,
+    "retention": 9.0,
+    "viral": 8.0,
+    "global_score": 65.0,
+    "strengths": [
+      "Hook très fort avec promesse de secret",
+      "Structure en révélations maintient la curiosité",
+      "Sujet original et bien documenté",
+      "CTA spécifique et engageant"
+    ],
+    "weaknesses": [
+      "Rythme un peu monotone (toutes les scènes ont la même durée)",
+      "Certaines scènes manquent de détails concrets (ex: startup fantôme)",
+      "Le lien entre les révélations pourrait être plus explicite"
+    ],
+    "suggestions": [
+      "Varier la durée des scènes pour créer des pics d'attention",
+      "Ajouter un exemple chiffré ou une anecdote dans chaque scène",
+      "Introduire un fil rouge narratif (ex: 'la stratégie du silence')"
+    ],
+    "metadata": {
+      "llm_provider": "deepseek",
+      "llm_model": "deepseek-v4-flash",
+      "llm_time_ms": 3580,
+      "llm_tokens": 1532,
+      "llm_cost_usd": 0.000607
+    }
+  }
+}

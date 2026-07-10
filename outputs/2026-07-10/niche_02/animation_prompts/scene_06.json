@@ -1,0 +1,20 @@
+{
+  "camera_motion": "Static (aucun mouvement de caméra) pour maximiser l'impact de l'explosion.",
+  "subject_motion": "Le cadenas se fissure rapidement, puis explose en fragments géométriques. Les données s'échappent en un flux chaotique de points, lignes et chiffres rouges et violets, se dispersant dans toutes les directions.",
+  "environment_motion": "L'arrière-plan noir reste immobile, mais des reflets néon et des lueurs d'alarme rouge apparaissent brièvement.",
+  "lighting_changes": "L'éclairage bleu électrique initial vire brutalement au rouge vif lors de l'explosion, puis revient progressivement à un bleu plus sombre et froid, avec des résidus lumineux rouges.",
+  "effects": "Particules lumineuses, étincelles, fumée numérique, éclats de verre lumineux, traînées de données.",
+  "sound_design": "Bruit de verre qui se brise, explosion sourde, bourdonnement électrique, puis sifflement aigu qui s'éteint.",
+  "transition": "Cut sec vers la scène suivante (contre-mesure).",
+  "duration": 5,
+  "prompt": "Close-up on a stylized digital padlock made of electric blue luminous lines, center frame, static camera. Suddenly, the padlock cracks and explodes into geometric fragments. From inside, a violent torrent of red and violet data (points, lines, numbers) bursts out chaotically, filling the screen. Deep black background with neon reflections. Cold blue lighting abruptly turns to alarm red during explosion, then fades back to dark blue. Particles, sparks, digital smoke, glass shards, data trails. Cinematic, photorealistic, 3D animation, HDR, 8K, vertical 9:16, volumetric lighting, glossy metallic texture, neon cyberpunk style. No characters.",
+  "metadata": {
+    "goal": "Montrer la menace et la vulnérabilité des données, renforcer le sentiment de danger.",
+    "emotion": "Urgence, inquiétude, sensation de perte de contrôle.",
+    "pace": "Tendu, explosif, puis ralentissement progressif.",
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "time_ms": 6212,
+    "cost_usd": 0.001273
+  }
+}

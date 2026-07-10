@@ -1,0 +1,144 @@
+{
+  "opportunity_id": "yBy5NnLTiWQ",
+  "niche": "Gaming & Esports",
+  "brief_angle": "Comparaison",
+  "script": {
+    "title": "Le secret des pros Minecraft révélé",
+    "hook": "J'ai perdu 200 combats en une heure.",
+    "introduction": "Puis j'ai rencontré un maître du PvP. Ce qu'il m'a appris a tout changé.",
+    "scenes": [
+      {
+        "order": 1,
+        "title": "Le défi impossible",
+        "narration": "Mon objectif : battre un joueur classé top 10 mondial.",
+        "visual_description": "Un joueur (vue à la première personne) perd un duel, barre de vie qui tombe à zéro.",
+        "image_prompt": "Minecraft PvP duel, joueur perdant, barre de vie vide, style pixel art dynamique",
+        "animation_notes": "Zoom avant sur l'écran de mort, fondu au noir rapide",
+        "sound_effects": "Son de défaite Minecraft, coup d'épée",
+        "duration_seconds": 10
+      },
+      {
+        "order": 2,
+        "title": "La première leçon",
+        "narration": "Il m'a dit : oublie le clic frénétique. La précision prime.",
+        "visual_description": "Split screen : à gauche clics sauvages, à droite clics calibrés avec hits parfaits.",
+        "image_prompt": "Comparaison de deux styles de clic Minecraft, l'un désordonné, l'autre précis",
+        "animation_notes": "Transition en wipe de gauche à droite",
+        "sound_effects": "Clics souris rapides puis un seul clic net",
+        "duration_seconds": 10
+      },
+      {
+        "order": 3,
+        "title": "Le secret du timing",
+        "narration": "Chaque coup doit être placé au millième de seconde près.",
+        "visual_description": "Animation ralentie d'un échange, avec indicateur de timing parfait.",
+        "image_prompt": "Minecraft combat au ralenti, flèche indiquant le moment idéal pour frapper",
+        "animation_notes": "Effet bullet time, le temps se fige au moment du coup",
+        "sound_effects": "Ralentissement sonore, puis impact amplifié",
+        "duration_seconds": 12
+      },
+      {
+        "order": 4,
+        "title": "L'erreur fatale",
+        "narration": "Je faisais toujours la même erreur : reculer en touchant au sol.",
+        "visual_description": "Joueur recule, trébuche sur un bloc, se fait frapper.",
+        "image_prompt": "Minecraft joueur trébuchant sur un bloc, vulnérable",
+        "animation_notes": "Caméra tremble lors de la chute",
+        "sound_effects": "Bruit de chute et coup critique",
+        "duration_seconds": 10
+      },
+      {
+        "order": 5,
+        "title": "La technique secrète",
+        "narration": "La technique s'appelle le 'block hitting' : frapper et bloquer en alternance.",
+        "visual_description": "Démonstration en gros plan de la main du joueur alternant clic droit et gauche.",
+        "image_prompt": "Minecraft main de joueur alternant épée et bouclier rapidement",
+        "animation_notes": "Boucle en accéléré de l'alternance",
+        "sound_effects": "Alternance rapide de sons d'épée et de bouclier",
+        "duration_seconds": 12
+      },
+      {
+        "order": 6,
+        "title": "L'entraînement intensif",
+        "narration": "J'ai passé six heures à répéter le même mouvement contre un mur.",
+        "visual_description": "Montage accéléré du joueur frappant un mur, sweat à la sueur, nuit qui tombe.",
+        "image_prompt": "Minecraft joueur s'entraînant seul contre un mur, ambiance nocturne",
+        "animation_notes": "Time-lapse avec changement d'heure",
+        "sound_effects": "Bruit de métronome et clics répétés",
+        "duration_seconds": 12
+      },
+      {
+        "order": 7,
+        "title": "Le test décisif",
+        "narration": "Le lendemain, j'ai affronté le maître. Cette fois, j'ai tenu 30 secondes.",
+        "visual_description": "Duel intense, barres de vie qui fluctuent, match très serré.",
+        "image_prompt": "Minecraft duel acharné, barres de vie basses, tension",
+        "animation_notes": "Caméra dynamique, zooms sur les dégâts",
+        "sound_effects": "Bruits de combat rapides, battement de cœur",
+        "duration_seconds": 15
+      },
+      {
+        "order": 8,
+        "title": "La révélation finale",
+        "narration": "Il m'a avoué : 'Tu progresses vite. Mais le vrai secret, c'est l'adaptation.'",
+        "visual_description": "Les deux joueurs face à face, poignée de main virtuelle, puis écran qui se coupe.",
+        "image_prompt": "Minecraft deux joueurs se serrant la main, décor épique",
+        "animation_notes": "Ralenti sur la poignée de main, puis fondu",
+        "sound_effects": "Musique épique crescendo, puis silence",
+        "duration_seconds": 12
+      },
+      {
+        "order": 9,
+        "title": "La leçon universelle",
+        "narration": "Dans le gaming comme dans la vie, la clé n'est pas la force brute, mais la capacité à lire l'adversaire.",
+        "visual_description": "Split screen : combat Minecraft d'un côté, de l'autre une situation de négociation en entreprise.",
+        "image_prompt": "Métaphore visuelle : duel Minecraft et réunion professionnelle en parallèle",
+        "animation_notes": "Transition fondu enchaîné entre les deux scènes",
+        "sound_effects": "Musique inspirante, sons de clavier",
+        "duration_seconds": 14
+      }
+    ],
+    "conclusion": "Cette expérience m'a transformé. J'ai gagné mon premier combat le troisième jour.",
+    "call_to_action": "Et toi, quelle est ta plus grande erreur en jeu ? Dis-le moi en commentaire.",
+    "estimated_duration": 107,
+    "language": "fr",
+    "target_audience": "Gamers",
+    "style": "Professionnel et Inspirant",
+    "metadata": {
+      "generator": "llm_v1",
+      "llm_provider": "deepseek",
+      "llm_model": "deepseek-v4-flash",
+      "angle": "Comparaison",
+      "niche": "Gaming & Esports",
+      "brand_id": "business_fr",
+      "brand_name": "Business FR",
+      "opportunity_score": 0.7304,
+      "urgency": 0.963,
+      "scene_count": 9,
+      "opportunity_id": "yBy5NnLTiWQ",
+      "llm_time_ms": 32958,
+      "llm_tokens": 6362,
+      "llm_cost_usd": 0.003071
+    }
+  },
+  "heuristic_score": {
+    "hook_score": 5.5,
+    "curiosity_score": 3.5,
+    "clarity_score": 9.0,
+    "rhythm_score": 8.5,
+    "cta_score": 6.0,
+    "retention_score": 8.4,
+    "emotion_score": 3.5,
+    "originality_score": 6.0,
+    "composite_score": 50.4,
+    "details": {
+      "hook_length": 36,
+      "total_length": 941,
+      "scene_count": 9,
+      "avg_scene_duration": 11.88888888888889,
+      "duration_seconds": 107,
+      "generator": "llm_v1"
+    }
+  },
+  "llm_judge_score": null
+}

@@ -1,0 +1,25 @@
+{
+  "shot_type": "Montage",
+  "camera_angle": "Eye Level",
+  "lens": "35mm",
+  "composition": "Center Composition",
+  "depth_of_field": "Deep focus for montage clarity",
+  "lighting_style": "Soft Diffused Lighting",
+  "color_palette": "Muted Earth Tones + Cool Blue",
+  "focal_point": "Homer's face in superimposition",
+  "visual_priority": [
+    "Homer's face",
+    "2001: A Space Odyssey",
+    "Interstellar",
+    "Dune",
+    "Blade Runner"
+  ],
+  "thumbnail_moment": "Homer's translucent face overlapping all four films simultaneously",
+  "cinematic_goal": "Show the ghostly presence of The Odyssey haunting all sci-fi films, unifying them in a single layered image",
+  "metadata": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "time_ms": 2321,
+    "cost_usd": 0.000966
+  }
+}

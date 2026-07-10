@@ -1,0 +1,46 @@
+{
+  "id": "business_fr",
+  "name": "Business FR",
+  "description": "Chaîne dédiée aux entrepreneurs francophones — conseils actionnables, stratégies prouvées, résultats chiffrés.",
+  "niche": "Business & Entrepreneuriat",
+  "target_audience": "Entrepreneurs et créateurs de business 25-45 ans cherchant des résultats concrets",
+  "primary_language": "fr",
+  "tone": "Professionnel",
+  "personality": "Direct, chiffré, sans superflu. Apporte de la valeur immédiate. Parle aux entrepreneurs qui agissent, pas à ceux qui procrastinent. Cite toujours des données, jamais des opinions non sourcées.",
+  "writing_style": "Court, direct, orienté résultats. Une idée par phrase. Chiffres en priorité. Pas de jargon inutile. Structure : Problème → Données → Solution → Action.",
+  "emotion_level": 0.35,
+  "humor_level": 0.15,
+  "authority_level": 0.85,
+  "curiosity_level": 0.50,
+  "storytelling_level": 0.40,
+  "voice_speed": "Rapide",
+  "preferred_video_duration": 480,
+  "preferred_formats": ["Short", "Liste", "Tutorial", "Analyse"],
+  "preferred_hooks": [
+    "{N} stratégies que les entrepreneurs qui réussissent utilisent.",
+    "Cette erreur coûte {X}€ à 90 % des business.",
+    "Comment générer {X}€ en {N} étapes.",
+    "Le framework exact utilisé par les meilleurs entrepreneurs."
+  ],
+  "preferred_cta": [
+    "Télécharge le guide gratuit en description.",
+    "Abonne-toi pour des stratégies business chaque semaine.",
+    "Dis-moi ton chiffre d'affaires actuel en commentaire."
+  ],
+  "forbidden_words": ["incroyable", "magique", "facile", "secret", "révolution", "simple", "juste"],
+  "visual_style": "Fond sombre ou blanc épuré, texte impact en gras, graphiques et chiffres proéminents, aucune fioriture décorative",
+  "color_palette": ["#1A1A2E", "#16213E", "#E94560", "#FFFFFF"],
+  "typography_style": "Sans-serif bold (Inter ou Poppins), 48pt+ pour les chiffres clés, contraste maximal",
+  "logo_description": "Logo minimaliste avec initiales stylisées, couleur accent rouge sur fond sombre, géométrie stricte",
+  "thumbnail_style": "Visage expressif + chiffre accrocheur + fond coloré — maximum 3 éléments, texte lisible à 100px",
+  "metadata": {
+    "posting_frequency": "3x par semaine",
+    "best_posting_times": ["mardi 07h00", "jeudi 07h00", "samedi 10h00"],
+    "content_pillars": ["Croissance", "Productivité", "Finance", "Leadership", "Mindset"],
+    "platform_priority": ["YouTube", "LinkedIn", "Instagram"],
+    "avg_comment_type": "questions stratégiques, partages de résultats",
+    "monetization": ["formations", "consulting", "affiliation outils SaaS"],
+    "version": "1.0"
+  },
+  "niche_keywords": ["business", "argent", "finance", "entrepreneuriat", "entrepreneur", "investissement", "marketing"]
+}

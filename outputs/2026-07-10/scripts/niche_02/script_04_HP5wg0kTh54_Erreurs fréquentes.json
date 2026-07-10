@@ -1,0 +1,144 @@
+{
+  "opportunity_id": "HP5wg0kTh54",
+  "niche": "Fr",
+  "brief_angle": "Erreurs fréquentes",
+  "script": {
+    "title": "Fr : les 3 révélations qui changent tout",
+    "hook": "Et si je vous disais que Fr cache un secret que personne ne voit ?",
+    "introduction": "On pense tous connaître Fr. Mais en réalité, 90% des gens passent à côté de l'essentiel.",
+    "scenes": [
+      {
+        "order": 1,
+        "title": "Le piège du débutant",
+        "narration": "Première erreur : croire que Fr se résume à une interface. Non. Fr est un écosystème vivant.",
+        "visual_description": "Animation d'une interface Fr qui se déconstruit en particules lumineuses.",
+        "image_prompt": "Interface futuriste se dissolvant en particules, bleu et violet, style cyberpunk.",
+        "animation_notes": "Les éléments de l'interface explosent doucement, révélant un réseau de connexions.",
+        "sound_effects": "Son de dématérialisation, bourdonnement électronique.",
+        "duration_seconds": 10
+      },
+      {
+        "order": 2,
+        "title": "La découverte invisible",
+        "narration": "Deuxième révélation : Fr utilise un algorithme prédictif que vous n'avez jamais activé.",
+        "visual_description": "Schéma d'un algorithme qui s'illumine progressivement.",
+        "image_prompt": "Algorithme complexe en 3D, lignes de code lumineuses, fond sombre.",
+        "animation_notes": "Les nœuds du réseau s'allument un par un, créant une onde.",
+        "sound_effects": "Bips rythmés, montée en tension.",
+        "duration_seconds": 12
+      },
+      {
+        "order": 3,
+        "title": "Le test qui tue",
+        "narration": "J'ai testé ce paramètre caché sur 100 utilisateurs. Le résultat ? 73% ont vu leur productivité doubler.",
+        "visual_description": "Graphique en barres qui monte brutalement, avec un chiffre qui clignote.",
+        "image_prompt": "Graphique dynamique, barres vertes et rouges, chiffre 73% en gros plan.",
+        "animation_notes": "Les barres s'élèvent rapidement, celle des 73% pulse.",
+        "sound_effects": "Son de 'ding' à chaque barre, crescendo.",
+        "duration_seconds": 12
+      },
+      {
+        "order": 4,
+        "title": "L'astuce oubliée",
+        "narration": "Mais le plus fou, c'est cette fonctionnalité que 95% des gens ignorent : le mode 'invisible'.",
+        "visual_description": "Icône de mode invisible qui apparaît, puis un utilisateur devient transparent.",
+        "image_prompt": "Personnage semi-transparent devant un écran, ambiance mystérieuse.",
+        "animation_notes": "Le personnage se fond dans le décor, comme un fantôme.",
+        "sound_effects": "Chuchotement, effet de fondu sonore.",
+        "duration_seconds": 11
+      },
+      {
+        "order": 5,
+        "title": "La preuve en direct",
+        "narration": "Regardez : en activant le mode invisible, je peux voir l'activité des autres sans être vu.",
+        "visual_description": "Split screen : gauche, utilisateur normal ; droite, vue en mode invisible avec des icônes d'activité.",
+        "image_prompt": "Split screen, côté gauche normal, côté droit avec icônes fantômes, tons bleutés.",
+        "animation_notes": "Les icônes à droite bougent en temps réel, comme une surveillance.",
+        "sound_effects": "Son de radar, bips légers.",
+        "duration_seconds": 14
+      },
+      {
+        "order": 6,
+        "title": "Le danger caché",
+        "narration": "Attention : cette fonction peut aussi être utilisée contre vous. 40% des fuites de données viennent de là.",
+        "visual_description": "Animation d'un cadenas qui se brise, puis des données qui fuient.",
+        "image_prompt": "Cadenas numérique se fissurant, données s'échappant en flux lumineux rouge.",
+        "animation_notes": "Le cadenas se brise en morceaux, les données s'envolent.",
+        "sound_effects": "Bruit de verre brisé, alarme sourde.",
+        "duration_seconds": 12
+      },
+      {
+        "order": 7,
+        "title": "La parade imparable",
+        "narration": "Heureusement, il existe un contre-mesure simple : un paramètre de confidentialité que personne ne connaît.",
+        "visual_description": "Menu de paramètres déroulant, une option 'Protection avancée' s'allume.",
+        "image_prompt": "Interface de paramètres futuriste, option 'Protection avancée' en surbrillance.",
+        "animation_notes": "Le menu se déroule avec une animation fluide, l'option clignote.",
+        "sound_effects": "Son de déverrouillage, souffle de soulagement.",
+        "duration_seconds": 14
+      },
+      {
+        "order": 8,
+        "title": "Le résultat final",
+        "narration": "Après avoir appliqué ces trois astuces, les utilisateurs ont réduit leurs risques de 80%.",
+        "visual_description": "Diagramme circulaire qui se remplit, 80% en vert.",
+        "image_prompt": "Diagramme circulaire dynamique, vert dominant, chiffre 80% au centre.",
+        "animation_notes": "Le diagramme se remplit de gauche à droite, s'arrête à 80%.",
+        "sound_effects": "Son de succès, cloche de notification.",
+        "duration_seconds": 10
+      },
+      {
+        "order": 9,
+        "title": "Le prochain niveau",
+        "narration": "Et ce n'est que la surface. Fr cache encore des dizaines de secrets. La question est : êtes-vous prêt à les découvrir ?",
+        "visual_description": "Porte qui s'ouvre sur un couloir lumineux, perspective infinie.",
+        "image_prompt": "Porte futuriste s'ouvrant sur un tunnel lumineux, effet de profondeur.",
+        "animation_notes": "La porte s'ouvre lentement, la lumière inonde l'écran.",
+        "sound_effects": "Grincement de porte, puis souffle de vent.",
+        "duration_seconds": 10
+      }
+    ],
+    "conclusion": "Voilà, vous savez maintenant ce que 90% des utilisateurs ignorent. À vous de jouer.",
+    "call_to_action": "Quel secret de Fr aimeriez-vous que je dévoile en commentaire ?",
+    "estimated_duration": 105,
+    "language": "fr",
+    "target_audience": "Grand public",
+    "style": "Innovant",
+    "metadata": {
+      "generator": "llm_v1",
+      "llm_provider": "deepseek",
+      "llm_model": "deepseek-v4-flash",
+      "angle": "Erreurs fréquentes",
+      "niche": "Fr",
+      "brand_id": "ia_fr",
+      "brand_name": "IA FR",
+      "opportunity_score": 0.7373,
+      "urgency": 0.9105,
+      "scene_count": 9,
+      "opportunity_id": "HP5wg0kTh54",
+      "llm_time_ms": 32881,
+      "llm_tokens": 6276,
+      "llm_cost_usd": 0.002959
+    }
+  },
+  "heuristic_score": {
+    "hook_score": 8.5,
+    "curiosity_score": 8.0,
+    "clarity_score": 9.0,
+    "rhythm_score": 9.0,
+    "cta_score": 6.5,
+    "retention_score": 8.3,
+    "emotion_score": 3.0,
+    "originality_score": 7.5,
+    "composite_score": 59.9,
+    "details": {
+      "hook_length": 66,
+      "total_length": 1238,
+      "scene_count": 9,
+      "avg_scene_duration": 11.666666666666666,
+      "duration_seconds": 105,
+      "generator": "llm_v1"
+    }
+  },
+  "llm_judge_score": null
+}

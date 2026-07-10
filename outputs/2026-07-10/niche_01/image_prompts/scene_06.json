@@ -1,0 +1,16 @@
+{
+  "subject": "Comparaison côte à côte d'un temple grec antique et du monolithe noir de 2001, reliés par des lignes de correspondance lumineuses",
+  "scene_description": "Un plan large symétrique divisé verticalement en deux moitiés. À gauche, un temple grec classique avec colonnes doriques, baigné dans une lumière chaude et douce. À droite, le monolithe noir lisse et vertical de 2001, éclairé par une lumière froide. Des lignes de correspondance fines et lumineuses (blanches ou dorées) relient les éléments architecturaux du temple au monolithe, créant un parallèle visuel. Fond épuré, tons chauds à gauche, tons froids à droite.",
+  "style": "Cinématographique, photoréaliste, HDR, 8K, format 9:16, éclairage diffus, symétrie parfaite, lignes de correspondance lumineuses, palette chaude/froide contrastée, fond épuré, style professionnel et épuré (Business FR), photorealistic, cinematic photography.",
+  "prompt": "A wide shot, symmetrical composition, split screen: left side ancient Greek temple with Doric columns, warm soft lighting, paper tones; right side the black monolith from 2001: A Space Odyssey, smooth vertical surface, cool dark lighting. Thin glowing white lines connect architectural elements of the temple to corresponding parts of the monolith, creating a visual parallel. Cinematic, photorealistic, HDR, 8K, vertical 9:16 aspect ratio, professional, clean background, no decorative flourishes.",
+  "negative_prompt": "infographic, diagram, flowchart, text, labels, explanatory graphics, stock photo, cartoon, illustration, cluttered, decorative elements, warm and cool mixing, blurry, low quality, distorted, asymmetrical, characters, people, animals., watermark, logo, signature, deformed, distorted anatomy, extra limbs, low resolution, painting, 3d render, oversaturated colors, horizontal crop, incorrect aspect ratio, plastic skin, jpeg artifacts, schematic, user interface, ui elements, app screenshot, bullet points, wall of text, powerpoint slide, presentation slide, table layout",
+  "metadata": {
+    "goal": "Montrer visuellement la parenté entre le temple grec et le monolithe de 2001, avec des lignes de correspondance qui révèlent la réinterprétation moderne.",
+    "emotion": "admiration",
+    "characters": [],
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "time_ms": 5535,
+    "cost_usd": 0.001196
+  }
+}

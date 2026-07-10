@@ -1,0 +1,670 @@
+{
+  "brand_id": "ia_fr",
+  "signals": [
+    {
+      "dimension": "hook",
+      "value": "Voici pourquoi Musique & Clips va tout changer.",
+      "performance_score": 0.8445,
+      "views": 135748,
+      "likes": 6834,
+      "comments": 1251,
+      "retention": 0.6001,
+      "brand_id": "ia_fr",
+      "niche": "Musique & Clips",
+      "opportunity_id": "lPBKCnIPZoI",
+      "metadata": {
+        "engagement_rate": 0.0596,
+        "watch_time": 2647.5,
+        "impressions_ctr": 0.1619,
+        "shares": 1362,
+        "subscribers_gained": 2848
+      }
+    },
+    {
+      "dimension": "duration_seconds",
+      "value": "117",
+      "performance_score": 0.8445,
+      "views": 135748,
+      "likes": 6834,
+      "comments": 1251,
+      "retention": 0.6001,
+      "brand_id": "ia_fr",
+      "niche": "Musique & Clips",
+      "opportunity_id": "lPBKCnIPZoI",
+      "metadata": {
+        "engagement_rate": 0.0596,
+        "watch_time": 2647.5,
+        "impressions_ctr": 0.1619,
+        "shares": 1362,
+        "subscribers_gained": 2848
+      }
+    },
+    {
+      "dimension": "cta",
+      "value": "Abonne-toi pour plus de contenu sur ce sujet.",
+      "performance_score": 0.8445,
+      "views": 135748,
+      "likes": 6834,
+      "comments": 1251,
+      "retention": 0.6001,
+      "brand_id": "ia_fr",
+      "niche": "Musique & Clips",
+      "opportunity_id": "lPBKCnIPZoI",
+      "metadata": {
+        "engagement_rate": 0.0596,
+        "watch_time": 2647.5,
+        "impressions_ctr": 0.1619,
+        "shares": 1362,
+        "subscribers_gained": 2848
+      }
+    },
+    {
+      "dimension": "style",
+      "value": "Innovant",
+      "performance_score": 0.8445,
+      "views": 135748,
+      "likes": 6834,
+      "comments": 1251,
+      "retention": 0.6001,
+      "brand_id": "ia_fr",
+      "niche": "Musique & Clips",
+      "opportunity_id": "lPBKCnIPZoI",
+      "metadata": {
+        "engagement_rate": 0.0596,
+        "watch_time": 2647.5,
+        "impressions_ctr": 0.1619,
+        "shares": 1362,
+        "subscribers_gained": 2848
+      }
+    },
+    {
+      "dimension": "angle",
+      "value": "Liste",
+      "performance_score": 0.8445,
+      "views": 135748,
+      "likes": 6834,
+      "comments": 1251,
+      "retention": 0.6001,
+      "brand_id": "ia_fr",
+      "niche": "Musique & Clips",
+      "opportunity_id": "lPBKCnIPZoI",
+      "metadata": {
+        "engagement_rate": 0.0596,
+        "watch_time": 2647.5,
+        "impressions_ctr": 0.1619,
+        "shares": 1362,
+        "subscribers_gained": 2848
+      }
+    },
+    {
+      "dimension": "emotion",
+      "value": "Neutre",
+      "performance_score": 0.8445,
+      "views": 135748,
+      "likes": 6834,
+      "comments": 1251,
+      "retention": 0.6001,
+      "brand_id": "ia_fr",
+      "niche": "Musique & Clips",
+      "opportunity_id": "lPBKCnIPZoI",
+      "metadata": {
+        "engagement_rate": 0.0596,
+        "watch_time": 2647.5,
+        "impressions_ctr": 0.1619,
+        "shares": 1362,
+        "subscribers_gained": 2848
+      }
+    },
+    {
+      "dimension": "format",
+      "value": "Standard",
+      "performance_score": 0.8445,
+      "views": 135748,
+      "likes": 6834,
+      "comments": 1251,
+      "retention": 0.6001,
+      "brand_id": "ia_fr",
+      "niche": "Musique & Clips",
+      "opportunity_id": "lPBKCnIPZoI",
+      "metadata": {
+        "engagement_rate": 0.0596,
+        "watch_time": 2647.5,
+        "impressions_ctr": 0.1619,
+        "shares": 1362,
+        "subscribers_gained": 2848
+      }
+    },
+    {
+      "dimension": "hook",
+      "value": "Si tu t'intéresses à Musique & Clips, regarde ça.",
+      "performance_score": 0.829,
+      "views": 183287,
+      "likes": 9269,
+      "comments": 822,
+      "retention": 0.6078,
+      "brand_id": "ia_fr",
+      "niche": "Musique & Clips",
+      "opportunity_id": "lPBKCnIPZoI",
+      "metadata": {
+        "engagement_rate": 0.0551,
+        "watch_time": 3032.6,
+        "impressions_ctr": 0.1635,
+        "shares": 1620,
+        "subscribers_gained": 1186
+      }
+    },
+    {
+      "dimension": "duration_seconds",
+      "value": "98",
+      "performance_score": 0.829,
+      "views": 183287,
+      "likes": 9269,
+      "comments": 822,
+      "retention": 0.6078,
+      "brand_id": "ia_fr",
+      "niche": "Musique & Clips",
+      "opportunity_id": "lPBKCnIPZoI",
+      "metadata": {
+        "engagement_rate": 0.0551,
+        "watch_time": 3032.6,
+        "impressions_ctr": 0.1635,
+        "shares": 1620,
+        "subscribers_gained": 1186
+      }
+    },
+    {
+      "dimension": "cta",
+      "value": "Abonne-toi pour plus de contenu sur ce sujet.",
+      "performance_score": 0.829,
+      "views": 183287,
+      "likes": 9269,
+      "comments": 822,
+      "retention": 0.6078,
+      "brand_id": "ia_fr",
+      "niche": "Musique & Clips",
+      "opportunity_id": "lPBKCnIPZoI",
+      "metadata": {
+        "engagement_rate": 0.0551,
+        "watch_time": 3032.6,
+        "impressions_ctr": 0.1635,
+        "shares": 1620,
+        "subscribers_gained": 1186
+      }
+    },
+    {
+      "dimension": "style",
+      "value": "Innovant",
+      "performance_score": 0.829,
+      "views": 183287,
+      "likes": 9269,
+      "comments": 822,
+      "retention": 0.6078,
+      "brand_id": "ia_fr",
+      "niche": "Musique & Clips",
+      "opportunity_id": "lPBKCnIPZoI",
+      "metadata": {
+        "engagement_rate": 0.0551,
+        "watch_time": 3032.6,
+        "impressions_ctr": 0.1635,
+        "shares": 1620,
+        "subscribers_gained": 1186
+      }
+    },
+    {
+      "dimension": "angle",
+      "value": "Histoire",
+      "performance_score": 0.829,
+      "views": 183287,
+      "likes": 9269,
+      "comments": 822,
+      "retention": 0.6078,
+      "brand_id": "ia_fr",
+      "niche": "Musique & Clips",
+      "opportunity_id": "lPBKCnIPZoI",
+      "metadata": {
+        "engagement_rate": 0.0551,
+        "watch_time": 3032.6,
+        "impressions_ctr": 0.1635,
+        "shares": 1620,
+        "subscribers_gained": 1186
+      }
+    },
+    {
+      "dimension": "emotion",
+      "value": "Neutre",
+      "performance_score": 0.829,
+      "views": 183287,
+      "likes": 9269,
+      "comments": 822,
+      "retention": 0.6078,
+      "brand_id": "ia_fr",
+      "niche": "Musique & Clips",
+      "opportunity_id": "lPBKCnIPZoI",
+      "metadata": {
+        "engagement_rate": 0.0551,
+        "watch_time": 3032.6,
+        "impressions_ctr": 0.1635,
+        "shares": 1620,
+        "subscribers_gained": 1186
+      }
+    },
+    {
+      "dimension": "format",
+      "value": "Standard",
+      "performance_score": 0.829,
+      "views": 183287,
+      "likes": 9269,
+      "comments": 822,
+      "retention": 0.6078,
+      "brand_id": "ia_fr",
+      "niche": "Musique & Clips",
+      "opportunity_id": "lPBKCnIPZoI",
+      "metadata": {
+        "engagement_rate": 0.0551,
+        "watch_time": 3032.6,
+        "impressions_ctr": 0.1635,
+        "shares": 1620,
+        "subscribers_gained": 1186
+      }
+    },
+    {
+      "dimension": "hook",
+      "value": "L'erreur numéro 1 sur Musique & Clips que tout le monde fait.",
+      "performance_score": 0.8547,
+      "views": 144154,
+      "likes": 11095,
+      "comments": 468,
+      "retention": 0.6436,
+      "brand_id": "ia_fr",
+      "niche": "Musique & Clips",
+      "opportunity_id": "lPBKCnIPZoI",
+      "metadata": {
+        "engagement_rate": 0.0802,
+        "watch_time": 3144.1,
+        "impressions_ctr": 0.0868,
+        "shares": 1106,
+        "subscribers_gained": 1984
+      }
+    },
+    {
+      "dimension": "duration_seconds",
+      "value": "122",
+      "performance_score": 0.8547,
+      "views": 144154,
+      "likes": 11095,
+      "comments": 468,
+      "retention": 0.6436,
+      "brand_id": "ia_fr",
+      "niche": "Musique & Clips",
+      "opportunity_id": "lPBKCnIPZoI",
+      "metadata": {
+        "engagement_rate": 0.0802,
+        "watch_time": 3144.1,
+        "impressions_ctr": 0.0868,
+        "shares": 1106,
+        "subscribers_gained": 1984
+      }
+    },
+    {
+      "dimension": "cta",
+      "value": "Abonne-toi pour plus de contenu sur ce sujet.",
+      "performance_score": 0.8547,
+      "views": 144154,
+      "likes": 11095,
+      "comments": 468,
+      "retention": 0.6436,
+      "brand_id": "ia_fr",
+      "niche": "Musique & Clips",
+      "opportunity_id": "lPBKCnIPZoI",
+      "metadata": {
+        "engagement_rate": 0.0802,
+        "watch_time": 3144.1,
+        "impressions_ctr": 0.0868,
+        "shares": 1106,
+        "subscribers_gained": 1984
+      }
+    },
+    {
+      "dimension": "style",
+      "value": "Innovant",
+      "performance_score": 0.8547,
+      "views": 144154,
+      "likes": 11095,
+      "comments": 468,
+      "retention": 0.6436,
+      "brand_id": "ia_fr",
+      "niche": "Musique & Clips",
+      "opportunity_id": "lPBKCnIPZoI",
+      "metadata": {
+        "engagement_rate": 0.0802,
+        "watch_time": 3144.1,
+        "impressions_ctr": 0.0868,
+        "shares": 1106,
+        "subscribers_gained": 1984
+      }
+    },
+    {
+      "dimension": "angle",
+      "value": "Erreurs fréquentes",
+      "performance_score": 0.8547,
+      "views": 144154,
+      "likes": 11095,
+      "comments": 468,
+      "retention": 0.6436,
+      "brand_id": "ia_fr",
+      "niche": "Musique & Clips",
+      "opportunity_id": "lPBKCnIPZoI",
+      "metadata": {
+        "engagement_rate": 0.0802,
+        "watch_time": 3144.1,
+        "impressions_ctr": 0.0868,
+        "shares": 1106,
+        "subscribers_gained": 1984
+      }
+    },
+    {
+      "dimension": "emotion",
+      "value": "Neutre",
+      "performance_score": 0.8547,
+      "views": 144154,
+      "likes": 11095,
+      "comments": 468,
+      "retention": 0.6436,
+      "brand_id": "ia_fr",
+      "niche": "Musique & Clips",
+      "opportunity_id": "lPBKCnIPZoI",
+      "metadata": {
+        "engagement_rate": 0.0802,
+        "watch_time": 3144.1,
+        "impressions_ctr": 0.0868,
+        "shares": 1106,
+        "subscribers_gained": 1984
+      }
+    },
+    {
+      "dimension": "format",
+      "value": "Standard",
+      "performance_score": 0.8547,
+      "views": 144154,
+      "likes": 11095,
+      "comments": 468,
+      "retention": 0.6436,
+      "brand_id": "ia_fr",
+      "niche": "Musique & Clips",
+      "opportunity_id": "lPBKCnIPZoI",
+      "metadata": {
+        "engagement_rate": 0.0802,
+        "watch_time": 3144.1,
+        "impressions_ctr": 0.0868,
+        "shares": 1106,
+        "subscribers_gained": 1984
+      }
+    },
+    {
+      "dimension": "hook",
+      "value": "Quel est le meilleur choix pour Musique & Clips en 2024 ?",
+      "performance_score": 0.8457,
+      "views": 134036,
+      "likes": 8754,
+      "comments": 2194,
+      "retention": 0.3637,
+      "brand_id": "ia_fr",
+      "niche": "Musique & Clips",
+      "opportunity_id": "lPBKCnIPZoI",
+      "metadata": {
+        "engagement_rate": 0.0817,
+        "watch_time": 1489.5,
+        "impressions_ctr": 0.1622,
+        "shares": 736,
+        "subscribers_gained": 2984
+      }
+    },
+    {
+      "dimension": "duration_seconds",
+      "value": "110",
+      "performance_score": 0.8457,
+      "views": 134036,
+      "likes": 8754,
+      "comments": 2194,
+      "retention": 0.3637,
+      "brand_id": "ia_fr",
+      "niche": "Musique & Clips",
+      "opportunity_id": "lPBKCnIPZoI",
+      "metadata": {
+        "engagement_rate": 0.0817,
+        "watch_time": 1489.5,
+        "impressions_ctr": 0.1622,
+        "shares": 736,
+        "subscribers_gained": 2984
+      }
+    },
+    {
+      "dimension": "cta",
+      "value": "Abonne-toi pour plus de contenu sur ce sujet.",
+      "performance_score": 0.8457,
+      "views": 134036,
+      "likes": 8754,
+      "comments": 2194,
+      "retention": 0.3637,
+      "brand_id": "ia_fr",
+      "niche": "Musique & Clips",
+      "opportunity_id": "lPBKCnIPZoI",
+      "metadata": {
+        "engagement_rate": 0.0817,
+        "watch_time": 1489.5,
+        "impressions_ctr": 0.1622,
+        "shares": 736,
+        "subscribers_gained": 2984
+      }
+    },
+    {
+      "dimension": "style",
+      "value": "Innovant",
+      "performance_score": 0.8457,
+      "views": 134036,
+      "likes": 8754,
+      "comments": 2194,
+      "retention": 0.3637,
+      "brand_id": "ia_fr",
+      "niche": "Musique & Clips",
+      "opportunity_id": "lPBKCnIPZoI",
+      "metadata": {
+        "engagement_rate": 0.0817,
+        "watch_time": 1489.5,
+        "impressions_ctr": 0.1622,
+        "shares": 736,
+        "subscribers_gained": 2984
+      }
+    },
+    {
+      "dimension": "angle",
+      "value": "Comparaison",
+      "performance_score": 0.8457,
+      "views": 134036,
+      "likes": 8754,
+      "comments": 2194,
+      "retention": 0.3637,
+      "brand_id": "ia_fr",
+      "niche": "Musique & Clips",
+      "opportunity_id": "lPBKCnIPZoI",
+      "metadata": {
+        "engagement_rate": 0.0817,
+        "watch_time": 1489.5,
+        "impressions_ctr": 0.1622,
+        "shares": 736,
+        "subscribers_gained": 2984
+      }
+    },
+    {
+      "dimension": "emotion",
+      "value": "Neutre",
+      "performance_score": 0.8457,
+      "views": 134036,
+      "likes": 8754,
+      "comments": 2194,
+      "retention": 0.3637,
+      "brand_id": "ia_fr",
+      "niche": "Musique & Clips",
+      "opportunity_id": "lPBKCnIPZoI",
+      "metadata": {
+        "engagement_rate": 0.0817,
+        "watch_time": 1489.5,
+        "impressions_ctr": 0.1622,
+        "shares": 736,
+        "subscribers_gained": 2984
+      }
+    },
+    {
+      "dimension": "format",
+      "value": "Standard",
+      "performance_score": 0.8457,
+      "views": 134036,
+      "likes": 8754,
+      "comments": 2194,
+      "retention": 0.3637,
+      "brand_id": "ia_fr",
+      "niche": "Musique & Clips",
+      "opportunity_id": "lPBKCnIPZoI",
+      "metadata": {
+        "engagement_rate": 0.0817,
+        "watch_time": 1489.5,
+        "impressions_ctr": 0.1622,
+        "shares": 736,
+        "subscribers_gained": 2984
+      }
+    },
+    {
+      "dimension": "hook",
+      "value": "J'ai testé Musique & Clips pendant 30 jours. Voici ce qui s'est passé.",
+      "performance_score": 0.8237,
+      "views": 145746,
+      "likes": 10523,
+      "comments": 2704,
+      "retention": 0.3062,
+      "brand_id": "ia_fr",
+      "niche": "Musique & Clips",
+      "opportunity_id": "lPBKCnIPZoI",
+      "metadata": {
+        "engagement_rate": 0.0908,
+        "watch_time": 1388.6,
+        "impressions_ctr": 0.1373,
+        "shares": 1818,
+        "subscribers_gained": 1349
+      }
+    },
+    {
+      "dimension": "duration_seconds",
+      "value": "112",
+      "performance_score": 0.8237,
+      "views": 145746,
+      "likes": 10523,
+      "comments": 2704,
+      "retention": 0.3062,
+      "brand_id": "ia_fr",
+      "niche": "Musique & Clips",
+      "opportunity_id": "lPBKCnIPZoI",
+      "metadata": {
+        "engagement_rate": 0.0908,
+        "watch_time": 1388.6,
+        "impressions_ctr": 0.1373,
+        "shares": 1818,
+        "subscribers_gained": 1349
+      }
+    },
+    {
+      "dimension": "cta",
+      "value": "Abonne-toi pour plus de contenu sur ce sujet.",
+      "performance_score": 0.8237,
+      "views": 145746,
+      "likes": 10523,
+      "comments": 2704,
+      "retention": 0.3062,
+      "brand_id": "ia_fr",
+      "niche": "Musique & Clips",
+      "opportunity_id": "lPBKCnIPZoI",
+      "metadata": {
+        "engagement_rate": 0.0908,
+        "watch_time": 1388.6,
+        "impressions_ctr": 0.1373,
+        "shares": 1818,
+        "subscribers_gained": 1349
+      }
+    },
+    {
+      "dimension": "style",
+      "value": "Innovant",
+      "performance_score": 0.8237,
+      "views": 145746,
+      "likes": 10523,
+      "comments": 2704,
+      "retention": 0.3062,
+      "brand_id": "ia_fr",
+      "niche": "Musique & Clips",
+      "opportunity_id": "lPBKCnIPZoI",
+      "metadata": {
+        "engagement_rate": 0.0908,
+        "watch_time": 1388.6,
+        "impressions_ctr": 0.1373,
+        "shares": 1818,
+        "subscribers_gained": 1349
+      }
+    },
+    {
+      "dimension": "angle",
+      "value": "Challenge",
+      "performance_score": 0.8237,
+      "views": 145746,
+      "likes": 10523,
+      "comments": 2704,
+      "retention": 0.3062,
+      "brand_id": "ia_fr",
+      "niche": "Musique & Clips",
+      "opportunity_id": "lPBKCnIPZoI",
+      "metadata": {
+        "engagement_rate": 0.0908,
+        "watch_time": 1388.6,
+        "impressions_ctr": 0.1373,
+        "shares": 1818,
+        "subscribers_gained": 1349
+      }
+    },
+    {
+      "dimension": "emotion",
+      "value": "Neutre",
+      "performance_score": 0.8237,
+      "views": 145746,
+      "likes": 10523,
+      "comments": 2704,
+      "retention": 0.3062,
+      "brand_id": "ia_fr",
+      "niche": "Musique & Clips",
+      "opportunity_id": "lPBKCnIPZoI",
+      "metadata": {
+        "engagement_rate": 0.0908,
+        "watch_time": 1388.6,
+        "impressions_ctr": 0.1373,
+        "shares": 1818,
+        "subscribers_gained": 1349
+      }
+    },
+    {
+      "dimension": "format",
+      "value": "Standard",
+      "performance_score": 0.8237,
+      "views": 145746,
+      "likes": 10523,
+      "comments": 2704,
+      "retention": 0.3062,
+      "brand_id": "ia_fr",
+      "niche": "Musique & Clips",
+      "opportunity_id": "lPBKCnIPZoI",
+      "metadata": {
+        "engagement_rate": 0.0908,
+        "watch_time": 1388.6,
+        "impressions_ctr": 0.1373,
+        "shares": 1818,
+        "subscribers_gained": 1349
+      }
+    }
+  ]
+}

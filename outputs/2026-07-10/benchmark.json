@@ -1,0 +1,48 @@
+{
+  "generated_at": "2026-07-10",
+  "provider": "deepseek",
+  "llm_judge_enabled": false,
+  "rewrite_enabled": false,
+  "niches_selected": [
+    {
+      "name": "US",
+      "volume": 84,
+      "avg_views": 359460.2738095238,
+      "avg_engagement": 5.857557904400522,
+      "avg_growth_speed": 10122.330186888836,
+      "niche_score": 26.628048741116874
+    },
+    {
+      "name": "FR",
+      "volume": 79,
+      "avg_views": 224351.20253164557,
+      "avg_engagement": 5.962470015207258,
+      "avg_growth_speed": 7416.75489959096,
+      "niche_score": 25.52579865751939
+    }
+  ],
+  "productions": [
+    {
+      "niche": "US",
+      "brand": "business_fr",
+      "scripts_generated": 6,
+      "best_script_title": "L'Odyssée : le mythe qui a changé le cinéma",
+      "heuristic_composite": 55.8,
+      "rewrite_applied": false,
+      "shot_plans_generated": 8,
+      "images_generated": 8,
+      "animations_generated": 8
+    },
+    {
+      "niche": "FR",
+      "brand": "ia_fr",
+      "scripts_generated": 6,
+      "best_script_title": "Fr : les 3 révélations qui changent tout",
+      "heuristic_composite": 59.9,
+      "rewrite_applied": false,
+      "shot_plans_generated": 9,
+      "images_generated": 9,
+      "animations_generated": 9
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "camera_motion": "Dolly avant très lent, depuis un plan large vers un plan moyen, centré sur le vaisseau, pour créer une sensation de découverte et d'intimité avec l'objet.",
+  "subject_motion": "Le vaisseau reste immobile, mais des particules de sable glissent sur sa coque et des lumières internes pulsent doucement, suggérant une activité résiduelle.",
+  "environment_motion": "Le sable autour du vaisseau ondule lentement, formant des motifs géométriques (méandres grecs) qui se déplacent comme des vagues. Des grains de sable soulevés par le vent dérivent dans l'air.",
+  "lighting_changes": "La lueur dorée du vaisseau pulse très lentement (cycle de 11 secondes), créant une respiration lumineuse. Les ombres des dunes s'allongent progressivement, indiquant un coucher de soleil imminent.",
+  "effects": "Particules de sable scintillantes en suspension, reflets métalliques mouvants sur le vaisseau, motifs de sable animés avec une physique réaliste.",
+  "sound_design": "Vent doux et constant, crépitement léger du sable sur la coque, résonance grave et profonde émanant du vaisseau (hum techno-organique), silence respectueux en arrière-plan.",
+  "transition": "Fondu enchaîné lent vers la scène suivante, les motifs de sable se dissolvant dans l'image suivante.",
+  "duration": 10,
+  "prompt": "Cinematic wide shot of a sleek, elongated spaceship with warm golden lights landed on the sand of Arrakis. The sand forms intricate geometric patterns reminiscent of Greek meanders around the landing zone. The ship emits a soft golden glow contrasting with the deep blue sky. Distant figures in stillsuits are visible, tiny against the vast ship and dunes. Camera performs a very slow dolly forward, moving from a wide to a medium shot centered on the ship. The ship remains still, but sand particles gently slide over its hull and internal lights pulse subtly. The sand around the ship undulates slowly, creating moving meander patterns. Grains of sand drift in the air, catching the light. The golden glow of the ship pulses very slowly, and shadows lengthen as if at sunset. Photorealistic, HDR, 8K, vertical 9:16 format, hard directional lighting with sharp shadows, warm gold and deep blue palette, granular sand texture, metallic reflections, epic and mysterious atmosphere. Cinematic photography, slow, solemn pace.",
+  "metadata": {
+    "goal": "Montrer la continuité du dialogue avec Homère à travers l'image épique du vaisseau sur Arrakis, renforçant le lien entre science-fiction et mythe antique.",
+    "emotion": "Émerveillement mêlé de respect, contemplation de l'immensité et de l'héritage culturel.",
+    "pace": "Lent et solennel, avec des mouvements fluides et majestueux.",
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "time_ms": 7825,
+    "cost_usd": 0.001472
+  }
+}

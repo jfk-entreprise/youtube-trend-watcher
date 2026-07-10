@@ -1,0 +1,16 @@
+[
+  {
+    "niche_name": "US",
+    "niche_score": 26.628048741116874,
+    "first_selected_date": "2026-07-10",
+    "last_confirmed_date": "2026-07-10",
+    "metadata": {}
+  },
+  {
+    "niche_name": "FR",
+    "niche_score": 25.52579865751939,
+    "first_selected_date": "2026-07-10",
+    "last_confirmed_date": "2026-07-10",
+    "metadata": {}
+  }
+]

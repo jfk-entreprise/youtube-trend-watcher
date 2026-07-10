@@ -1,0 +1,16 @@
+{
+  "subject": "Le vaisseau spatial Endurance en silhouette devant un trou noir lumineux avec un anneau de matière accrétée.",
+  "scene_description": "Vue large du vaisseau Endurance, profilé en silhouette sombre, s'approchant du trou noir Gargantua. Le trou noir est un disque lumineux d'or et de bleu, avec un halo de lumière courbée par la gravité. L'arrière-plan est un espace profond parsemé d'étoiles. La composition est centrée, avec le vaisseau légèrement décalé pour créer une tension. Éclairage dur venant du trou noir, créant des reflets sur les bords du vaisseau.",
+  "style": "Photographique, cinématographique, HDR, 8K, ratio 9:16, couleurs profondes avec bleu et or dominants, contraste élevé, atmosphère de science-fiction réaliste, photorealistic, cinematic photography.",
+  "prompt": "Cinematic wide shot of the Endurance spacecraft from Interstellar approaching a black hole with a glowing accretion disk, golden and blue light, hard directional lighting from the black hole, silhouette of the spaceship, deep space background, stars, highly detailed, photorealistic, HDR, 8K, vertical 9:16, movie poster quality, inspired by Christopher Nolan and Stanley Kubrick, sense of scale and mystery.",
+  "negative_prompt": "Cartoon, illustration, low quality, blurry, distorted, text, watermark, oversaturated, lens flare, chromatic aberration, fisheye, dutch angle, cluttered composition, multiple subjects, bright foreground, daytime, spaceship not recognizable., logo, signature, deformed, distorted anatomy, extra limbs, low resolution, painting, 3d render, oversaturated colors, horizontal crop, incorrect aspect ratio, plastic skin, jpeg artifacts, infographic, diagram, schematic, chart, graph, user interface, ui elements, app screenshot, bullet points, wall of text, powerpoint slide, presentation slide, flowchart, table layout",
+  "metadata": {
+    "goal": "Montrer l'influence du projet avorté de Kubrick sur Interstellar, en créant une image iconique qui évoque à la fois le film de Nolan et l'héritage de Kubrick.",
+    "emotion": "Mystère et admiration",
+    "characters": [],
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "time_ms": 5466,
+    "cost_usd": 0.001139
+  }
+}

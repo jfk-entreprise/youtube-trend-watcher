@@ -1,0 +1,16 @@
+{
+  "subject": "Un doigt humain (peau réaliste, légère lueur néon bleue) touchant l'option 'Protection avancée' qui s'allume en or sur un écran de smartphone futuriste.",
+  "scene_description": "Close-up d'un smartphone tenu à la main, fond noir profond. L'écran affiche un menu de paramètres déroulant avec des lignes lumineuses bleues et violettes. L'option 'Protection avancée' est mise en évidence, s'allumant en or avec un léger effet de glow. La composition suit la règle des tiers, l'option étant placée sur le point fort supérieur droit. L'éclairage néon crée des reflets sur le doigt et l'écran.",
+  "style": "Cinématique, réaliste, HDR, 8K, ambiance néon futuriste, profondeur de champ faible, couleurs saturées (bleu électrique, violet, or), texture d'écran lisse, vertical 9:16 aspect ratio, portrait orientation, photorealistic, cinematic photography.",
+  "prompt": "Cinematic close-up of a human finger touching a smartphone screen, dark background, neon lighting, blue electric and violet glowing lines, gold accent on 'Protection avancée' option lighting up, rule of thirds composition, shallow depth of field, HDR, 8K, photorealistic, futuristic yet accessible, vertical 9:16 aspect ratio, high contrast, sharp details.",
+  "negative_prompt": "infographic, diagram, flowchart, text heavy, cartoon, flat design, low resolution, blurry, overexposed, underexposed, messy background, multiple subjects, stock photo aesthetic, explanatory graphic., watermark, logo, signature, deformed, distorted anatomy, extra limbs, low quality, illustration, painting, 3d render, oversaturated colors, horizontal crop, incorrect aspect ratio, plastic skin, jpeg artifacts, schematic, user interface, ui elements, app screenshot, bullet points, wall of text, powerpoint slide, presentation slide, table layout",
+  "metadata": {
+    "goal": "Montrer la découverte du paramètre de confidentialité comme une révélation visuelle puissante.",
+    "emotion": "curiosity",
+    "characters": [],
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "time_ms": 5117,
+    "cost_usd": 0.001121
+  }
+}

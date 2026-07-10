@@ -1,0 +1,140 @@
+{
+  "opportunity_id": "AyIZ9tiiN8I",
+  "niche": "Cinéma & Séries",
+  "brief_angle": "Liste",
+  "script": {
+    "title": "Top 5 : tout ce qu'il faut savoir sur Cinéma & Séries",
+    "hook": "Voici pourquoi Cinéma & Séries va tout changer.",
+    "introduction": "Aujourd'hui, on va parler de Cinéma & Séries. Tu vas découvrir les points essentiels sur Cinéma & Séries — directement actionnables.",
+    "scenes": [
+      {
+        "order": 1,
+        "title": "Hook",
+        "narration": "Voici pourquoi Cinéma & Séries va tout changer.",
+        "visual_description": "Plan d'accroche dynamique — visuel choc ou question à l'écran. Texte impactant superposé.",
+        "image_prompt": "Dynamic abstract composition with bold typography, high contrast lighting, cinematic depth of field",
+        "animation_notes": "Fade-in from black. Bold text animation (scale up + stabilize). 0.5s buildup.",
+        "sound_effects": "Whoosh + impact sound. Music starts strong then drops to background.",
+        "duration_seconds": 9
+      },
+      {
+        "order": 2,
+        "title": "Introduction",
+        "narration": "Aujourd'hui, on va parler de Cinéma & Séries. Tu vas découvrir les points essentiels sur Cinéma & Séries — directement actionnables.",
+        "visual_description": "Tête parlante face caméra OU écran titre avec musique douce en fond.",
+        "image_prompt": "Clean professional workspace with warm ambient lighting, shallow depth of field",
+        "animation_notes": "Crossfade transition. Gentle parallax on background. Soft text reveal.",
+        "sound_effects": "Background music at speaking volume. Subtle room tone.",
+        "duration_seconds": 14
+      },
+      {
+        "order": 3,
+        "title": "Point #1",
+        "narration": "Premier point clé : Cinéma & Séries — voici ce qu'il faut retenir.",
+        "visual_description": "Infographie ou liste animée. Numéro à l'écran.",
+        "image_prompt": "Numbered infographic #1, clean design, accent color highlighting",
+        "animation_notes": "Number flies in from left. Content fades below. Staggered bullet reveal.",
+        "sound_effects": "Soft chime on number reveal. Pop sound for text line.",
+        "duration_seconds": 19
+      },
+      {
+        "order": 4,
+        "title": "Point #2",
+        "narration": "Deuxième point : on creuse un peu plus.",
+        "visual_description": "Transition vers nouvelle infographie. Changement de couleur.",
+        "image_prompt": "Information card #2, continued visual theme, secondary color accent",
+        "animation_notes": "Number transition — slide right, new number enters from left.",
+        "sound_effects": "Different pitched chime. Content swoosh for new info.",
+        "duration_seconds": 16
+      },
+      {
+        "order": 5,
+        "title": "Point #3",
+        "narration": "Troisième point : celui qui change tout.",
+        "visual_description": "Point culminant visuel. Donnée choc en plein écran.",
+        "image_prompt": "Key insight reveal #3, strongest visual hierarchy, primary color impact",
+        "animation_notes": "Full screen number reveal. Particles or sparkle on '3'. Energetic.",
+        "sound_effects": "Triumphant chord. Sparkle sound effect. Crowd cheer optional.",
+        "duration_seconds": 21
+      },
+      {
+        "order": 6,
+        "title": "Point bonus",
+        "narration": "Un dernier pour la route — celui-ci va vous surprendre.",
+        "visual_description": "Plan plus léger, musique qui change. Tone shift.",
+        "image_prompt": "Bonus content card, playful lighter design, star or sparkle accent",
+        "animation_notes": "Slide in from right. Lighter animation style. Bouncy text.",
+        "sound_effects": "Bell sound — lighter, higher pitch. 'Ta-da' flourish.",
+        "duration_seconds": 12
+      },
+      {
+        "order": 7,
+        "title": "Conclusion",
+        "narration": "Pour conclure, retenez ceci : Tu vas découvrir les points essentiels sur Cinéma & Séries — directement actionnables.",
+        "visual_description": "Résumé visuel des points clés. Retour sur la promesse initiale.",
+        "image_prompt": "Summary card with key takeaways, clean organized layout, brand colors",
+        "animation_notes": "Summary cards stack. Check marks appear. Music swells slightly.",
+        "sound_effects": "Music swells slightly. Warm reverb on final words. Soft button click.",
+        "duration_seconds": 14
+      },
+      {
+        "order": 8,
+        "title": "CTA",
+        "narration": "Abonne-toi pour plus de contenu sur ce sujet.",
+        "visual_description": "Fond de chaîne ou miniature finale. Boutons abonnement animés. Liens à l'écran.",
+        "image_prompt": "Subscription call-to-action frame, brand colors, button visual, inviting composition",
+        "animation_notes": "Screen compresses to show subscribe button. Bell icon shakes. Links pulse gently.",
+        "sound_effects": "Subscribe sound effect. Bell ding. Music lift then fade to end.",
+        "duration_seconds": 12
+      }
+    ],
+    "conclusion": "Pour conclure, retenez ceci : Tu vas découvrir les points essentiels sur Cinéma & Séries — directement actionnables.",
+    "call_to_action": "Abonne-toi pour plus de contenu sur ce sujet.",
+    "estimated_duration": 117,
+    "language": "fr",
+    "target_audience": "Cinéphiles",
+    "style": "Innovant",
+    "metadata": {
+      "generator": "heuristic_v1",
+      "angle": "Liste",
+      "niche": "Cinéma & Séries",
+      "brand_id": "ia_fr",
+      "brand_name": "IA FR",
+      "opportunity_score": 0.7194,
+      "urgency": 0.928,
+      "structure": [
+        "Hook",
+        "Introduction",
+        "Point #1",
+        "Point #2",
+        "Point #3",
+        "Point bonus",
+        "Conclusion",
+        "CTA"
+      ],
+      "brand_duration_factor": 1.2,
+      "scene_count": 8,
+      "opportunity_id": "AyIZ9tiiN8I"
+    }
+  },
+  "heuristic_score": {
+    "hook_score": 6.0,
+    "curiosity_score": 5.0,
+    "clarity_score": 9.0,
+    "rhythm_score": 10.0,
+    "cta_score": 6.5,
+    "retention_score": 7.8,
+    "emotion_score": 3.0,
+    "originality_score": 3.0,
+    "composite_score": 50.3,
+    "details": {
+      "hook_length": 47,
+      "total_length": 945,
+      "scene_count": 8,
+      "avg_scene_duration": 14.625,
+      "duration_seconds": 117,
+      "generator": "heuristic_v1"
+    }
+  },
+  "llm_judge_score": null
+}

@@ -1,0 +1,20 @@
+{
+  "camera_motion": "Léger push-in progressif (0.5x) pour accentuer l'importance du paramètre, avec un micro-tremblement humain pour le réalisme.",
+  "subject_motion": "Le doigt descend verticalement depuis le haut de l'écran, s'arrête net à 2mm au-dessus de l'option 'Protection avancée', puis appuie avec une légère déformation de la peau (0.5s). L'option s'allume en or avec un pulse lumineux (2 pulses).",
+  "environment_motion": "Les lignes bleues/violettes du menu défilent doucement vers le haut (0.3x) pendant le mouvement du doigt, puis s'immobilisent. Des particules lumineuses flottent en arrière-plan (très lent).",
+  "lighting_changes": "Au moment du clic, le glow de l'option augmente de 50% et une lueur dorée se répand sur le doigt et l'écran (0.5s), puis retour progressif à l'éclairage initial (2s).",
+  "effects": "Léger flare d'objectif sur le point lumineux (option), micro-particules de poussière en suspension, reflets dynamiques sur l'écran (changement d'angle de la lumière).",
+  "sound_design": "Silence total pendant l'approche du doigt, puis un 'clic' doux et précis (fréquence medium, réverbération courte) suivi d'un 'whoosh' basse fréquence (0.5s) pour le pulse lumineux, avec un souffle ambiant très faible.",
+  "transition": "Cut sec sur le pic du pulse lumineux (dernière image de la scène) vers la scène suivante, pour un contraste fort.",
+  "duration": 5,
+  "prompt": "Close-up of a human finger with realistic skin texture and subtle blue neon reflection, slowly descending from the top of a futuristic smartphone screen. The screen displays a scrolling menu of blue and violet glowing lines. The finger stops precisely 2mm above the highlighted 'Protection avancée' option, which glows in gold. The finger presses down with a slight skin deformation, and the option lights up with a double golden pulse. Camera does a slow push-in (0.5x) with a micro handheld tremor. The menu lines scroll upward at 0.3x speed during the finger movement, then freeze. Tiny floating light particles in deep black background. At the click, the golden glow intensifies by 50% and spreads to the finger and screen for 0.5s, then fades back to original lighting over 2s. Lens flare on the golden option. Cinematic, realistic, HDR, 8K, neon futuristic ambiance, shallow depth of field, saturated colors (electric blue, violet, gold), smooth screen texture, vertical 9:16 aspect ratio, portrait orientation, photorealistic, cinematic photography.",
+  "metadata": {
+    "goal": "Révéler la solution simple et inattendue (le paramètre secret) avec un geste précis qui attire l'attention sur l'option clé.",
+    "emotion": "Soulagement mêlé de curiosité : la solution est simple et visuellement satisfaisante.",
+    "pace": "Lent et méthodique, pour laisser le spectateur assimiler l'information et apprécier le détail.",
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "time_ms": 10314,
+    "cost_usd": 0.001568
+  }
+}

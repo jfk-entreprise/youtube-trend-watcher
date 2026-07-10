@@ -1,0 +1,174 @@
+{
+  "opportunity_id": "yBy5NnLTiWQ",
+  "niche": "Gaming & Esports",
+  "brief_angle": "Histoire",
+  "script": {
+    "title": "J'ai été entraîné par une IA : elle a hacké mon cerveau de gamer",
+    "hook": "Et si une IA pouvait te rendre meilleur que les meilleurs joueurs Minecraft ?",
+    "introduction": "On m'a dit que c'était impossible. Mais j'ai accepté le défi : me faire coacher par une IA spécialisée dans le combat PvP.",
+    "scenes": [
+      {
+        "order": 1,
+        "title": "Le défi impossible",
+        "narration": "J'ai défié une IA sur Minecraft PvP. Résultat : 27 défaites d'affilée. Mais au lieu de pleurer, j'ai demandé à être son élève.",
+        "visual_description": "Split screen : à gauche, le joueur humain (vue FPS Minecraft) se fait dominer par un adversaire au mouvement robotique ; à droite, un visage humain en gros plan, bouche bée.",
+        "image_prompt": "Minecraft player losing a PvP fight against an AI opponent, stylized, dynamic angle, cinematic lighting",
+        "animation_notes": "Fast cuts between deaths, screen shake on each hit, health bar dropping rapidly",
+        "sound_effects": "Minecraft damage sounds, rapid clicking, glass shatter on defeat",
+        "duration_seconds": 10
+      },
+      {
+        "order": 2,
+        "title": "L'IA entraîneuse",
+        "narration": "L'IA, baptisée 'Aegis', analyse mes moindres clics, mes déplacements. Elle voit mes erreurs avant même que je les fasse.",
+        "visual_description": "Interface futuriste superposée à l'écran de jeu : lignes de data, heatmap des clics, zones d'erreur en rouge clignotant.",
+        "image_prompt": "HUD overlay with AI analytics on Minecraft screen, neon blue lines, heatmap of player clicks, futuristic design",
+        "animation_notes": "Data streams flowing, heatmap pulsing, text appearing 'Error anticipation: 98%'",
+        "sound_effects": "Electronic hum, data packet sounds, soft beeps",
+        "duration_seconds": 12
+      },
+      {
+        "order": 3,
+        "title": "Reprogrammation cognitive",
+        "narration": "Aegis ne me dit pas 'clique plus vite'. Elle me fait comprendre pourquoi je clique mal. Elle m'entraîne à voir le jeu en patterns.",
+        "visual_description": "Animation qui montre le cerveau du joueur, avec des connexions neurales qui se reforment; transition vers une vue Minecraft où des trajectoires prédictives apparaissent.",
+        "image_prompt": "Brain neural network rewiring, stylized, with Minecraft blocks floating, golden synapses",
+        "animation_notes": "Morphing from brain to game, lines showing predicted enemy paths, slow motion",
+        "sound_effects": "Whoosh, electrical crackle, soft piano building tension",
+        "duration_seconds": 13
+      },
+      {
+        "order": 4,
+        "title": "Première victoire",
+        "narration": "Après 72 heures de training intensif, je remporte mon premier duel contre Aegis. Mais elle adapte immédiatement sa stratégie.",
+        "visual_description": "Victory screen (Minecraft 'You Win!') avec le score, puis l'écran devient menaçant: l'IA change de couleur, devient rouge.",
+        "image_prompt": "Minecraft victory screen, but then screen glitching red, AI name 'Aegis' turning aggressive, digital distortion",
+        "animation_notes": "Slow zoom on victory text, then sudden glitch effect, red overlay, heartbeat-like pulse",
+        "sound_effects": "Victory fanfare, then static noise, mechanical breathing",
+        "duration_seconds": 12
+      },
+      {
+        "order": 5,
+        "title": "L'IA évolue",
+        "narration": "Aegis commence à anticiper mes nouvelles tactiques. Elle apprend à la même vitesse que moi. C'est un bras de fer numérique.",
+        "visual_description": "Montage de combats rapides : chaque fois que le joueur prend l'avantage, l'IA contre-attaque parfaitement ; on voit les lignes de code défiler, symboles de boucles d'apprentissage.",
+        "image_prompt": "Fast-paced Minecraft combat montage, two characters clashing, digital code floating between them, AI learning loops",
+        "animation_notes": "Cut every 2 seconds, speed ramps up, screen tearing effects, particle explosions",
+        "sound_effects": "Gun-like clicks (sword hits), electronic buzzing, escalating synth beat",
+        "duration_seconds": 13
+      },
+      {
+        "order": 6,
+        "title": "Le pattern final",
+        "narration": "Je découvre un pattern qu'Aegis n'a jamais vu. Un combo ultra-rare que même elle ne peut pas prédire. C'est ma chance.",
+        "visual_description": "Gros plan sur les doigts du joueur sur le clavier, ralenti, puis vue subjective du jeu où des indicateurs montrent le pattern unique.",
+        "image_prompt": "Close-up of gamer hands on keyboard, slow motion, keyboard keys glowing, Minecraft screen in background showing unique combo path",
+        "animation_notes": "Slow motion, focus pull from hands to screen, highlighted path on ground, time remaining counter",
+        "sound_effects": "Heartbeat, suspenseful strings, keyboard click amplified",
+        "duration_seconds": 11
+      },
+      {
+        "order": 7,
+        "title": "Le duel final",
+        "narration": "J'exécute le pattern parfaitement. Aegis essaie de s'adapter, mais trop tard. Le coup final est irréversible.",
+        "visual_description": "Combat intense, le joueur enchaîne les coups, barre de vie de l'IA diminue rapidement, dernier coup porté au ralenti.",
+        "image_prompt": "Epic Minecraft PvP final blow, slow motion, sparks flying, health bar at zero, dramatic lighting",
+        "animation_notes": "Slow motion on last hit, camera shake, screen flash white, then silhouette of player standing over defeated AI",
+        "sound_effects": "Sword clash, slow motion whoosh, silence then crowd cheer",
+        "duration_seconds": 14
+      },
+      {
+        "order": 8,
+        "title": "Ce que l'IA m'a appris",
+        "narration": "L'IA ne m'a pas volé mon talent. Elle m'a montré que mon cerveau pouvait aller bien plus loin que je ne le croyais.",
+        "visual_description": "Transition vers une salle blanche futuriste, écran holographique montrant les progrès du joueur (courbe exponentielle), data visualisation.",
+        "image_prompt": "Futuristic data room, holographic display showing performance curve, exponential growth, player avatar, clean white design",
+        "animation_notes": "Hologram spinning, data points glowing, player silhouette integrates with the graph",
+        "sound_effects": "Soft ambient, beeps, uplifting chord",
+        "duration_seconds": 12
+      },
+      {
+        "order": 9,
+        "title": "Le nouveau standard",
+        "narration": "Les pros utilisent déjà l'IA pour s'entraîner. Dans 5 ans, ce sera la norme. La question n'est pas 'si' mais 'quand' tu commenceras.",
+        "visual_description": "Split screen : à gauche, un joueur seul sur son PC avec des post-its ; à droite, un joueur avec un casque VR, entouré de data, souriant.",
+        "image_prompt": "Split screen comparison: left side old-school gamer with sticky notes, right side VR headset gamer with AI holograms, futuristic vs present",
+        "animation_notes": "Smooth transition, old side desaturates, new side becomes vivid, VR headset reflects data",
+        "sound_effects": "Typewriter clicks vs electronic tones, fade into hopeful synth",
+        "duration_seconds": 12
+      }
+    ],
+    "conclusion": "L'IA ne m'a pas juste appris à cliquer plus vite. Elle a reprogrammé ma façon de penser le jeu.",
+    "call_to_action": "Et toi, tu laisserais une IA te coacher ? Teste l'outil en lien et envoie-nous tes impressions.",
+    "estimated_duration": 109,
+    "language": "fr",
+    "target_audience": "Gamers curieux et technophiles 20-40 ans",
+    "style": "Innovant, narratif, rythmé",
+    "metadata": {
+      "generator": "llm_v1",
+      "llm_provider": "deepseek",
+      "llm_model": "deepseek-v4-flash",
+      "angle": "Histoire",
+      "niche": "Gaming & Esports",
+      "brand_id": "ia_fr",
+      "brand_name": "IA FR",
+      "opportunity_score": 0.7335,
+      "urgency": 0.9695,
+      "scene_count": 9,
+      "opportunity_id": "yBy5NnLTiWQ",
+      "llm_time_ms": 25275,
+      "llm_tokens": 4734,
+      "llm_cost_usd": 0.006074
+    }
+  },
+  "heuristic_score": {
+    "hook_score": 6.5,
+    "curiosity_score": 4.0,
+    "clarity_score": 9.0,
+    "rhythm_score": 10.0,
+    "cta_score": 7.5,
+    "retention_score": 8.0,
+    "emotion_score": 3.0,
+    "originality_score": 6.0,
+    "composite_score": 54.0,
+    "details": {
+      "hook_length": 77,
+      "total_length": 1564,
+      "scene_count": 9,
+      "avg_scene_duration": 12.11111111111111,
+      "duration_seconds": 109,
+      "generator": "llm_v1"
+    }
+  },
+  "llm_judge_score": {
+    "hook": 9.0,
+    "curiosity": 9.0,
+    "storytelling": 8.0,
+    "rhythm": 7.0,
+    "clarity": 8.0,
+    "cta": 7.0,
+    "retention": 9.0,
+    "viral": 8.0,
+    "global_score": 65.0,
+    "strengths": [
+      "Hook puissant avec question intrigante",
+      "Curiosité maintenue par la progression du défi",
+      "Storytelling bien structuré avec climax"
+    ],
+    "weaknesses": [
+      "Rythme un peu dense, certaines scènes pourraient être resserrées",
+      "CTA pourrait être plus spécifique à l'outil mentionné"
+    ],
+    "suggestions": [
+      "Réduire la durée de certaines scènes pour un rythme plus soutenu",
+      "Rendre le CTA plus concret : 'Teste l'outil gratuit en lien'"
+    ],
+    "metadata": {
+      "llm_provider": "deepseek",
+      "llm_model": "deepseek-v4-flash",
+      "llm_time_ms": 3051,
+      "llm_tokens": 1469,
+      "llm_cost_usd": 0.000559
+    }
+  }
+}

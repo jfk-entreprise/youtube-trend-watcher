@@ -1,0 +1,4112 @@
+{
+  "generated_at": "2026-07-10T02:49:40.157073+00:00",
+  "total_profiles": 503,
+  "topics": {
+    "Intelligence Artificielle": {
+      "name": "topic.Intelligence Artificielle",
+      "description": "Intelligence Artificielle",
+      "value": {
+        "frequency": 81,
+        "pct": 16.1,
+        "avg_trend_score": 0.414,
+        "avg_evergreen_score": 0.536,
+        "avg_confidence": 0.616
+      },
+      "confidence": 0.616,
+      "observations": 81,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {}
+    },
+    "Business & Entrepreneuriat": {
+      "name": "topic.Business & Entrepreneuriat",
+      "description": "Business & Entrepreneuriat",
+      "value": {
+        "frequency": 97,
+        "pct": 19.3,
+        "avg_trend_score": 0.367,
+        "avg_evergreen_score": 0.526,
+        "avg_confidence": 0.629
+      },
+      "confidence": 0.629,
+      "observations": 97,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {}
+    },
+    "Finance & Investissement": {
+      "name": "topic.Finance & Investissement",
+      "description": "Finance & Investissement",
+      "value": {
+        "frequency": 59,
+        "pct": 11.7,
+        "avg_trend_score": 0.38,
+        "avg_evergreen_score": 0.484,
+        "avg_confidence": 0.596
+      },
+      "confidence": 0.596,
+      "observations": 59,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {}
+    },
+    "Divertissement": {
+      "name": "topic.Divertissement",
+      "description": "Divertissement",
+      "value": {
+        "frequency": 11,
+        "pct": 2.2,
+        "avg_trend_score": 0.566,
+        "avg_evergreen_score": 0.564,
+        "avg_confidence": 0.623
+      },
+      "confidence": 0.623,
+      "observations": 11,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {}
+    },
+    "Cinéma & Séries": {
+      "name": "topic.Cinéma & Séries",
+      "description": "Cinéma & Séries",
+      "value": {
+        "frequency": 29,
+        "pct": 5.8,
+        "avg_trend_score": 0.816,
+        "avg_evergreen_score": 0.557,
+        "avg_confidence": 0.604
+      },
+      "confidence": 0.604,
+      "observations": 29,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {}
+    },
+    "Histoire & Culture": {
+      "name": "topic.Histoire & Culture",
+      "description": "Histoire & Culture",
+      "value": {
+        "frequency": 51,
+        "pct": 10.1,
+        "avg_trend_score": 0.432,
+        "avg_evergreen_score": 0.81,
+        "avg_confidence": 0.634
+      },
+      "confidence": 0.634,
+      "observations": 51,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {}
+    },
+    "Technologie": {
+      "name": "topic.Technologie",
+      "description": "Technologie",
+      "value": {
+        "frequency": 51,
+        "pct": 10.1,
+        "avg_trend_score": 0.412,
+        "avg_evergreen_score": 0.503,
+        "avg_confidence": 0.615
+      },
+      "confidence": 0.615,
+      "observations": 51,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {}
+    },
+    "Gaming & Esports": {
+      "name": "topic.Gaming & Esports",
+      "description": "Gaming & Esports",
+      "value": {
+        "frequency": 37,
+        "pct": 7.4,
+        "avg_trend_score": 0.8,
+        "avg_evergreen_score": 0.488,
+        "avg_confidence": 0.618
+      },
+      "confidence": 0.618,
+      "observations": 37,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {}
+    },
+    "Musique & Clips": {
+      "name": "topic.Musique & Clips",
+      "description": "Musique & Clips",
+      "value": {
+        "frequency": 42,
+        "pct": 8.3,
+        "avg_trend_score": 0.794,
+        "avg_evergreen_score": 0.558,
+        "avg_confidence": 0.579
+      },
+      "confidence": 0.579,
+      "observations": 42,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {}
+    },
+    "Voyage & Lifestyle": {
+      "name": "topic.Voyage & Lifestyle",
+      "description": "Voyage & Lifestyle",
+      "value": {
+        "frequency": 1,
+        "pct": 0.2,
+        "avg_trend_score": 0.924,
+        "avg_evergreen_score": 0.3,
+        "avg_confidence": 0.607
+      },
+      "confidence": 0.607,
+      "observations": 1,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {}
+    },
+    "Fr": {
+      "name": "topic.Fr",
+      "description": "Fr",
+      "value": {
+        "frequency": 13,
+        "pct": 2.6,
+        "avg_trend_score": 0.838,
+        "avg_evergreen_score": 0.512,
+        "avg_confidence": 0.543
+      },
+      "confidence": 0.543,
+      "observations": 13,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {}
+    },
+    "Us": {
+      "name": "topic.Us",
+      "description": "Us",
+      "value": {
+        "frequency": 21,
+        "pct": 4.2,
+        "avg_trend_score": 0.846,
+        "avg_evergreen_score": 0.51,
+        "avg_confidence": 0.539
+      },
+      "confidence": 0.539,
+      "observations": 21,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {}
+    },
+    "Sports": {
+      "name": "topic.Sports",
+      "description": "Sports",
+      "value": {
+        "frequency": 9,
+        "pct": 1.8,
+        "avg_trend_score": 0.567,
+        "avg_evergreen_score": 0.561,
+        "avg_confidence": 0.621
+      },
+      "confidence": 0.621,
+      "observations": 9,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {}
+    },
+    "Éducation & Science": {
+      "name": "topic.Éducation & Science",
+      "description": "Éducation & Science",
+      "value": {
+        "frequency": 1,
+        "pct": 0.2,
+        "avg_trend_score": 0.283,
+        "avg_evergreen_score": 0.7,
+        "avg_confidence": 0.684
+      },
+      "confidence": 0.684,
+      "observations": 1,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {}
+    }
+  },
+  "emotions": {
+    "Neutre": {
+      "name": "emotion.Neutre",
+      "description": "Neutre",
+      "value": {
+        "frequency": 327,
+        "pct": 65.0,
+        "avg_trend_score": 0.561,
+        "avg_evergreen_score": 0.509,
+        "avg_confidence": 0.592
+      },
+      "confidence": 0.592,
+      "observations": 327,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {}
+    },
+    "Divertissant": {
+      "name": "emotion.Divertissant",
+      "description": "Divertissant",
+      "value": {
+        "frequency": 34,
+        "pct": 6.8,
+        "avg_trend_score": 0.501,
+        "avg_evergreen_score": 0.482,
+        "avg_confidence": 0.642
+      },
+      "confidence": 0.642,
+      "observations": 34,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {}
+    },
+    "Sensationnel": {
+      "name": "emotion.Sensationnel",
+      "description": "Sensationnel",
+      "value": {
+        "frequency": 27,
+        "pct": 5.4,
+        "avg_trend_score": 0.61,
+        "avg_evergreen_score": 0.544,
+        "avg_confidence": 0.641
+      },
+      "confidence": 0.641,
+      "observations": 27,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {}
+    },
+    "Inspirant": {
+      "name": "emotion.Inspirant",
+      "description": "Inspirant",
+      "value": {
+        "frequency": 46,
+        "pct": 9.1,
+        "avg_trend_score": 0.385,
+        "avg_evergreen_score": 0.574,
+        "avg_confidence": 0.654
+      },
+      "confidence": 0.654,
+      "observations": 46,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {}
+    },
+    "Éducatif": {
+      "name": "emotion.Éducatif",
+      "description": "Éducatif",
+      "value": {
+        "frequency": 21,
+        "pct": 4.2,
+        "avg_trend_score": 0.406,
+        "avg_evergreen_score": 0.719,
+        "avg_confidence": 0.644
+      },
+      "confidence": 0.644,
+      "observations": 21,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {}
+    },
+    "Nostalgique": {
+      "name": "emotion.Nostalgique",
+      "description": "Nostalgique",
+      "value": {
+        "frequency": 48,
+        "pct": 9.5,
+        "avg_trend_score": 0.402,
+        "avg_evergreen_score": 0.799,
+        "avg_confidence": 0.634
+      },
+      "confidence": 0.634,
+      "observations": 48,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {}
+    }
+  },
+  "audiences": {
+    "Passionnés Tech": {
+      "name": "audience.Passionnés Tech",
+      "description": "Passionnés Tech",
+      "value": {
+        "frequency": 121,
+        "pct": 24.1,
+        "avg_trend_score": 0.411,
+        "avg_evergreen_score": 0.517,
+        "avg_confidence": 0.619
+      },
+      "confidence": 0.619,
+      "observations": 121,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {}
+    },
+    "Gamers": {
+      "name": "audience.Gamers",
+      "description": "Gamers",
+      "value": {
+        "frequency": 38,
+        "pct": 7.6,
+        "avg_trend_score": 0.729,
+        "avg_evergreen_score": 0.563,
+        "avg_confidence": 0.629
+      },
+      "confidence": 0.629,
+      "observations": 38,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {}
+    },
+    "Professionnels": {
+      "name": "audience.Professionnels",
+      "description": "Professionnels",
+      "value": {
+        "frequency": 112,
+        "pct": 22.3,
+        "avg_trend_score": 0.363,
+        "avg_evergreen_score": 0.534,
+        "avg_confidence": 0.63
+      },
+      "confidence": 0.63,
+      "observations": 112,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {}
+    },
+    "Grand public": {
+      "name": "audience.Grand public",
+      "description": "Grand public",
+      "value": {
+        "frequency": 143,
+        "pct": 28.4,
+        "avg_trend_score": 0.672,
+        "avg_evergreen_score": 0.485,
+        "avg_confidence": 0.571
+      },
+      "confidence": 0.571,
+      "observations": 143,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {}
+    },
+    "Cinéphiles": {
+      "name": "audience.Cinéphiles",
+      "description": "Cinéphiles",
+      "value": {
+        "frequency": 31,
+        "pct": 6.2,
+        "avg_trend_score": 0.8,
+        "avg_evergreen_score": 0.556,
+        "avg_confidence": 0.605
+      },
+      "confidence": 0.605,
+      "observations": 31,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {}
+    },
+    "Curieux & Étudiants": {
+      "name": "audience.Curieux & Étudiants",
+      "description": "Curieux & Étudiants",
+      "value": {
+        "frequency": 58,
+        "pct": 11.5,
+        "avg_trend_score": 0.403,
+        "avg_evergreen_score": 0.806,
+        "avg_confidence": 0.635
+      },
+      "confidence": 0.635,
+      "observations": 58,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {}
+    }
+  },
+  "content_types": {
+    "Short": {
+      "name": "content_type.Short",
+      "description": "Short",
+      "value": {
+        "frequency": 224,
+        "pct": 44.5,
+        "avg_trend_score": 0.378,
+        "avg_evergreen_score": 0.475,
+        "avg_confidence": 0.632
+      },
+      "confidence": 0.632,
+      "observations": 224,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {}
+    },
+    "Standard": {
+      "name": "content_type.Standard",
+      "description": "Standard",
+      "value": {
+        "frequency": 112,
+        "pct": 22.3,
+        "avg_trend_score": 0.594,
+        "avg_evergreen_score": 0.617,
+        "avg_confidence": 0.567
+      },
+      "confidence": 0.567,
+      "observations": 112,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {}
+    },
+    "Long": {
+      "name": "content_type.Long",
+      "description": "Long",
+      "value": {
+        "frequency": 59,
+        "pct": 11.7,
+        "avg_trend_score": 0.683,
+        "avg_evergreen_score": 0.666,
+        "avg_confidence": 0.59
+      },
+      "confidence": 0.59,
+      "observations": 59,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {}
+    },
+    "Actualité": {
+      "name": "content_type.Actualité",
+      "description": "Actualité",
+      "value": {
+        "frequency": 43,
+        "pct": 8.5,
+        "avg_trend_score": 0.701,
+        "avg_evergreen_score": 0.456,
+        "avg_confidence": 0.617
+      },
+      "confidence": 0.617,
+      "observations": 43,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {}
+    },
+    "Divertissement": {
+      "name": "content_type.Divertissement",
+      "description": "Divertissement",
+      "value": {
+        "frequency": 19,
+        "pct": 3.8,
+        "avg_trend_score": 0.6,
+        "avg_evergreen_score": 0.592,
+        "avg_confidence": 0.638
+      },
+      "confidence": 0.638,
+      "observations": 19,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {}
+    },
+    "Analyse": {
+      "name": "content_type.Analyse",
+      "description": "Analyse",
+      "value": {
+        "frequency": 9,
+        "pct": 1.8,
+        "avg_trend_score": 0.496,
+        "avg_evergreen_score": 0.794,
+        "avg_confidence": 0.612
+      },
+      "confidence": 0.612,
+      "observations": 9,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {}
+    },
+    "Tutorial": {
+      "name": "content_type.Tutorial",
+      "description": "Tutorial",
+      "value": {
+        "frequency": 17,
+        "pct": 3.4,
+        "avg_trend_score": 0.421,
+        "avg_evergreen_score": 0.729,
+        "avg_confidence": 0.629
+      },
+      "confidence": 0.629,
+      "observations": 17,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {}
+    },
+    "Clip Musical": {
+      "name": "content_type.Clip Musical",
+      "description": "Clip Musical",
+      "value": {
+        "frequency": 17,
+        "pct": 3.4,
+        "avg_trend_score": 0.874,
+        "avg_evergreen_score": 0.603,
+        "avg_confidence": 0.587
+      },
+      "confidence": 0.587,
+      "observations": 17,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {}
+    },
+    "Gameplay": {
+      "name": "content_type.Gameplay",
+      "description": "Gameplay",
+      "value": {
+        "frequency": 3,
+        "pct": 0.6,
+        "avg_trend_score": 0.926,
+        "avg_evergreen_score": 0.6,
+        "avg_confidence": 0.646
+      },
+      "confidence": 0.646,
+      "observations": 3,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {}
+    }
+  },
+  "languages": {
+    "fr": {
+      "name": "language.fr",
+      "description": "fr",
+      "value": {
+        "frequency": 224,
+        "pct": 44.5,
+        "avg_trend_score": 0.503,
+        "avg_evergreen_score": 0.602,
+        "avg_confidence": 0.621
+      },
+      "confidence": 0.621,
+      "observations": 224,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {}
+    },
+    "pt": {
+      "name": "language.pt",
+      "description": "pt",
+      "value": {
+        "frequency": 13,
+        "pct": 2.6,
+        "avg_trend_score": 0.546,
+        "avg_evergreen_score": 0.481,
+        "avg_confidence": 0.616
+      },
+      "confidence": 0.616,
+      "observations": 13,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {}
+    },
+    "inconnu": {
+      "name": "language.inconnu",
+      "description": "inconnu",
+      "value": {
+        "frequency": 94,
+        "pct": 18.7,
+        "avg_trend_score": 0.39,
+        "avg_evergreen_score": 0.507,
+        "avg_confidence": 0.557
+      },
+      "confidence": 0.557,
+      "observations": 94,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {}
+    },
+    "es": {
+      "name": "language.es",
+      "description": "es",
+      "value": {
+        "frequency": 13,
+        "pct": 2.6,
+        "avg_trend_score": 0.475,
+        "avg_evergreen_score": 0.538,
+        "avg_confidence": 0.612
+      },
+      "confidence": 0.612,
+      "observations": 13,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {}
+    },
+    "en": {
+      "name": "language.en",
+      "description": "en",
+      "value": {
+        "frequency": 159,
+        "pct": 31.6,
+        "avg_trend_score": 0.627,
+        "avg_evergreen_score": 0.512,
+        "avg_confidence": 0.624
+      },
+      "confidence": 0.624,
+      "observations": 159,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {}
+    }
+  },
+  "evergreen": {
+    "name": "evergreen.global",
+    "description": "Analyse de la pérennité du contenu",
+    "value": {
+      "mean": 0.551,
+      "median": 0.5,
+      "top_topics": [
+        {
+          "topic": "Histoire & Culture",
+          "avg_score": 0.81
+        },
+        {
+          "topic": "Éducation & Science",
+          "avg_score": 0.7
+        },
+        {
+          "topic": "Divertissement",
+          "avg_score": 0.564
+        },
+        {
+          "topic": "Sports",
+          "avg_score": 0.561
+        },
+        {
+          "topic": "Musique & Clips",
+          "avg_score": 0.558
+        }
+      ]
+    },
+    "confidence": 0.75,
+    "observations": 503,
+    "updated_at": "2026-07-10T02:49:40.157073+00:00",
+    "metadata": {}
+  },
+  "trend": {
+    "name": "trend.global",
+    "description": "Analyse de la dynamique de tendance",
+    "value": {
+      "mean": 0.522,
+      "high_trend_count": 121,
+      "low_trend_count": 243,
+      "top_topics": [
+        {
+          "topic": "Voyage & Lifestyle",
+          "avg_score": 0.924
+        },
+        {
+          "topic": "Us",
+          "avg_score": 0.846
+        },
+        {
+          "topic": "Fr",
+          "avg_score": 0.838
+        },
+        {
+          "topic": "Cinéma & Séries",
+          "avg_score": 0.816
+        },
+        {
+          "topic": "Gaming & Esports",
+          "avg_score": 0.8
+        }
+      ]
+    },
+    "confidence": 0.7,
+    "observations": 503,
+    "updated_at": "2026-07-10T02:49:40.157073+00:00",
+    "metadata": {}
+  },
+  "durations": {
+    "name": "duration.global",
+    "description": "Analyse des durées de contenu",
+    "value": {
+      "mean_seconds": 1043,
+      "median_seconds": 72,
+      "mean_fmt": "17m23s",
+      "median_fmt": "1m12s",
+      "best_range_by_volume": "Short (≤60s)",
+      "ranges": {
+        "Short (≤60s)": 224,
+        "Court (1–5min)": 160,
+        "Moyen (5–10min)": 11,
+        "Long (>10min)": 108
+      },
+      "avg_trend_by_range": {
+        "Short (≤60s)": 0.379,
+        "Court (1–5min)": 0.595,
+        "Moyen (5–10min)": 0.616,
+        "Long (>10min)": 0.7
+      }
+    },
+    "confidence": 0.8,
+    "observations": 503,
+    "updated_at": "2026-07-10T02:49:40.157073+00:00",
+    "metadata": {}
+  },
+  "combinations": [
+    {
+      "name": "combination.pair.25",
+      "description": "Business & Entrepreneuriat + Professionnels",
+      "value": {
+        "keys": {
+          "primary_topic": "Business & Entrepreneuriat",
+          "target_audience": "Professionnels"
+        },
+        "frequency": 95,
+        "pct": 18.9
+      },
+      "confidence": 0.7,
+      "observations": 95,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.75",
+      "description": "Short + Passionnés Tech",
+      "value": {
+        "keys": {
+          "content_type": "Short",
+          "target_audience": "Passionnés Tech"
+        },
+        "frequency": 80,
+        "pct": 15.9
+      },
+      "confidence": 0.7,
+      "observations": 80,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.76",
+      "description": "Short + Professionnels",
+      "value": {
+        "keys": {
+          "content_type": "Short",
+          "target_audience": "Professionnels"
+        },
+        "frequency": 79,
+        "pct": 15.7
+      },
+      "confidence": 0.7,
+      "observations": 79,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.0",
+      "description": "Business & Entrepreneuriat + Short",
+      "value": {
+        "keys": {
+          "primary_topic": "Business & Entrepreneuriat",
+          "content_type": "Short"
+        },
+        "frequency": 73,
+        "pct": 14.5
+      },
+      "confidence": 0.7,
+      "observations": 73,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.triple.100",
+      "description": "Business & Entrepreneuriat + Short + Professionnels",
+      "value": {
+        "keys": {
+          "primary_topic": "Business & Entrepreneuriat",
+          "content_type": "Short",
+          "target_audience": "Professionnels"
+        },
+        "frequency": 72,
+        "pct": 14.3
+      },
+      "confidence": 0.7,
+      "observations": 72,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.pair.26",
+      "description": "Intelligence Artificielle + Passionnés Tech",
+      "value": {
+        "keys": {
+          "primary_topic": "Intelligence Artificielle",
+          "target_audience": "Passionnés Tech"
+        },
+        "frequency": 70,
+        "pct": 13.9
+      },
+      "confidence": 0.7,
+      "observations": 70,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.50",
+      "description": "Intelligence Artificielle + Neutre",
+      "value": {
+        "keys": {
+          "primary_topic": "Intelligence Artificielle",
+          "emotion": "Neutre"
+        },
+        "frequency": 62,
+        "pct": 12.3
+      },
+      "confidence": 0.7,
+      "observations": 62,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.51",
+      "description": "Business & Entrepreneuriat + Neutre",
+      "value": {
+        "keys": {
+          "primary_topic": "Business & Entrepreneuriat",
+          "emotion": "Neutre"
+        },
+        "frequency": 62,
+        "pct": 12.3
+      },
+      "confidence": 0.7,
+      "observations": 62,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.1",
+      "description": "Intelligence Artificielle + Short",
+      "value": {
+        "keys": {
+          "primary_topic": "Intelligence Artificielle",
+          "content_type": "Short"
+        },
+        "frequency": 52,
+        "pct": 10.3
+      },
+      "confidence": 0.7,
+      "observations": 52,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.triple.101",
+      "description": "Intelligence Artificielle + Short + Passionnés Tech",
+      "value": {
+        "keys": {
+          "primary_topic": "Intelligence Artificielle",
+          "content_type": "Short",
+          "target_audience": "Passionnés Tech"
+        },
+        "frequency": 49,
+        "pct": 9.7
+      },
+      "confidence": 0.7,
+      "observations": 49,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.pair.27",
+      "description": "Finance & Investissement + Grand public",
+      "value": {
+        "keys": {
+          "primary_topic": "Finance & Investissement",
+          "target_audience": "Grand public"
+        },
+        "frequency": 48,
+        "pct": 9.5
+      },
+      "confidence": 0.7,
+      "observations": 48,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.28",
+      "description": "Technologie + Passionnés Tech",
+      "value": {
+        "keys": {
+          "primary_topic": "Technologie",
+          "target_audience": "Passionnés Tech"
+        },
+        "frequency": 47,
+        "pct": 9.3
+      },
+      "confidence": 0.7,
+      "observations": 47,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.triple.125",
+      "description": "Business & Entrepreneuriat + Neutre + Short",
+      "value": {
+        "keys": {
+          "primary_topic": "Business & Entrepreneuriat",
+          "emotion": "Neutre",
+          "content_type": "Short"
+        },
+        "frequency": 47,
+        "pct": 9.3
+      },
+      "confidence": 0.7,
+      "observations": 47,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion",
+          "content_type"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.pair.29",
+      "description": "Histoire & Culture + Curieux & Étudiants",
+      "value": {
+        "keys": {
+          "primary_topic": "Histoire & Culture",
+          "target_audience": "Curieux & Étudiants"
+        },
+        "frequency": 46,
+        "pct": 9.1
+      },
+      "confidence": 0.7,
+      "observations": 46,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.77",
+      "description": "Standard + Grand public",
+      "value": {
+        "keys": {
+          "content_type": "Standard",
+          "target_audience": "Grand public"
+        },
+        "frequency": 45,
+        "pct": 8.9
+      },
+      "confidence": 0.7,
+      "observations": 45,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.triple.126",
+      "description": "Intelligence Artificielle + Neutre + Short",
+      "value": {
+        "keys": {
+          "primary_topic": "Intelligence Artificielle",
+          "emotion": "Neutre",
+          "content_type": "Short"
+        },
+        "frequency": 42,
+        "pct": 8.3
+      },
+      "confidence": 0.7,
+      "observations": 42,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion",
+          "content_type"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.pair.2",
+      "description": "Finance & Investissement + Short",
+      "value": {
+        "keys": {
+          "primary_topic": "Finance & Investissement",
+          "content_type": "Short"
+        },
+        "frequency": 38,
+        "pct": 7.6
+      },
+      "confidence": 0.7,
+      "observations": 38,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.52",
+      "description": "Finance & Investissement + Neutre",
+      "value": {
+        "keys": {
+          "primary_topic": "Finance & Investissement",
+          "emotion": "Neutre"
+        },
+        "frequency": 37,
+        "pct": 7.4
+      },
+      "confidence": 0.7,
+      "observations": 37,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.53",
+      "description": "Technologie + Neutre",
+      "value": {
+        "keys": {
+          "primary_topic": "Technologie",
+          "emotion": "Neutre"
+        },
+        "frequency": 37,
+        "pct": 7.4
+      },
+      "confidence": 0.7,
+      "observations": 37,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.54",
+      "description": "Musique & Clips + Neutre",
+      "value": {
+        "keys": {
+          "primary_topic": "Musique & Clips",
+          "emotion": "Neutre"
+        },
+        "frequency": 37,
+        "pct": 7.4
+      },
+      "confidence": 0.7,
+      "observations": 37,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.78",
+      "description": "Short + Grand public",
+      "value": {
+        "keys": {
+          "content_type": "Short",
+          "target_audience": "Grand public"
+        },
+        "frequency": 37,
+        "pct": 7.4
+      },
+      "confidence": 0.7,
+      "observations": 37,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.55",
+      "description": "Histoire & Culture + Nostalgique",
+      "value": {
+        "keys": {
+          "primary_topic": "Histoire & Culture",
+          "emotion": "Nostalgique"
+        },
+        "frequency": 36,
+        "pct": 7.2
+      },
+      "confidence": 0.7,
+      "observations": 36,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.30",
+      "description": "Musique & Clips + Grand public",
+      "value": {
+        "keys": {
+          "primary_topic": "Musique & Clips",
+          "target_audience": "Grand public"
+        },
+        "frequency": 34,
+        "pct": 6.8
+      },
+      "confidence": 0.7,
+      "observations": 34,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.triple.102",
+      "description": "Finance & Investissement + Short + Grand public",
+      "value": {
+        "keys": {
+          "primary_topic": "Finance & Investissement",
+          "content_type": "Short",
+          "target_audience": "Grand public"
+        },
+        "frequency": 34,
+        "pct": 6.8
+      },
+      "confidence": 0.7,
+      "observations": 34,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.pair.3",
+      "description": "Technologie + Short",
+      "value": {
+        "keys": {
+          "primary_topic": "Technologie",
+          "content_type": "Short"
+        },
+        "frequency": 27,
+        "pct": 5.4
+      },
+      "confidence": 0.7,
+      "observations": 27,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.triple.103",
+      "description": "Technologie + Short + Passionnés Tech",
+      "value": {
+        "keys": {
+          "primary_topic": "Technologie",
+          "content_type": "Short",
+          "target_audience": "Passionnés Tech"
+        },
+        "frequency": 27,
+        "pct": 5.4
+      },
+      "confidence": 0.7,
+      "observations": 27,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.triple.127",
+      "description": "Finance & Investissement + Neutre + Short",
+      "value": {
+        "keys": {
+          "primary_topic": "Finance & Investissement",
+          "emotion": "Neutre",
+          "content_type": "Short"
+        },
+        "frequency": 26,
+        "pct": 5.2
+      },
+      "confidence": 0.7,
+      "observations": 26,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion",
+          "content_type"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.pair.31",
+      "description": "Gaming & Esports + Gamers",
+      "value": {
+        "keys": {
+          "primary_topic": "Gaming & Esports",
+          "target_audience": "Gamers"
+        },
+        "frequency": 25,
+        "pct": 5.0
+      },
+      "confidence": 0.7,
+      "observations": 25,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.56",
+      "description": "Cinéma & Séries + Neutre",
+      "value": {
+        "keys": {
+          "primary_topic": "Cinéma & Séries",
+          "emotion": "Neutre"
+        },
+        "frequency": 25,
+        "pct": 5.0
+      },
+      "confidence": 0.7,
+      "observations": 25,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.57",
+      "description": "Gaming & Esports + Neutre",
+      "value": {
+        "keys": {
+          "primary_topic": "Gaming & Esports",
+          "emotion": "Neutre"
+        },
+        "frequency": 25,
+        "pct": 5.0
+      },
+      "confidence": 0.7,
+      "observations": 25,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.32",
+      "description": "Cinéma & Séries + Cinéphiles",
+      "value": {
+        "keys": {
+          "primary_topic": "Cinéma & Séries",
+          "target_audience": "Cinéphiles"
+        },
+        "frequency": 22,
+        "pct": 4.4
+      },
+      "confidence": 0.7,
+      "observations": 22,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.58",
+      "description": "Business & Entrepreneuriat + Inspirant",
+      "value": {
+        "keys": {
+          "primary_topic": "Business & Entrepreneuriat",
+          "emotion": "Inspirant"
+        },
+        "frequency": 22,
+        "pct": 4.4
+      },
+      "confidence": 0.7,
+      "observations": 22,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.79",
+      "description": "Standard + Passionnés Tech",
+      "value": {
+        "keys": {
+          "content_type": "Standard",
+          "target_audience": "Passionnés Tech"
+        },
+        "frequency": 22,
+        "pct": 4.4
+      },
+      "confidence": 0.7,
+      "observations": 22,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.80",
+      "description": "Short + Curieux & Étudiants",
+      "value": {
+        "keys": {
+          "content_type": "Short",
+          "target_audience": "Curieux & Étudiants"
+        },
+        "frequency": 22,
+        "pct": 4.4
+      },
+      "confidence": 0.7,
+      "observations": 22,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.4",
+      "description": "Musique & Clips + Standard",
+      "value": {
+        "keys": {
+          "primary_topic": "Musique & Clips",
+          "content_type": "Standard"
+        },
+        "frequency": 21,
+        "pct": 4.2
+      },
+      "confidence": 0.7,
+      "observations": 21,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.33",
+      "description": "Us + Grand public",
+      "value": {
+        "keys": {
+          "primary_topic": "Us",
+          "target_audience": "Grand public"
+        },
+        "frequency": 21,
+        "pct": 4.2
+      },
+      "confidence": 0.7,
+      "observations": 21,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.59",
+      "description": "Us + Neutre",
+      "value": {
+        "keys": {
+          "primary_topic": "Us",
+          "emotion": "Neutre"
+        },
+        "frequency": 20,
+        "pct": 4.0
+      },
+      "confidence": 0.7,
+      "observations": 20,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.5",
+      "description": "Histoire & Culture + Short",
+      "value": {
+        "keys": {
+          "primary_topic": "Histoire & Culture",
+          "content_type": "Short"
+        },
+        "frequency": 19,
+        "pct": 3.8
+      },
+      "confidence": 0.7,
+      "observations": 19,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.81",
+      "description": "Long + Gamers",
+      "value": {
+        "keys": {
+          "content_type": "Long",
+          "target_audience": "Gamers"
+        },
+        "frequency": 19,
+        "pct": 3.8
+      },
+      "confidence": 0.7,
+      "observations": 19,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.triple.104",
+      "description": "Histoire & Culture + Short + Curieux & Étudiants",
+      "value": {
+        "keys": {
+          "primary_topic": "Histoire & Culture",
+          "content_type": "Short",
+          "target_audience": "Curieux & Étudiants"
+        },
+        "frequency": 18,
+        "pct": 3.6
+      },
+      "confidence": 0.7,
+      "observations": 18,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.triple.128",
+      "description": "Technologie + Neutre + Short",
+      "value": {
+        "keys": {
+          "primary_topic": "Technologie",
+          "emotion": "Neutre",
+          "content_type": "Short"
+        },
+        "frequency": 18,
+        "pct": 3.6
+      },
+      "confidence": 0.7,
+      "observations": 18,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion",
+          "content_type"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.triple.129",
+      "description": "Musique & Clips + Neutre + Standard",
+      "value": {
+        "keys": {
+          "primary_topic": "Musique & Clips",
+          "emotion": "Neutre",
+          "content_type": "Standard"
+        },
+        "frequency": 18,
+        "pct": 3.6
+      },
+      "confidence": 0.7,
+      "observations": 18,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion",
+          "content_type"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.pair.82",
+      "description": "Long + Grand public",
+      "value": {
+        "keys": {
+          "content_type": "Long",
+          "target_audience": "Grand public"
+        },
+        "frequency": 17,
+        "pct": 3.4
+      },
+      "confidence": 0.7,
+      "observations": 17,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.83",
+      "description": "Standard + Curieux & Étudiants",
+      "value": {
+        "keys": {
+          "content_type": "Standard",
+          "target_audience": "Curieux & Étudiants"
+        },
+        "frequency": 17,
+        "pct": 3.4
+      },
+      "confidence": 0.7,
+      "observations": 17,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.triple.130",
+      "description": "Business & Entrepreneuriat + Inspirant + Short",
+      "value": {
+        "keys": {
+          "primary_topic": "Business & Entrepreneuriat",
+          "emotion": "Inspirant",
+          "content_type": "Short"
+        },
+        "frequency": 17,
+        "pct": 3.4
+      },
+      "confidence": 0.7,
+      "observations": 17,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion",
+          "content_type"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.pair.6",
+      "description": "Gaming & Esports + Long",
+      "value": {
+        "keys": {
+          "primary_topic": "Gaming & Esports",
+          "content_type": "Long"
+        },
+        "frequency": 16,
+        "pct": 3.2
+      },
+      "confidence": 0.7,
+      "observations": 16,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.84",
+      "description": "Actualité + Grand public",
+      "value": {
+        "keys": {
+          "content_type": "Actualité",
+          "target_audience": "Grand public"
+        },
+        "frequency": 16,
+        "pct": 3.2
+      },
+      "confidence": 0.7,
+      "observations": 16,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.triple.105",
+      "description": "Musique & Clips + Standard + Grand public",
+      "value": {
+        "keys": {
+          "primary_topic": "Musique & Clips",
+          "content_type": "Standard",
+          "target_audience": "Grand public"
+        },
+        "frequency": 16,
+        "pct": 3.2
+      },
+      "confidence": 0.7,
+      "observations": 16,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.pair.7",
+      "description": "Histoire & Culture + Standard",
+      "value": {
+        "keys": {
+          "primary_topic": "Histoire & Culture",
+          "content_type": "Standard"
+        },
+        "frequency": 15,
+        "pct": 3.0
+      },
+      "confidence": 0.7,
+      "observations": 15,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.85",
+      "description": "Standard + Professionnels",
+      "value": {
+        "keys": {
+          "content_type": "Standard",
+          "target_audience": "Professionnels"
+        },
+        "frequency": 15,
+        "pct": 3.0
+      },
+      "confidence": 0.7,
+      "observations": 15,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.86",
+      "description": "Clip Musical + Grand public",
+      "value": {
+        "keys": {
+          "content_type": "Clip Musical",
+          "target_audience": "Grand public"
+        },
+        "frequency": 15,
+        "pct": 3.0
+      },
+      "confidence": 0.7,
+      "observations": 15,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.triple.106",
+      "description": "Histoire & Culture + Standard + Curieux & Étudiants",
+      "value": {
+        "keys": {
+          "primary_topic": "Histoire & Culture",
+          "content_type": "Standard",
+          "target_audience": "Curieux & Étudiants"
+        },
+        "frequency": 15,
+        "pct": 3.0
+      },
+      "confidence": 0.7,
+      "observations": 15,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.pair.8",
+      "description": "Technologie + Standard",
+      "value": {
+        "keys": {
+          "primary_topic": "Technologie",
+          "content_type": "Standard"
+        },
+        "frequency": 14,
+        "pct": 2.8
+      },
+      "confidence": 0.7,
+      "observations": 14,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.9",
+      "description": "Musique & Clips + Clip Musical",
+      "value": {
+        "keys": {
+          "primary_topic": "Musique & Clips",
+          "content_type": "Clip Musical"
+        },
+        "frequency": 13,
+        "pct": 2.6
+      },
+      "confidence": 0.7,
+      "observations": 13,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.34",
+      "description": "Fr + Grand public",
+      "value": {
+        "keys": {
+          "primary_topic": "Fr",
+          "target_audience": "Grand public"
+        },
+        "frequency": 13,
+        "pct": 2.6
+      },
+      "confidence": 0.7,
+      "observations": 13,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.triple.107",
+      "description": "Technologie + Standard + Passionnés Tech",
+      "value": {
+        "keys": {
+          "primary_topic": "Technologie",
+          "content_type": "Standard",
+          "target_audience": "Passionnés Tech"
+        },
+        "frequency": 13,
+        "pct": 2.6
+      },
+      "confidence": 0.7,
+      "observations": 13,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.triple.108",
+      "description": "Gaming & Esports + Long + Gamers",
+      "value": {
+        "keys": {
+          "primary_topic": "Gaming & Esports",
+          "content_type": "Long",
+          "target_audience": "Gamers"
+        },
+        "frequency": 13,
+        "pct": 2.6
+      },
+      "confidence": 0.7,
+      "observations": 13,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.triple.131",
+      "description": "Histoire & Culture + Nostalgique + Standard",
+      "value": {
+        "keys": {
+          "primary_topic": "Histoire & Culture",
+          "emotion": "Nostalgique",
+          "content_type": "Standard"
+        },
+        "frequency": 13,
+        "pct": 2.6
+      },
+      "confidence": 0.7,
+      "observations": 13,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion",
+          "content_type"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.triple.132",
+      "description": "Histoire & Culture + Nostalgique + Short",
+      "value": {
+        "keys": {
+          "primary_topic": "Histoire & Culture",
+          "emotion": "Nostalgique",
+          "content_type": "Short"
+        },
+        "frequency": 13,
+        "pct": 2.6
+      },
+      "confidence": 0.7,
+      "observations": 13,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion",
+          "content_type"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.triple.133",
+      "description": "Musique & Clips + Neutre + Clip Musical",
+      "value": {
+        "keys": {
+          "primary_topic": "Musique & Clips",
+          "emotion": "Neutre",
+          "content_type": "Clip Musical"
+        },
+        "frequency": 13,
+        "pct": 2.6
+      },
+      "confidence": 0.7,
+      "observations": 13,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion",
+          "content_type"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.pair.10",
+      "description": "Business & Entrepreneuriat + Standard",
+      "value": {
+        "keys": {
+          "primary_topic": "Business & Entrepreneuriat",
+          "content_type": "Standard"
+        },
+        "frequency": 12,
+        "pct": 2.4
+      },
+      "confidence": 0.7,
+      "observations": 12,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.35",
+      "description": "Gaming & Esports + Grand public",
+      "value": {
+        "keys": {
+          "primary_topic": "Gaming & Esports",
+          "target_audience": "Grand public"
+        },
+        "frequency": 12,
+        "pct": 2.4
+      },
+      "confidence": 0.7,
+      "observations": 12,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.87",
+      "description": "Standard + Cinéphiles",
+      "value": {
+        "keys": {
+          "content_type": "Standard",
+          "target_audience": "Cinéphiles"
+        },
+        "frequency": 12,
+        "pct": 2.4
+      },
+      "confidence": 0.7,
+      "observations": 12,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.triple.109",
+      "description": "Business & Entrepreneuriat + Standard + Professionnels",
+      "value": {
+        "keys": {
+          "primary_topic": "Business & Entrepreneuriat",
+          "content_type": "Standard",
+          "target_audience": "Professionnels"
+        },
+        "frequency": 12,
+        "pct": 2.4
+      },
+      "confidence": 0.7,
+      "observations": 12,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.triple.134",
+      "description": "Technologie + Neutre + Standard",
+      "value": {
+        "keys": {
+          "primary_topic": "Technologie",
+          "emotion": "Neutre",
+          "content_type": "Standard"
+        },
+        "frequency": 12,
+        "pct": 2.4
+      },
+      "confidence": 0.7,
+      "observations": 12,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion",
+          "content_type"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.triple.135",
+      "description": "Gaming & Esports + Neutre + Long",
+      "value": {
+        "keys": {
+          "primary_topic": "Gaming & Esports",
+          "emotion": "Neutre",
+          "content_type": "Long"
+        },
+        "frequency": 12,
+        "pct": 2.4
+      },
+      "confidence": 0.7,
+      "observations": 12,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion",
+          "content_type"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.pair.11",
+      "description": "Us + Standard",
+      "value": {
+        "keys": {
+          "primary_topic": "Us",
+          "content_type": "Standard"
+        },
+        "frequency": 11,
+        "pct": 2.2
+      },
+      "confidence": 0.7,
+      "observations": 11,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.60",
+      "description": "Fr + Neutre",
+      "value": {
+        "keys": {
+          "primary_topic": "Fr",
+          "emotion": "Neutre"
+        },
+        "frequency": 11,
+        "pct": 2.2
+      },
+      "confidence": 0.7,
+      "observations": 11,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.triple.110",
+      "description": "Musique & Clips + Clip Musical + Grand public",
+      "value": {
+        "keys": {
+          "primary_topic": "Musique & Clips",
+          "content_type": "Clip Musical",
+          "target_audience": "Grand public"
+        },
+        "frequency": 11,
+        "pct": 2.2
+      },
+      "confidence": 0.7,
+      "observations": 11,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.triple.111",
+      "description": "Us + Standard + Grand public",
+      "value": {
+        "keys": {
+          "primary_topic": "Us",
+          "content_type": "Standard",
+          "target_audience": "Grand public"
+        },
+        "frequency": 11,
+        "pct": 2.2
+      },
+      "confidence": 0.7,
+      "observations": 11,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.triple.136",
+      "description": "Us + Neutre + Standard",
+      "value": {
+        "keys": {
+          "primary_topic": "Us",
+          "emotion": "Neutre",
+          "content_type": "Standard"
+        },
+        "frequency": 11,
+        "pct": 2.2
+      },
+      "confidence": 0.7,
+      "observations": 11,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion",
+          "content_type"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.pair.12",
+      "description": "Intelligence Artificielle + Standard",
+      "value": {
+        "keys": {
+          "primary_topic": "Intelligence Artificielle",
+          "content_type": "Standard"
+        },
+        "frequency": 10,
+        "pct": 2.0
+      },
+      "confidence": 0.7,
+      "observations": 10,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.13",
+      "description": "Cinéma & Séries + Standard",
+      "value": {
+        "keys": {
+          "primary_topic": "Cinéma & Séries",
+          "content_type": "Standard"
+        },
+        "frequency": 10,
+        "pct": 2.0
+      },
+      "confidence": 0.7,
+      "observations": 10,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.triple.137",
+      "description": "Intelligence Artificielle + Neutre + Standard",
+      "value": {
+        "keys": {
+          "primary_topic": "Intelligence Artificielle",
+          "emotion": "Neutre",
+          "content_type": "Standard"
+        },
+        "frequency": 10,
+        "pct": 2.0
+      },
+      "confidence": 0.7,
+      "observations": 10,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion",
+          "content_type"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.triple.138",
+      "description": "Business & Entrepreneuriat + Neutre + Standard",
+      "value": {
+        "keys": {
+          "primary_topic": "Business & Entrepreneuriat",
+          "emotion": "Neutre",
+          "content_type": "Standard"
+        },
+        "frequency": 10,
+        "pct": 2.0
+      },
+      "confidence": 0.7,
+      "observations": 10,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion",
+          "content_type"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.pair.14",
+      "description": "Intelligence Artificielle + Long",
+      "value": {
+        "keys": {
+          "primary_topic": "Intelligence Artificielle",
+          "content_type": "Long"
+        },
+        "frequency": 9,
+        "pct": 1.8
+      },
+      "confidence": 0.7,
+      "observations": 9,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.15",
+      "description": "Gaming & Esports + Actualité",
+      "value": {
+        "keys": {
+          "primary_topic": "Gaming & Esports",
+          "content_type": "Actualité"
+        },
+        "frequency": 9,
+        "pct": 1.8
+      },
+      "confidence": 0.7,
+      "observations": 9,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.61",
+      "description": "Finance & Investissement + Divertissant",
+      "value": {
+        "keys": {
+          "primary_topic": "Finance & Investissement",
+          "emotion": "Divertissant"
+        },
+        "frequency": 9,
+        "pct": 1.8
+      },
+      "confidence": 0.7,
+      "observations": 9,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.62",
+      "description": "Histoire & Culture + Inspirant",
+      "value": {
+        "keys": {
+          "primary_topic": "Histoire & Culture",
+          "emotion": "Inspirant"
+        },
+        "frequency": 9,
+        "pct": 1.8
+      },
+      "confidence": 0.7,
+      "observations": 9,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.88",
+      "description": "Long + Passionnés Tech",
+      "value": {
+        "keys": {
+          "content_type": "Long",
+          "target_audience": "Passionnés Tech"
+        },
+        "frequency": 9,
+        "pct": 1.8
+      },
+      "confidence": 0.7,
+      "observations": 9,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.triple.112",
+      "description": "Intelligence Artificielle + Standard + Passionnés Tech",
+      "value": {
+        "keys": {
+          "primary_topic": "Intelligence Artificielle",
+          "content_type": "Standard",
+          "target_audience": "Passionnés Tech"
+        },
+        "frequency": 9,
+        "pct": 1.8
+      },
+      "confidence": 0.7,
+      "observations": 9,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.pair.16",
+      "description": "Histoire & Culture + Long",
+      "value": {
+        "keys": {
+          "primary_topic": "Histoire & Culture",
+          "content_type": "Long"
+        },
+        "frequency": 8,
+        "pct": 1.6
+      },
+      "confidence": 0.7,
+      "observations": 8,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.36",
+      "description": "Intelligence Artificielle + Gamers",
+      "value": {
+        "keys": {
+          "primary_topic": "Intelligence Artificielle",
+          "target_audience": "Gamers"
+        },
+        "frequency": 8,
+        "pct": 1.6
+      },
+      "confidence": 0.7,
+      "observations": 8,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.63",
+      "description": "Intelligence Artificielle + Divertissant",
+      "value": {
+        "keys": {
+          "primary_topic": "Intelligence Artificielle",
+          "emotion": "Divertissant"
+        },
+        "frequency": 8,
+        "pct": 1.6
+      },
+      "confidence": 0.7,
+      "observations": 8,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.64",
+      "description": "Business & Entrepreneuriat + Sensationnel",
+      "value": {
+        "keys": {
+          "primary_topic": "Business & Entrepreneuriat",
+          "emotion": "Sensationnel"
+        },
+        "frequency": 8,
+        "pct": 1.6
+      },
+      "confidence": 0.7,
+      "observations": 8,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.89",
+      "description": "Actualité + Professionnels",
+      "value": {
+        "keys": {
+          "content_type": "Actualité",
+          "target_audience": "Professionnels"
+        },
+        "frequency": 8,
+        "pct": 1.6
+      },
+      "confidence": 0.7,
+      "observations": 8,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.90",
+      "description": "Actualité + Gamers",
+      "value": {
+        "keys": {
+          "content_type": "Actualité",
+          "target_audience": "Gamers"
+        },
+        "frequency": 8,
+        "pct": 1.6
+      },
+      "confidence": 0.7,
+      "observations": 8,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.triple.139",
+      "description": "Gaming & Esports + Neutre + Actualité",
+      "value": {
+        "keys": {
+          "primary_topic": "Gaming & Esports",
+          "emotion": "Neutre",
+          "content_type": "Actualité"
+        },
+        "frequency": 8,
+        "pct": 1.6
+      },
+      "confidence": 0.7,
+      "observations": 8,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion",
+          "content_type"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.triple.140",
+      "description": "Cinéma & Séries + Neutre + Standard",
+      "value": {
+        "keys": {
+          "primary_topic": "Cinéma & Séries",
+          "emotion": "Neutre",
+          "content_type": "Standard"
+        },
+        "frequency": 8,
+        "pct": 1.6
+      },
+      "confidence": 0.7,
+      "observations": 8,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion",
+          "content_type"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.pair.17",
+      "description": "Finance & Investissement + Standard",
+      "value": {
+        "keys": {
+          "primary_topic": "Finance & Investissement",
+          "content_type": "Standard"
+        },
+        "frequency": 7,
+        "pct": 1.4
+      },
+      "confidence": 0.7,
+      "observations": 7,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.18",
+      "description": "Cinéma & Séries + Actualité",
+      "value": {
+        "keys": {
+          "primary_topic": "Cinéma & Séries",
+          "content_type": "Actualité"
+        },
+        "frequency": 7,
+        "pct": 1.4
+      },
+      "confidence": 0.7,
+      "observations": 7,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.37",
+      "description": "Finance & Investissement + Professionnels",
+      "value": {
+        "keys": {
+          "primary_topic": "Finance & Investissement",
+          "target_audience": "Professionnels"
+        },
+        "frequency": 7,
+        "pct": 1.4
+      },
+      "confidence": 0.7,
+      "observations": 7,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.91",
+      "description": "Long + Curieux & Étudiants",
+      "value": {
+        "keys": {
+          "content_type": "Long",
+          "target_audience": "Curieux & Étudiants"
+        },
+        "frequency": 7,
+        "pct": 1.4
+      },
+      "confidence": 0.7,
+      "observations": 7,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.triple.141",
+      "description": "Finance & Investissement + Divertissant + Short",
+      "value": {
+        "keys": {
+          "primary_topic": "Finance & Investissement",
+          "emotion": "Divertissant",
+          "content_type": "Short"
+        },
+        "frequency": 7,
+        "pct": 1.4
+      },
+      "confidence": 0.7,
+      "observations": 7,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion",
+          "content_type"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.triple.142",
+      "description": "Cinéma & Séries + Neutre + Actualité",
+      "value": {
+        "keys": {
+          "primary_topic": "Cinéma & Séries",
+          "emotion": "Neutre",
+          "content_type": "Actualité"
+        },
+        "frequency": 7,
+        "pct": 1.4
+      },
+      "confidence": 0.7,
+      "observations": 7,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion",
+          "content_type"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.pair.19",
+      "description": "Fr + Standard",
+      "value": {
+        "keys": {
+          "primary_topic": "Fr",
+          "content_type": "Standard"
+        },
+        "frequency": 6,
+        "pct": 1.2
+      },
+      "confidence": 0.7,
+      "observations": 6,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.20",
+      "description": "Us + Long",
+      "value": {
+        "keys": {
+          "primary_topic": "Us",
+          "content_type": "Long"
+        },
+        "frequency": 6,
+        "pct": 1.2
+      },
+      "confidence": 0.7,
+      "observations": 6,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.65",
+      "description": "Finance & Investissement + Inspirant",
+      "value": {
+        "keys": {
+          "primary_topic": "Finance & Investissement",
+          "emotion": "Inspirant"
+        },
+        "frequency": 6,
+        "pct": 1.2
+      },
+      "confidence": 0.7,
+      "observations": 6,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.66",
+      "description": "Divertissement + Divertissant",
+      "value": {
+        "keys": {
+          "primary_topic": "Divertissement",
+          "emotion": "Divertissant"
+        },
+        "frequency": 6,
+        "pct": 1.2
+      },
+      "confidence": 0.7,
+      "observations": 6,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.92",
+      "description": "Actualité + Cinéphiles",
+      "value": {
+        "keys": {
+          "content_type": "Actualité",
+          "target_audience": "Cinéphiles"
+        },
+        "frequency": 6,
+        "pct": 1.2
+      },
+      "confidence": 0.7,
+      "observations": 6,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.triple.113",
+      "description": "Intelligence Artificielle + Long + Passionnés Tech",
+      "value": {
+        "keys": {
+          "primary_topic": "Intelligence Artificielle",
+          "content_type": "Long",
+          "target_audience": "Passionnés Tech"
+        },
+        "frequency": 6,
+        "pct": 1.2
+      },
+      "confidence": 0.7,
+      "observations": 6,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.triple.114",
+      "description": "Cinéma & Séries + Standard + Cinéphiles",
+      "value": {
+        "keys": {
+          "primary_topic": "Cinéma & Séries",
+          "content_type": "Standard",
+          "target_audience": "Cinéphiles"
+        },
+        "frequency": 6,
+        "pct": 1.2
+      },
+      "confidence": 0.7,
+      "observations": 6,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.triple.115",
+      "description": "Fr + Standard + Grand public",
+      "value": {
+        "keys": {
+          "primary_topic": "Fr",
+          "content_type": "Standard",
+          "target_audience": "Grand public"
+        },
+        "frequency": 6,
+        "pct": 1.2
+      },
+      "confidence": 0.7,
+      "observations": 6,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.triple.116",
+      "description": "Cinéma & Séries + Actualité + Cinéphiles",
+      "value": {
+        "keys": {
+          "primary_topic": "Cinéma & Séries",
+          "content_type": "Actualité",
+          "target_audience": "Cinéphiles"
+        },
+        "frequency": 6,
+        "pct": 1.2
+      },
+      "confidence": 0.7,
+      "observations": 6,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.triple.117",
+      "description": "Us + Long + Grand public",
+      "value": {
+        "keys": {
+          "primary_topic": "Us",
+          "content_type": "Long",
+          "target_audience": "Grand public"
+        },
+        "frequency": 6,
+        "pct": 1.2
+      },
+      "confidence": 0.7,
+      "observations": 6,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.triple.143",
+      "description": "Histoire & Culture + Nostalgique + Long",
+      "value": {
+        "keys": {
+          "primary_topic": "Histoire & Culture",
+          "emotion": "Nostalgique",
+          "content_type": "Long"
+        },
+        "frequency": 6,
+        "pct": 1.2
+      },
+      "confidence": 0.7,
+      "observations": 6,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion",
+          "content_type"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.triple.144",
+      "description": "Fr + Neutre + Standard",
+      "value": {
+        "keys": {
+          "primary_topic": "Fr",
+          "emotion": "Neutre",
+          "content_type": "Standard"
+        },
+        "frequency": 6,
+        "pct": 1.2
+      },
+      "confidence": 0.7,
+      "observations": 6,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion",
+          "content_type"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.triple.145",
+      "description": "Us + Neutre + Long",
+      "value": {
+        "keys": {
+          "primary_topic": "Us",
+          "emotion": "Neutre",
+          "content_type": "Long"
+        },
+        "frequency": 6,
+        "pct": 1.2
+      },
+      "confidence": 0.7,
+      "observations": 6,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion",
+          "content_type"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.pair.21",
+      "description": "Business & Entrepreneuriat + Actualité",
+      "value": {
+        "keys": {
+          "primary_topic": "Business & Entrepreneuriat",
+          "content_type": "Actualité"
+        },
+        "frequency": 5,
+        "pct": 1.0
+      },
+      "confidence": 0.7,
+      "observations": 5,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.22",
+      "description": "Cinéma & Séries + Long",
+      "value": {
+        "keys": {
+          "primary_topic": "Cinéma & Séries",
+          "content_type": "Long"
+        },
+        "frequency": 5,
+        "pct": 1.0
+      },
+      "confidence": 0.7,
+      "observations": 5,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.23",
+      "description": "Divertissement + Divertissement",
+      "value": {
+        "keys": {
+          "primary_topic": "Divertissement",
+          "content_type": "Divertissement"
+        },
+        "frequency": 5,
+        "pct": 1.0
+      },
+      "confidence": 0.7,
+      "observations": 5,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.24",
+      "description": "Finance & Investissement + Tutorial",
+      "value": {
+        "keys": {
+          "primary_topic": "Finance & Investissement",
+          "content_type": "Tutorial"
+        },
+        "frequency": 5,
+        "pct": 1.0
+      },
+      "confidence": 0.7,
+      "observations": 5,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.38",
+      "description": "Cinéma & Séries + Grand public",
+      "value": {
+        "keys": {
+          "primary_topic": "Cinéma & Séries",
+          "target_audience": "Grand public"
+        },
+        "frequency": 5,
+        "pct": 1.0
+      },
+      "confidence": 0.7,
+      "observations": 5,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.39",
+      "description": "Musique & Clips + Cinéphiles",
+      "value": {
+        "keys": {
+          "primary_topic": "Musique & Clips",
+          "target_audience": "Cinéphiles"
+        },
+        "frequency": 5,
+        "pct": 1.0
+      },
+      "confidence": 0.7,
+      "observations": 5,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.67",
+      "description": "Divertissement + Neutre",
+      "value": {
+        "keys": {
+          "primary_topic": "Divertissement",
+          "emotion": "Neutre"
+        },
+        "frequency": 5,
+        "pct": 1.0
+      },
+      "confidence": 0.7,
+      "observations": 5,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.68",
+      "description": "Finance & Investissement + Éducatif",
+      "value": {
+        "keys": {
+          "primary_topic": "Finance & Investissement",
+          "emotion": "Éducatif"
+        },
+        "frequency": 5,
+        "pct": 1.0
+      },
+      "confidence": 0.7,
+      "observations": 5,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.69",
+      "description": "Gaming & Esports + Sensationnel",
+      "value": {
+        "keys": {
+          "primary_topic": "Gaming & Esports",
+          "emotion": "Sensationnel"
+        },
+        "frequency": 5,
+        "pct": 1.0
+      },
+      "confidence": 0.7,
+      "observations": 5,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.70",
+      "description": "Sports + Neutre",
+      "value": {
+        "keys": {
+          "primary_topic": "Sports",
+          "emotion": "Neutre"
+        },
+        "frequency": 5,
+        "pct": 1.0
+      },
+      "confidence": 0.7,
+      "observations": 5,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.93",
+      "description": "Long + Cinéphiles",
+      "value": {
+        "keys": {
+          "content_type": "Long",
+          "target_audience": "Cinéphiles"
+        },
+        "frequency": 5,
+        "pct": 1.0
+      },
+      "confidence": 0.7,
+      "observations": 5,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.94",
+      "description": "Tutorial + Grand public",
+      "value": {
+        "keys": {
+          "content_type": "Tutorial",
+          "target_audience": "Grand public"
+        },
+        "frequency": 5,
+        "pct": 1.0
+      },
+      "confidence": 0.7,
+      "observations": 5,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.95",
+      "description": "Analyse + Curieux & Étudiants",
+      "value": {
+        "keys": {
+          "content_type": "Analyse",
+          "target_audience": "Curieux & Étudiants"
+        },
+        "frequency": 5,
+        "pct": 1.0
+      },
+      "confidence": 0.7,
+      "observations": 5,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.triple.118",
+      "description": "Business & Entrepreneuriat + Actualité + Professionnels",
+      "value": {
+        "keys": {
+          "primary_topic": "Business & Entrepreneuriat",
+          "content_type": "Actualité",
+          "target_audience": "Professionnels"
+        },
+        "frequency": 5,
+        "pct": 1.0
+      },
+      "confidence": 0.7,
+      "observations": 5,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.triple.119",
+      "description": "Finance & Investissement + Standard + Grand public",
+      "value": {
+        "keys": {
+          "primary_topic": "Finance & Investissement",
+          "content_type": "Standard",
+          "target_audience": "Grand public"
+        },
+        "frequency": 5,
+        "pct": 1.0
+      },
+      "confidence": 0.7,
+      "observations": 5,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.triple.120",
+      "description": "Histoire & Culture + Long + Curieux & Étudiants",
+      "value": {
+        "keys": {
+          "primary_topic": "Histoire & Culture",
+          "content_type": "Long",
+          "target_audience": "Curieux & Étudiants"
+        },
+        "frequency": 5,
+        "pct": 1.0
+      },
+      "confidence": 0.7,
+      "observations": 5,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.triple.121",
+      "description": "Gaming & Esports + Actualité + Gamers",
+      "value": {
+        "keys": {
+          "primary_topic": "Gaming & Esports",
+          "content_type": "Actualité",
+          "target_audience": "Gamers"
+        },
+        "frequency": 5,
+        "pct": 1.0
+      },
+      "confidence": 0.7,
+      "observations": 5,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.triple.122",
+      "description": "Histoire & Culture + Analyse + Curieux & Étudiants",
+      "value": {
+        "keys": {
+          "primary_topic": "Histoire & Culture",
+          "content_type": "Analyse",
+          "target_audience": "Curieux & Étudiants"
+        },
+        "frequency": 5,
+        "pct": 1.0
+      },
+      "confidence": 0.7,
+      "observations": 5,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.triple.123",
+      "description": "Musique & Clips + Actualité + Grand public",
+      "value": {
+        "keys": {
+          "primary_topic": "Musique & Clips",
+          "content_type": "Actualité",
+          "target_audience": "Grand public"
+        },
+        "frequency": 5,
+        "pct": 1.0
+      },
+      "confidence": 0.7,
+      "observations": 5,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.triple.124",
+      "description": "Musique & Clips + Standard + Cinéphiles",
+      "value": {
+        "keys": {
+          "primary_topic": "Musique & Clips",
+          "content_type": "Standard",
+          "target_audience": "Cinéphiles"
+        },
+        "frequency": 5,
+        "pct": 1.0
+      },
+      "confidence": 0.7,
+      "observations": 5,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.triple.146",
+      "description": "Intelligence Artificielle + Neutre + Long",
+      "value": {
+        "keys": {
+          "primary_topic": "Intelligence Artificielle",
+          "emotion": "Neutre",
+          "content_type": "Long"
+        },
+        "frequency": 5,
+        "pct": 1.0
+      },
+      "confidence": 0.7,
+      "observations": 5,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion",
+          "content_type"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.triple.147",
+      "description": "Business & Entrepreneuriat + Sensationnel + Short",
+      "value": {
+        "keys": {
+          "primary_topic": "Business & Entrepreneuriat",
+          "emotion": "Sensationnel",
+          "content_type": "Short"
+        },
+        "frequency": 5,
+        "pct": 1.0
+      },
+      "confidence": 0.7,
+      "observations": 5,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion",
+          "content_type"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.triple.148",
+      "description": "Finance & Investissement + Neutre + Standard",
+      "value": {
+        "keys": {
+          "primary_topic": "Finance & Investissement",
+          "emotion": "Neutre",
+          "content_type": "Standard"
+        },
+        "frequency": 5,
+        "pct": 1.0
+      },
+      "confidence": 0.7,
+      "observations": 5,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion",
+          "content_type"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.triple.149",
+      "description": "Histoire & Culture + Inspirant + Short",
+      "value": {
+        "keys": {
+          "primary_topic": "Histoire & Culture",
+          "emotion": "Inspirant",
+          "content_type": "Short"
+        },
+        "frequency": 5,
+        "pct": 1.0
+      },
+      "confidence": 0.7,
+      "observations": 5,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion",
+          "content_type"
+        ],
+        "scope": "triple"
+      }
+    },
+    {
+      "name": "combination.pair.40",
+      "description": "Divertissement + Grand public",
+      "value": {
+        "keys": {
+          "primary_topic": "Divertissement",
+          "target_audience": "Grand public"
+        },
+        "frequency": 4,
+        "pct": 0.8
+      },
+      "confidence": 0.7,
+      "observations": 4,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.41",
+      "description": "Finance & Investissement + Curieux & Étudiants",
+      "value": {
+        "keys": {
+          "primary_topic": "Finance & Investissement",
+          "target_audience": "Curieux & Étudiants"
+        },
+        "frequency": 4,
+        "pct": 0.8
+      },
+      "confidence": 0.7,
+      "observations": 4,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.42",
+      "description": "Histoire & Culture + Gamers",
+      "value": {
+        "keys": {
+          "primary_topic": "Histoire & Culture",
+          "target_audience": "Gamers"
+        },
+        "frequency": 4,
+        "pct": 0.8
+      },
+      "confidence": 0.7,
+      "observations": 4,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.43",
+      "description": "Sports + Grand public",
+      "value": {
+        "keys": {
+          "primary_topic": "Sports",
+          "target_audience": "Grand public"
+        },
+        "frequency": 4,
+        "pct": 0.8
+      },
+      "confidence": 0.7,
+      "observations": 4,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.71",
+      "description": "Intelligence Artificielle + Nostalgique",
+      "value": {
+        "keys": {
+          "primary_topic": "Intelligence Artificielle",
+          "emotion": "Nostalgique"
+        },
+        "frequency": 4,
+        "pct": 0.8
+      },
+      "confidence": 0.7,
+      "observations": 4,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.72",
+      "description": "Technologie + Divertissant",
+      "value": {
+        "keys": {
+          "primary_topic": "Technologie",
+          "emotion": "Divertissant"
+        },
+        "frequency": 4,
+        "pct": 0.8
+      },
+      "confidence": 0.7,
+      "observations": 4,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.73",
+      "description": "Technologie + Éducatif",
+      "value": {
+        "keys": {
+          "primary_topic": "Technologie",
+          "emotion": "Éducatif"
+        },
+        "frequency": 4,
+        "pct": 0.8
+      },
+      "confidence": 0.7,
+      "observations": 4,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.74",
+      "description": "Intelligence Artificielle + Éducatif",
+      "value": {
+        "keys": {
+          "primary_topic": "Intelligence Artificielle",
+          "emotion": "Éducatif"
+        },
+        "frequency": 4,
+        "pct": 0.8
+      },
+      "confidence": 0.7,
+      "observations": 4,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "emotion"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.96",
+      "description": "Actualité + Passionnés Tech",
+      "value": {
+        "keys": {
+          "content_type": "Actualité",
+          "target_audience": "Passionnés Tech"
+        },
+        "frequency": 4,
+        "pct": 0.8
+      },
+      "confidence": 0.7,
+      "observations": 4,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.97",
+      "description": "Divertissement + Grand public",
+      "value": {
+        "keys": {
+          "content_type": "Divertissement",
+          "target_audience": "Grand public"
+        },
+        "frequency": 4,
+        "pct": 0.8
+      },
+      "confidence": 0.7,
+      "observations": 4,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.98",
+      "description": "Divertissement + Gamers",
+      "value": {
+        "keys": {
+          "content_type": "Divertissement",
+          "target_audience": "Gamers"
+        },
+        "frequency": 4,
+        "pct": 0.8
+      },
+      "confidence": 0.7,
+      "observations": 4,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.99",
+      "description": "Short + Cinéphiles",
+      "value": {
+        "keys": {
+          "content_type": "Short",
+          "target_audience": "Cinéphiles"
+        },
+        "frequency": 4,
+        "pct": 0.8
+      },
+      "confidence": 0.7,
+      "observations": 4,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "content_type",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.44",
+      "description": "Intelligence Artificielle + Professionnels",
+      "value": {
+        "keys": {
+          "primary_topic": "Intelligence Artificielle",
+          "target_audience": "Professionnels"
+        },
+        "frequency": 3,
+        "pct": 0.6
+      },
+      "confidence": 0.7,
+      "observations": 3,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.45",
+      "description": "Technologie + Professionnels",
+      "value": {
+        "keys": {
+          "primary_topic": "Technologie",
+          "target_audience": "Professionnels"
+        },
+        "frequency": 3,
+        "pct": 0.6
+      },
+      "confidence": 0.7,
+      "observations": 3,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.46",
+      "description": "Divertissement + Cinéphiles",
+      "value": {
+        "keys": {
+          "primary_topic": "Divertissement",
+          "target_audience": "Cinéphiles"
+        },
+        "frequency": 3,
+        "pct": 0.6
+      },
+      "confidence": 0.7,
+      "observations": 3,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.47",
+      "description": "Sports + Curieux & Étudiants",
+      "value": {
+        "keys": {
+          "primary_topic": "Sports",
+          "target_audience": "Curieux & Étudiants"
+        },
+        "frequency": 3,
+        "pct": 0.6
+      },
+      "confidence": 0.7,
+      "observations": 3,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.48",
+      "description": "Divertissement + Professionnels",
+      "value": {
+        "keys": {
+          "primary_topic": "Divertissement",
+          "target_audience": "Professionnels"
+        },
+        "frequency": 2,
+        "pct": 0.4
+      },
+      "confidence": 0.7,
+      "observations": 2,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    },
+    {
+      "name": "combination.pair.49",
+      "description": "Sports + Passionnés Tech",
+      "value": {
+        "keys": {
+          "primary_topic": "Sports",
+          "target_audience": "Passionnés Tech"
+        },
+        "frequency": 2,
+        "pct": 0.4
+      },
+      "confidence": 0.7,
+      "observations": 2,
+      "updated_at": "2026-07-10T02:49:40.157073+00:00",
+      "metadata": {
+        "dimensions": [
+          "primary_topic",
+          "target_audience"
+        ],
+        "scope": "pair"
+      }
+    }
+  ]
+}

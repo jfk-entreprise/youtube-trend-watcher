@@ -1,0 +1,188 @@
+{
+  "1": {
+    "shot_type": "Close-Up",
+    "camera_angle": "Low Angle",
+    "lens": "35mm",
+    "composition": "Rule of Thirds",
+    "depth_of_field": "shallow depth of field, background slightly soft",
+    "lighting_style": "Hard Directional Lighting",
+    "color_palette": "Muted Earth Tones + Deep Red",
+    "focal_point": "Affiche de film en feu",
+    "visual_priority": [
+      "Affiche en feu",
+      "Pile de billets brûlée",
+      "Kubrick en arrière-plan"
+    ],
+    "thumbnail_moment": "La flamme enveloppe l'affiche d'Ulysse, billets calcinés au premier plan",
+    "cinematic_goal": "Symboliser l'ambition brisée et le refus des studios, avec une tension visuelle forte",
+    "metadata": {
+      "provider": "deepseek",
+      "model": "deepseek-v4-flash",
+      "time_ms": 2529,
+      "cost_usd": 0.000916
+    }
+  },
+  "2": {
+    "shot_type": "Wide Shot",
+    "camera_angle": "Low Angle",
+    "lens": "24mm",
+    "composition": "Symmetry",
+    "depth_of_field": "Deep focus, sharp from foreground to background",
+    "lighting_style": "Hard Directional Lighting",
+    "color_palette": "Deep Blue + Gold",
+    "focal_point": "Spaceship",
+    "visual_priority": [
+      "Spaceship",
+      "Greek columns",
+      "Stars"
+    ],
+    "thumbnail_moment": "Spaceship floating majestically with Greek columns in background, illuminated by a single light source",
+    "cinematic_goal": "Evoke awe and transformation, bridging ancient myth and futuristic vision",
+    "metadata": {
+      "provider": "deepseek",
+      "model": "deepseek-v4-flash",
+      "time_ms": 2013,
+      "cost_usd": 0.000877
+    }
+  },
+  "3": {
+    "shot_type": "Montage rapide",
+    "camera_angle": "Eye Level",
+    "lens": "35mm",
+    "composition": "Center Composition",
+    "depth_of_field": "Profondeur de champ modérée, arrière-plan légèrement flou",
+    "lighting_style": "Soft Diffused Lighting",
+    "color_palette": "Deep Blue + White",
+    "focal_point": "Monolithe",
+    "visual_priority": [
+      "Monolithe",
+      "HAL 9000",
+      "Passage dimensionnel"
+    ],
+    "thumbnail_moment": "Le monolithe noir se dresse verticalement au centre, éclairé par une lumière mystérieuse, créant un contraste saisissant avec l'obscurité environnante.",
+    "cinematic_goal": "Capturer l'essence révolutionnaire de 2001 en un montage dynamique, avec un focus sur le monolithe comme symbole de mystère et de transformation.",
+    "metadata": {
+      "provider": "deepseek",
+      "model": "deepseek-v4-flash",
+      "time_ms": 2576,
+      "cost_usd": 0.000953
+    }
+  },
+  "4": {
+    "shot_type": "Split Screen",
+    "camera_angle": "Eye Level",
+    "lens": "35mm",
+    "composition": "Symmetry",
+    "depth_of_field": "Deep focus, both sides sharp",
+    "lighting_style": "Soft Diffused Lighting",
+    "color_palette": "Warm Paper + Cool Blue",
+    "focal_point": "Script page on left",
+    "visual_priority": [
+      "Script page",
+      "Storyboard page",
+      "Split screen divider"
+    ],
+    "thumbnail_moment": "Both documents perfectly aligned side by side, script and storyboard mirroring each other",
+    "cinematic_goal": "Emphasize the parallel between the unmade original and the made masterpiece, showing how the myth survived through transformation",
+    "metadata": {
+      "provider": "deepseek",
+      "model": "deepseek-v4-flash",
+      "time_ms": 2338,
+      "cost_usd": 0.000907
+    }
+  },
+  "5": {
+    "shot_type": "Wide Shot",
+    "camera_angle": "Low Angle",
+    "lens": "24mm",
+    "composition": "Center Composition",
+    "depth_of_field": "Deep focus, sharp from foreground to infinity",
+    "lighting_style": "Hard Directional Lighting",
+    "color_palette": "Deep Blue + Gold",
+    "focal_point": "Endurance spacecraft",
+    "visual_priority": [
+      "Endurance spacecraft",
+      "Black hole",
+      "Stars"
+    ],
+    "thumbnail_moment": "Endurance silhouetted against the glowing accretion disk of the black hole",
+    "cinematic_goal": "Emphasize the awe and scale of the black hole, mirroring the original Interstellar shot while maintaining continuity with previous sci-fi scenes.",
+    "metadata": {
+      "provider": "deepseek",
+      "model": "deepseek-v4-flash",
+      "time_ms": 2214,
+      "cost_usd": 0.000916
+    }
+  },
+  "6": {
+    "shot_type": "Wide Shot",
+    "camera_angle": "Eye Level",
+    "lens": "35mm",
+    "composition": "Symmetry",
+    "depth_of_field": "Deep depth of field, both elements in sharp focus",
+    "lighting_style": "Soft Diffused Lighting",
+    "color_palette": "Warm Paper + Cool Black",
+    "focal_point": "Monolith",
+    "visual_priority": [
+      "Monolith",
+      "Greek Temple",
+      "Correspondence lines"
+    ],
+    "thumbnail_moment": "The moment where the monolith and the temple pillars align perfectly, with luminous lines connecting their proportions",
+    "cinematic_goal": "Reveal the visual and symbolic continuity between ancient architecture and modern sci-fi iconography, emphasizing the reinterpretation theme",
+    "metadata": {
+      "provider": "deepseek",
+      "model": "deepseek-v4-flash",
+      "time_ms": 2321,
+      "cost_usd": 0.000938
+    }
+  },
+  "7": {
+    "shot_type": "Wide Shot",
+    "camera_angle": "Low Angle",
+    "lens": "24mm",
+    "composition": "Leading Lines",
+    "depth_of_field": "deep focus, foreground to background sharp",
+    "lighting_style": "Hard Directional Lighting",
+    "color_palette": "Warm Gold + Deep Blue",
+    "focal_point": "Spice harvester",
+    "visual_priority": [
+      "Spice harvester",
+      "Sand dunes with Greek patterns",
+      "Starship descending"
+    ],
+    "thumbnail_moment": "Spice harvester emerging from sand clouds, starship silhouette in background",
+    "cinematic_goal": "Convey the epic scale and mythic resonance of Villeneuve's Dune through low-angle grandeur and desert geometry",
+    "metadata": {
+      "provider": "deepseek",
+      "model": "deepseek-v4-flash",
+      "time_ms": 2523,
+      "cost_usd": 0.000944
+    }
+  },
+  "8": {
+    "shot_type": "Montage",
+    "camera_angle": "Eye Level",
+    "lens": "35mm",
+    "composition": "Center Composition",
+    "depth_of_field": "Deep focus for montage clarity",
+    "lighting_style": "Soft Diffused Lighting",
+    "color_palette": "Muted Earth Tones + Cool Blue",
+    "focal_point": "Homer's face in superimposition",
+    "visual_priority": [
+      "Homer's face",
+      "2001: A Space Odyssey",
+      "Interstellar",
+      "Dune",
+      "Blade Runner"
+    ],
+    "thumbnail_moment": "Homer's translucent face overlapping all four films simultaneously",
+    "cinematic_goal": "Show the ghostly presence of The Odyssey haunting all sci-fi films, unifying them in a single layered image",
+    "metadata": {
+      "provider": "deepseek",
+      "model": "deepseek-v4-flash",
+      "time_ms": 2321,
+      "cost_usd": 0.000966
+    }
+  }
+}

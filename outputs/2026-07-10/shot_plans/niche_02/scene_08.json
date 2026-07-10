@@ -1,0 +1,23 @@
+{
+  "shot_type": "Close-Up",
+  "camera_angle": "Eye Level",
+  "lens": "50mm",
+  "composition": "Center Composition",
+  "depth_of_field": "Deep focus, entire pie chart sharp",
+  "lighting_style": "Neon",
+  "color_palette": "Blue Electric + Violet + Lime Green",
+  "focal_point": "Pie chart 80% green segment",
+  "visual_priority": [
+    "Pie chart 80% green",
+    "Remaining 20% red",
+    "Glowing outline"
+  ],
+  "thumbnail_moment": "Pie chart snaps to 80% green, neon glow intensifies",
+  "cinematic_goal": "Visualize the triumphant result with clarity and impact, reinforcing the 80% reduction as a concrete, glowing achievement.",
+  "metadata": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "time_ms": 2473,
+    "cost_usd": 0.000962
+  }
+}

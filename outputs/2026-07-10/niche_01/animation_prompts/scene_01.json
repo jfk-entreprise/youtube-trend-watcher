@@ -1,0 +1,20 @@
+{
+  "camera_motion": "Static, très léger micro-tremblement pour suggérer l'incertitude.",
+  "subject_motion": "Le billet se consume lentement d'un coin, les cendres tombent.",
+  "environment_motion": "L'affiche tremble légèrement, comme sous l'effet d'un souffle chaud.",
+  "lighting_changes": "La lumière vacille doucement, comme une flamme, puis s'assombrit légèrement.",
+  "effects": "Particules de cendre fines, fumée légère s'élevant du billet.",
+  "sound_design": "Crépitement très doux de papier qui brûle, puis silence pesant.",
+  "transition": "Cut to black progressif après la dernière cendre.",
+  "duration": 5,
+  "prompt": "A close-up shot of a paper ticket resting on a dark surface, with a typed text 'ULYSSE 1960' visible. The ticket begins to smolder at one corner, slowly catching fire. Flames creep across the paper, turning it to ash. Fine ash particles float upward, accompanied by thin wisps of smoke. The lighting flickers slightly, mimicking the fire's glow. The composition follows the rule of thirds, with the ticket centered. Hard directional lighting from the side creates deep shadows. The background is a muted, dark tone. Cinematic, high detail, 9:16 aspect ratio.",
+  "metadata": {
+    "goal": "Montrer l'échec du projet d'Ulysse par la destruction symbolique du billet.",
+    "emotion": "Déception, frustration, renoncement.",
+    "pace": "Lent, avec une accélération finale lors de la combustion.",
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "time_ms": 4895,
+    "cost_usd": 0.0011
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "subject": "",
+  "scene_description": "Center Composition. Neon. Style: cinematic, professional photography, high detail. Color palette: Blue Electric + Violet + Transparent White. Aspect ratio: 9:16 (720x1280).",
+  "style": "Fond noir profond, lignes lumineuses animées, ambiance néon — bleu électrique et violet, futuriste mais accessible",
+  "prompt": "",
+  "negative_prompt": "blurry, low quality, distorted, ugly, deformed, bad anatomy",
+  "metadata": {
+    "goal": "",
+    "emotion": "",
+    "characters": [],
+    "provider": "heuristic_image_v1",
+    "model": "",
+    "time_ms": 0,
+    "cost_usd": 0.0,
+    "fallback_reason": "validation_failed"
+  }
+}

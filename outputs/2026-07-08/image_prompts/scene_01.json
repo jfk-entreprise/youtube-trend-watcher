@@ -1,0 +1,19 @@
+{
+  "subject": "Le visage du joueur humain en gros plan, bouche bée de stupéfaction",
+  "scene_description": "Split screen vertical. À gauche, vue à la première personne dans Minecraft : un paysage en blocs (herbe, arbres cubiques, ciel pixelisé). Le joueur humain (invisible depuis cette vue) est attaqué par Aegis, dont les mouvements sont saccadés et mécaniques, épée levée. À droite, un gros plan du visage du joueur humain. Fond neutre légèrement flou, éclairé par la lumière bleutée de l'écran. L'expression est figée, bouche ouverte, yeux fixant l'écran avec incrédulité. La composition suit la règle des tiers. L'ambiance est tendue, avec un léger contre-jour de l'écran. Couleurs dominantes : bleus profonds (fond écran) et teintes chair sur le visage. L'image capte le moment de défaite et de révélation.",
+  "style": "Cinématographique, photoréaliste, HDR, 8K, ratio vertical 9:16. Éclairage naturel diffus, textures réalistes sur le visage. Légère aberration chromatique pour un rendu immersif. Ambiance néon futuriste (bleu électrique, violet) en accord avec l'identité de marque IA FR, photorealistic, cinematic photography.",
+  "prompt": "Generate an image where a human player is being dominated in a Minecraft PvP match, shown as a vertical split screen: on the left, first-person Minecraft view with an AI opponent (robotic movements) attacking the player; on the right, a close-up of the player's face with mouth agape and wide eyes, expressing shock and awe. The player is seated in front of a computer screen, the blue light illuminating his face.",
+  "negative_prompt": "Cartoon, illustration, 3D render, low quality, blurry, overexposed, anime style, unrealistic textures, no split screen effect, missing Minecraft elements, flat lighting., watermark, logo, signature, deformed, distorted anatomy, extra limbs, low resolution, painting, oversaturated colors, horizontal crop, incorrect aspect ratio, plastic skin, jpeg artifacts",
+  "metadata": {
+    "goal": "Montrer la domination de l'IA sur le joueur humain et la réaction de choc de ce dernier, menant à sa décision de devenir l'élève de l'IA.",
+    "emotion": "Choc, humilité, admiration mêlée de détermination",
+    "characters": [
+      "Le joueur humain : jeune homme d'une vingtaine d'années, visage expressif, bouche ouverte, yeux écarquillés de surprise, sourcils levés. Cheveux bruns en désordre, t-shirt blanc décontracté. Assis devant un écran d'ordinateur, mains positionnées sur le clavier.",
+      "Aegis (avatar Minecraft) : personnage Minecraft au skin sombre (noir et violet), mouvements saccadés et mécaniques, tenant une épée en diamant. Présence robotique et intimidante."
+    ],
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "time_ms": 17283,
+    "cost_usd": 0.003786
+  }
+}

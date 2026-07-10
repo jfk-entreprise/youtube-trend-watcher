@@ -1,0 +1,305 @@
+{
+  "niches_candidates": [
+    {
+      "name": "US",
+      "volume": 84,
+      "avg_views": 359460.2738095238,
+      "avg_engagement": 5.857557904400522,
+      "avg_growth_speed": 10122.330186888836,
+      "niche_score": 26.628048741116874
+    },
+    {
+      "name": "FR",
+      "volume": 79,
+      "avg_views": 224351.20253164557,
+      "avg_engagement": 5.962470015207258,
+      "avg_growth_speed": 7416.75489959096,
+      "niche_score": 25.52579865751939
+    },
+    {
+      "name": "IA",
+      "volume": 69,
+      "avg_views": 9324.463768115942,
+      "avg_engagement": 4.872223395878644,
+      "avg_growth_speed": 858.5412728931807,
+      "niche_score": 18.00697912889401
+    },
+    {
+      "name": "Business",
+      "volume": 85,
+      "avg_views": 3958.9764705882353,
+      "avg_engagement": 2.4166707638613967,
+      "avg_growth_speed": 651.9904818386312,
+      "niche_score": 16.514961965867627
+    },
+    {
+      "name": "Histoire",
+      "volume": 61,
+      "avg_views": 7714.606557377049,
+      "avg_engagement": 8.654456706882007,
+      "avg_growth_speed": 356.83544110353444,
+      "niche_score": 16.29699710784122
+    },
+    {
+      "name": "Technologie",
+      "volume": 56,
+      "avg_views": 3276.25,
+      "avg_engagement": 4.648057345303355,
+      "avg_growth_speed": 111.01472810446651,
+      "niche_score": 12.968908391497058
+    },
+    {
+      "name": "Argent",
+      "volume": 69,
+      "avg_views": 1374.072463768116,
+      "avg_engagement": 8.13318376803674,
+      "avg_growth_speed": 127.51529750628463,
+      "niche_score": 12.957208454646164
+    }
+  ],
+  "niches_selected": [
+    {
+      "name": "US",
+      "volume": 84,
+      "avg_views": 359460.2738095238,
+      "avg_engagement": 5.857557904400522,
+      "avg_growth_speed": 10122.330186888836,
+      "niche_score": 26.628048741116874
+    },
+    {
+      "name": "FR",
+      "volume": 79,
+      "avg_views": 224351.20253164557,
+      "avg_engagement": 5.962470015207258,
+      "avg_growth_speed": 7416.75489959096,
+      "niche_score": 25.52579865751939
+    }
+  ],
+  "opportunities_by_niche": {
+    "US": [
+      {
+        "title": "We Played Zombies in The Backrooms",
+        "niche": "Gaming & Esports",
+        "source_video_id": "_xNSHS1Hz9o",
+        "overall_score": 0.7487,
+        "virality_score": 0.8568,
+        "growth_score": 1.0,
+        "evergreen_score": 0.7,
+        "trend_score": 0.926,
+        "competition_score": 0.3531,
+        "production_difficulty": 0.35,
+        "urgency": 0.963,
+        "recommendation": "Produire aujourd'hui — tendance active et croissance mesurée.",
+        "rationale": [
+          "Potentiel viral élevé (score composite 0.86)",
+          "Croissance mesurée : 61,841 vues/heure entre snapshots",
+          "Sujet pérenne — audience durable garantie (evergreen 0.70)",
+          "En tendance active (trend 0.93)",
+          "Niche 'Gaming & Esports' : 37 vidéos (7.4% du corpus) — trend moyen 0.80"
+        ],
+        "metadata": {
+          "raw_scores": {
+            "virality": 0.8568,
+            "growth": 1.0,
+            "evergreen": 0.7,
+            "trend": 0.926,
+            "competition": 0.3531,
+            "difficulty": 0.35,
+            "knowledge": 0.0
+          },
+          "base_score": 0.7529,
+          "content_type": "Gameplay",
+          "language": "en",
+          "target_audience": "Gamers",
+          "emotion": "Neutre"
+        }
+      },
+      {
+        "title": "I Got Trained By a Minecraft Combat Master",
+        "niche": "Gaming & Esports",
+        "source_video_id": "yBy5NnLTiWQ",
+        "overall_score": 0.7304,
+        "virality_score": 0.8942,
+        "growth_score": 1.0,
+        "evergreen_score": 0.7,
+        "trend_score": 0.926,
+        "competition_score": 0.3531,
+        "production_difficulty": 0.75,
+        "urgency": 0.963,
+        "recommendation": "Produire aujourd'hui — tendance active et croissance mesurée. Production exigeante — prévoir les ressources adaptées.",
+        "rationale": [
+          "Potentiel viral élevé (score composite 0.89)",
+          "Croissance mesurée : 64,160 vues/heure entre snapshots",
+          "Sujet pérenne — audience durable garantie (evergreen 0.70)",
+          "En tendance active (trend 0.93)",
+          "Niche 'Gaming & Esports' : 37 vidéos (7.4% du corpus) — trend moyen 0.80"
+        ],
+        "metadata": {
+          "raw_scores": {
+            "virality": 0.8942,
+            "growth": 1.0,
+            "evergreen": 0.7,
+            "trend": 0.926,
+            "competition": 0.3531,
+            "difficulty": 0.75,
+            "knowledge": 0.0
+          },
+          "base_score": 0.7344,
+          "content_type": "Long",
+          "language": "en",
+          "target_audience": "Gamers",
+          "emotion": "Neutre"
+        }
+      },
+      {
+        "title": "The Odyssey | Official Countdown Trailer",
+        "niche": "Cinéma & Séries",
+        "source_video_id": "AyIZ9tiiN8I",
+        "overall_score": 0.7192,
+        "virality_score": 0.8518,
+        "growth_score": 0.9358,
+        "evergreen_score": 0.6,
+        "trend_score": 0.9,
+        "competition_score": 0.2777,
+        "production_difficulty": 0.45,
+        "urgency": 0.9275,
+        "recommendation": "Produire aujourd'hui — tendance active et croissance mesurée.",
+        "rationale": [
+          "Potentiel viral élevé (score composite 0.85)",
+          "Croissance mesurée : 24,957 vues/heure entre snapshots",
+          "En tendance active (trend 0.90)",
+          "Niche 'Cinéma & Séries' : 29 vidéos (5.8% du corpus) — trend moyen 0.82"
+        ],
+        "metadata": {
+          "raw_scores": {
+            "virality": 0.8518,
+            "growth": 0.9358,
+            "evergreen": 0.6,
+            "trend": 0.9,
+            "competition": 0.2777,
+            "difficulty": 0.45,
+            "knowledge": 0.0
+          },
+          "base_score": 0.7271,
+          "content_type": "Standard",
+          "language": "en",
+          "target_audience": "Cinéphiles",
+          "emotion": "Sensationnel"
+        }
+      }
+    ],
+    "FR": [
+      {
+        "title": "The Odyssey - Oh, Dear...",
+        "niche": "Cinéma & Séries",
+        "source_video_id": "BkGOs3_q79I",
+        "overall_score": 0.75,
+        "virality_score": 0.891,
+        "growth_score": 1.0,
+        "evergreen_score": 0.6,
+        "trend_score": 0.925,
+        "competition_score": 0.2777,
+        "production_difficulty": 0.45,
+        "urgency": 0.9625,
+        "recommendation": "Produire aujourd'hui — tendance active et croissance mesurée.",
+        "rationale": [
+          "Potentiel viral élevé (score composite 0.89)",
+          "Croissance mesurée : 59,859 vues/heure entre snapshots",
+          "En tendance active (trend 0.93)",
+          "Niche 'Cinéma & Séries' : 29 vidéos (5.8% du corpus) — trend moyen 0.82"
+        ],
+        "metadata": {
+          "raw_scores": {
+            "virality": 0.891,
+            "growth": 1.0,
+            "evergreen": 0.6,
+            "trend": 0.925,
+            "competition": 0.2777,
+            "difficulty": 0.45,
+            "knowledge": 0.0
+          },
+          "base_score": 0.7543,
+          "content_type": "Standard",
+          "language": "en",
+          "target_audience": "Cinéphiles",
+          "emotion": "Neutre"
+        }
+      },
+      {
+        "title": "『劇場版 薬屋のひとりごと 亡妃の秘宝』予告｜2026年12月11日（金）公開",
+        "niche": "Fr",
+        "source_video_id": "HP5wg0kTh54",
+        "overall_score": 0.7373,
+        "virality_score": 0.9532,
+        "growth_score": 0.8643,
+        "evergreen_score": 0.35,
+        "trend_score": 0.916,
+        "competition_score": 0.125,
+        "production_difficulty": 0.15,
+        "urgency": 0.9105,
+        "recommendation": "Produire aujourd'hui — tendance active et croissance mesurée. Niche peu exploitée — positionnement privilégié disponible. Production accessible — idéal pour tester rapidement.",
+        "rationale": [
+          "Potentiel viral élevé (score composite 0.95)",
+          "Croissance mesurée : 11,519 vues/heure entre snapshots",
+          "En tendance active (trend 0.92)",
+          "Niche 'Fr' : 13 vidéos (2.6% du corpus) — trend moyen 0.84",
+          "Faible concurrence dans cette niche — opportunité rare",
+          "Accélération de croissance positive (+97.3 vues/h²)"
+        ],
+        "metadata": {
+          "raw_scores": {
+            "virality": 0.9532,
+            "growth": 0.8643,
+            "evergreen": 0.35,
+            "trend": 0.916,
+            "competition": 0.125,
+            "difficulty": 0.15,
+            "knowledge": 0.0
+          },
+          "base_score": 0.7474,
+          "content_type": "Short",
+          "language": "inconnu",
+          "target_audience": "Grand public",
+          "emotion": "Neutre"
+        }
+      },
+      {
+        "title": "manifest - Toz Pembe | Official Music Video",
+        "niche": "Musique & Clips",
+        "source_video_id": "0pg0raFMNIU",
+        "overall_score": 0.7176,
+        "virality_score": 0.9612,
+        "growth_score": 1.0,
+        "evergreen_score": 0.6,
+        "trend_score": 0.916,
+        "competition_score": 0.4003,
+        "production_difficulty": 0.85,
+        "urgency": 0.958,
+        "recommendation": "Produire aujourd'hui — tendance active et croissance mesurée. Production exigeante — prévoir les ressources adaptées.",
+        "rationale": [
+          "Potentiel viral élevé (score composite 0.96)",
+          "Croissance mesurée : 141,100 vues/heure entre snapshots",
+          "En tendance active (trend 0.92)",
+          "Niche 'Musique & Clips' : 42 vidéos (8.3% du corpus) — trend moyen 0.79"
+        ],
+        "metadata": {
+          "raw_scores": {
+            "virality": 0.9612,
+            "growth": 1.0,
+            "evergreen": 0.6,
+            "trend": 0.916,
+            "competition": 0.4003,
+            "difficulty": 0.85,
+            "knowledge": 0.0
+          },
+          "base_score": 0.7221,
+          "content_type": "Clip Musical",
+          "language": "en",
+          "target_audience": "Grand public",
+          "emotion": "Neutre"
+        }
+      }
+    ]
+  },
+  "total_opportunities": 6
+}

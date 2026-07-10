@@ -1,0 +1,23 @@
+{
+  "shot_type": "Close-Up",
+  "camera_angle": "Dutch Angle",
+  "lens": "50mm",
+  "composition": "Center Composition",
+  "depth_of_field": "Shallow depth of field, subject in sharp focus, background blurred",
+  "lighting_style": "Neon",
+  "color_palette": "Electric Blue + Violet + Black",
+  "focal_point": "Question mark symbol",
+  "visual_priority": [
+    "Question mark symbol",
+    "Floating neon particles",
+    "Dark background"
+  ],
+  "thumbnail_moment": "The question mark symbol glows intensely as it floats in the center, surrounded by neon particles, with a sense of confusion and curiosity.",
+  "cinematic_goal": "Visually represent the feeling of being lost or overwhelmed by the vastness of Gaming & Esports, using a close-up and Dutch angle to create unease and focus on the problem.",
+  "metadata": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "time_ms": 2340,
+    "cost_usd": 0.000898
+  }
+}

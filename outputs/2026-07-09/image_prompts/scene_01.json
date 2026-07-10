@@ -1,0 +1,16 @@
+{
+  "subject": "Un casque gaming néon aux reflets bleu électrique et violet, posé sur un clavier mécanique rétroéclairé, avec un écran d'ordinateur affichant un jeu flou en arrière-plan.",
+  "scene_description": "Close-up dynamique d'un casque gaming aux contours lumineux bleu électrique et violet, posé sur un clavier mécanique RGB. L'écran d'ordinateur en arrière-plan est flou (depth of field) avec des lueurs de jeu. L'ambiance est sombre, néon, futuriste. La composition centrée attire le regard sur le casque, symbole d'immersion dans le gaming.",
+  "style": "Cinématique, néon, futuriste, fond noir profond, lumières vives, HDR, 8K, format vertical 9:16, photoréaliste, photorealistic, cinematic photography.",
+  "prompt": "Extreme close-up of a gaming headset with glowing electric blue and violet neon lights, resting on a mechanical RGB keyboard, shallow depth of field, blurred gaming monitor in background with colorful game lights, dark atmosphere, neon lighting, cinematic, HDR, 8K, vertical 9:16, photorealistic, high contrast, electric blue and violet color palette.",
+  "negative_prompt": "Stock photo, flat lighting, daytime, natural light, cluttered background, text, logo, watermark, low quality, blurry, cartoon, 3D render, oversaturated, infographic, diagram., signature, deformed, distorted anatomy, extra limbs, low resolution, illustration, painting, oversaturated colors, horizontal crop, incorrect aspect ratio, plastic skin, jpeg artifacts, schematic, chart, user interface, ui elements, app screenshot, bullet points, wall of text, powerpoint slide, presentation slide, flowchart, table layout",
+  "metadata": {
+    "goal": "Stopper le défilement par un visuel choc et une question implicite sur le gaming et les esports.",
+    "emotion": "curiosité",
+    "characters": [],
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "time_ms": 5007,
+    "cost_usd": 0.001052
+  }
+}

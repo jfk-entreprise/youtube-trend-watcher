@@ -1,0 +1,23 @@
+{
+  "shot_type": "Close-Up",
+  "camera_angle": "Eye Level",
+  "lens": "35mm",
+  "composition": "Center Composition",
+  "depth_of_field": "Shallow depth of field, soft bokeh background, algorithm lines in sharp focus",
+  "lighting_style": "Neon",
+  "color_palette": "Blue Electric + Violet",
+  "focal_point": "Algorithm node at center",
+  "visual_priority": [
+    "Central illuminated node",
+    "Connecting lines",
+    "Background grid"
+  ],
+  "thumbnail_moment": "The central algorithm node flares to life, its first electric pulse radiating outward in a burst of blue light against the dark void.",
+  "cinematic_goal": "Reveal the hidden algorithm's activation with a sense of discovery and technological awe, maintaining the neon futurist brand identity.",
+  "metadata": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "time_ms": 2585,
+    "cost_usd": 0.0009
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "shot_type": "Close-Up",
+  "camera_angle": "Eye Level",
+  "lens": "50mm",
+  "composition": "Rule of Thirds",
+  "depth_of_field": "shallow depth of field, background menu gently blurred, option in sharp focus",
+  "lighting_style": "Neon",
+  "color_palette": "Blue Electric + Violet + Gold Accent",
+  "focal_point": "Highlighted 'Protection avancée' option",
+  "visual_priority": [
+    "Protection avancée option",
+    "Settings menu",
+    "Subtle glow"
+  ],
+  "thumbnail_moment": "The instant the 'Protection avancée' option illuminates, casting a gold accent on the menu.",
+  "cinematic_goal": "Reveal the hidden countermeasure with a sense of discovery and relief, using a close-up to emphasize the option's significance.",
+  "metadata": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "time_ms": 2461,
+    "cost_usd": 0.000971
+  }
+}

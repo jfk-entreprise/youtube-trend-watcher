@@ -1,0 +1,90 @@
+name: YouTube Trend Watcher — Studio de production quotidien
+
+on:
+  schedule:
+    - cron: '0 6 * * *'   # Une fois par jour, 06:00 UTC (décalé du cron 6h de collect.yml)
+  workflow_dispatch:          # Déclenchement manuel depuis l'interface GitHub
+
+env:
+  PYTHONIOENCODING: utf-8
+  YOUTUBE_REGION_CODE: FR
+  YOUTUBE_LANGUAGE: fr
+
+jobs:
+  daily-production:
+    name: Studio de production — 2 vidéos/jour
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    # Les secrets sont déclarés au niveau du job pour être hérités par toutes
+    # les étapes (build_storage()/build_niche_selection_store() en dépendent).
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+      GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+      # Sprint 29 — Google Drive (GoogleDriveUploader) et Telegram (NotificationService).
+      # Optionnels : absents → repli automatique sur NoOp / journalisation (aucun échec).
+      GOOGLE_DRIVE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_DRIVE_SERVICE_ACCOUNT_JSON }}
+      GOOGLE_DRIVE_FOLDER_ID: ${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+
+    steps:
+      # ── Environnement ──────────────────────────────────────────────────────────
+
+      - name: Checkout du dépôt
+        uses: actions/checkout@v4
+
+      - name: Configuration Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Installation des dépendances
+        run: |
+          echo "▶ Installation des dépendances Python"
+          pip install --quiet --upgrade pip
+          pip install --quiet -r requirements.txt
+          echo "✅ Dépendances installées"
+
+      - name: Validation des secrets requis
+        run: |
+          echo "▶ Vérification des variables d'environnement"
+          if [ -z "${DEEPSEEK_API_KEY}" ]; then
+            echo "::error::DEEPSEEK_API_KEY non configuré dans les secrets GitHub."
+            exit 1
+          fi
+          echo "✅ DEEPSEEK_API_KEY : présent"
+          SUPABASE_STATUS="absent (mode JSON/CSV local uniquement)"
+          if [ -n "${SUPABASE_URL}" ]; then SUPABASE_STATUS="présent"; fi
+          echo "ℹ️  SUPABASE_URL      : ${SUPABASE_STATUS}"
+          DRIVE_STATUS="absent (mode NoOp — package local uniquement)"
+          if [ -n "${GOOGLE_DRIVE_SERVICE_ACCOUNT_JSON}" ] && [ -n "${GOOGLE_DRIVE_FOLDER_ID}" ]; then DRIVE_STATUS="présent"; fi
+          echo "ℹ️  Google Drive      : ${DRIVE_STATUS}"
+          TELEGRAM_STATUS="absent (mode log uniquement)"
+          if [ -n "${TELEGRAM_BOT_TOKEN}" ] && [ -n "${TELEGRAM_CHAT_ID}" ]; then TELEGRAM_STATUS="présent"; fi
+          echo "ℹ️  Telegram          : ${TELEGRAM_STATUS}"
+
+      # ── Studio de production ─────────────────────────────────────────────────────
+
+      - name: "Pipeline quotidien (run_daily_pipeline.py — 8 étapes, 2 vidéos/jour)"
+        run: |
+          echo "▶ Lancement du studio de production autonome"
+          python scripts/run_daily_pipeline.py --provider deepseek --brand ia_fr
+          echo "✅ Production quotidienne terminée"
+          echo ""
+          echo "Fichiers présents dans outputs/ :"
+          ls -lhR outputs/ 2>/dev/null || echo "(répertoire vide)"
+
+      # ── Artefact ───────────────────────────────────────────────────────────────
+
+      - name: Sauvegarde des packages de production en artefacts GitHub Actions
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: daily-production-run${{ github.run_number }}-${{ github.run_id }}
+          path: outputs/
+          retention-days: 30
+          if-no-files-found: warn

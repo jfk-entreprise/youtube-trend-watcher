@@ -9,7 +9,6 @@ Coût quota : 1 unité par pays (très économique).
 
 import logging
 import re
-from datetime import datetime, timezone
 from typing import Optional
 
 from googleapiclient.discovery import build

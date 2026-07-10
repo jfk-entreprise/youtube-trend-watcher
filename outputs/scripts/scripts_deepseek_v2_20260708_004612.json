@@ -1,0 +1,628 @@
+{
+  "generated_at": "20260708_004612",
+  "generator": "deepseek_v2",
+  "count": 5,
+  "scripts": [
+    {
+      "title": "Obsession musicale : l'IA qui crée des tubes",
+      "hook": "Et si votre prochaine obsession musicale était née dans un cerveau artificiel ?",
+      "introduction": "DON XHONI vient de dévoiler 'Obsession'. Mais derrière le clip, une révolution silencieuse se prépare.",
+      "conclusion": "L'IA ne remplace pas l'artiste, elle décuple sa créativité. La musique n'a jamais été aussi proche de l'inattendu.",
+      "call_to_action": "Quel artiste devrait collaborer avec l'IA selon vous ? Dites-le en commentaire.",
+      "estimated_duration": 115,
+      "language": "fr",
+      "target_audience": "Curieux technophiles et professionnels 20-40 ans voulant comprendre et utiliser l'IA",
+      "style": "Innovant",
+      "scenes": [
+        {
+          "order": 1,
+          "title": "Le chiffre qui tue",
+          "narration": "Le morceau 'Obsession' cumule 10 millions de streams en une semaine. Un record ? Non, un nouveau standard.",
+          "visual_description": "Compteur de streams qui défile sur fond de cover art, puis explosion de chiffres.",
+          "image_prompt": "3D digital counter spinning rapidly with neon lights, background dark club atmosphere, vibrant purple and pink colors, cinematic lighting",
+          "animation_notes": "Compteur tourne rapidement, puis freeze sur '10,000,000' avec effet d'éclat.",
+          "sound_effects": "Bruit de rembobinage rapide, puis 'ding' d'arrivée, heartbeat basse",
+          "duration_seconds": 10
+        },
+        {
+          "order": 2,
+          "title": "Le secret de production",
+          "narration": "Mais ce que vous ignorez, c'est que 30% des harmonies ont été générées par une IA. Oui, vous avez bien entendu.",
+          "visual_description": "Split screen : à gauche le studio traditionnel, à droite une interface IA avec des lignes de code et des ondes sonores.",
+          "image_prompt": "Split screen showing a traditional music studio on left and a futuristic AI interface on right with glowing waveforms and code, neon blue and orange contrast",
+          "animation_notes": "Transition fluide entre les deux mondes, éléments sonores apparaissent comme des particules.",
+          "sound_effects": "Bruit de synthé montant, puis switch sec entre deux ambiances",
+          "duration_seconds": 11
+        },
+        {
+          "order": 3,
+          "title": "L'outil qui change tout",
+          "narration": "L'IA utilisée s'appelle 'Harmony Architect'. Elle analyse des milliers de tubes et propose des progressions inédites.",
+          "visual_description": "Animation d'un réseau neuronal qui analyse des notes de musique, puis affiche une partition complexe.",
+          "image_prompt": "Neural network visualization with musical notes flowing through nodes, glowing blue connections, dark background, holographic interface",
+          "animation_notes": "Le réseau s'active de gauche à droite, les notes se transforment en partition.",
+          "sound_effects": "Bips électroniques légers, puis arpège de synthé",
+          "duration_seconds": 12
+        },
+        {
+          "order": 4,
+          "title": "Démonstration choc",
+          "narration": "Regardez : en 10 secondes, l'IA génère une mélodie de piano. Don Xhoni l'a utilisée pour le refrain. Écoutez.",
+          "visual_description": "Vue en direct d'une interface d'IA générant une mélodie, suivie d'un extrait audio du refrain d'Obsession.",
+          "image_prompt": "Close-up of a digital audio workstation with AI generating a piano melody, green waveforms, dark studio lighting, screen glow on face",
+          "animation_notes": "Les notes s'affichent en temps réel, puis transition vers une visualisation du refrain.",
+          "sound_effects": "Piano notes being played, puis fondu vers le refrain d'Obsession (5 secondes)",
+          "duration_seconds": 12
+        },
+        {
+          "order": 5,
+          "title": "La polémique",
+          "narration": "Certains crient à la triche. Mais l'IA n'est qu'un outil : c'est l'artiste qui choisit, qui ressent, qui décide.",
+          "visual_description": "Montage rapide de gros titres polémiques ('IA tue-t-elle la musique ?'), puis image de Don Xhoni en studio souriant.",
+          "image_prompt": "Newspaper headlines floating in space with 'AI vs Artists' in bold, then dissolve into a studio photo of a confident artist with headphones",
+          "animation_notes": "Les titres défilent en 3D, puis zoom arrière sur la photo.",
+          "sound_effects": "Bruit de flash d'appareil photo, puis musique apaisante",
+          "duration_seconds": 12
+        },
+        {
+          "order": 6,
+          "title": "Le vrai pouvoir",
+          "narration": "L'IA permet de tester 1000 variations en une heure. Là où un humain mettrait des jours. Gain de temps = plus de créativité.",
+          "visual_description": "Animation de 1000 petites icônes musicale qui défilent rapidement, puis ralentissement sur une seule qui brille.",
+          "image_prompt": "Thousands of tiny music note icons zooming fast, then slow to one golden note glowing, abstract digital art, blue and gold colors",
+          "animation_notes": "Effet de cascade de notes, puis ralenti sur la note gagnante.",
+          "sound_effects": "Whoosh rapide, puis tintement cristallin",
+          "duration_seconds": 11
+        },
+        {
+          "order": 7,
+          "title": "La faille humaine",
+          "narration": "Mais l'IA a un talon : elle ne comprend pas l'émotion. C'est l'artiste qui insuffle l'âme. Sans lui, ce n'est que du bruit.",
+          "visual_description": "Split screen : côté IA un cœur mécanique, côté humain un vrai cœur battant. Les deux pulsent en alternance.",
+          "image_prompt": "Split screen with a mechanical heart on left and a human heart on right, both pulsing with light, dark background, red and blue neon glow",
+          "animation_notes": "Les cœurs battent en décalé, puis le cœur humain s'illumine plus fort.",
+          "sound_effects": "Battement mécanique vs battement organique, crescendo",
+          "duration_seconds": 11
+        },
+        {
+          "order": 8,
+          "title": "La nouvelle donne",
+          "narration": "Résultat : 'Obsession' est le premier morceau certifié disque d'or co-écrit avec une IA. Un précédent qui fait date.",
+          "visual_description": "Animation d'un disque d'or avec inscription 'Obsession - Don Xhoni & AI', puis confettis.",
+          "image_prompt": "Golden record spinning with 'Obsession' text and a subtle AI logo, confetti falling, stage lights, celebration atmosphere",
+          "animation_notes": "Le disque tourne, puis gros plan sur l'inscription.",
+          "sound_effects": "Bruit de vinyle, puis applaudissements",
+          "duration_seconds": 12
+        },
+        {
+          "order": 9,
+          "title": "Et après ?",
+          "narration": "La prochaine étape ? Un album entièrement composé avec l'IA. Et si le prochain tube planétaire venait d'une machine ?",
+          "visual_description": "Futuristic music studio avec hologrammes d'IA, notes dansantes, ambiance cyberpunk.",
+          "image_prompt": "Futuristic music studio with holographic AI assistants, floating musical notes, neon lights pink and blue, digital art style",
+          "animation_notes": "Les hologrammes bougent, les notes tournoient doucement.",
+          "sound_effects": "Ambiance électronique futuriste, synth pad",
+          "duration_seconds": 12
+        },
+        {
+          "order": 10,
+          "title": "Le mot de la fin",
+          "narration": "Don Xhoni a ouvert une porte. À vous de décider si vous voulez la franchir. La musique n'attend que vous.",
+          "visual_description": "Plan fixe sur une porte lumineuse dans un couloir sombre, silhouette de Don Xhoni qui s'éloigne.",
+          "image_prompt": "A glowing doorway in a dark corridor, silhouette of a man walking away, warm light inside, cinematic composition",
+          "animation_notes": "Caméra recule lentement, la porte devient plus petite.",
+          "sound_effects": "Musique douce qui s'estompe, bruit de pas, puis silence",
+          "duration_seconds": 12
+        }
+      ],
+      "metadata": {
+        "generator": "llm_v1",
+        "llm_provider": "deepseek",
+        "llm_model": "deepseek-v4-flash",
+        "angle": "Liste",
+        "niche": "Musique & Clips",
+        "brand_id": "ia_fr",
+        "brand_name": "IA FR",
+        "opportunity_score": 0.7133,
+        "urgency": 0.9481,
+        "scene_count": 10,
+        "opportunity_id": "lPBKCnIPZoI",
+        "llm_time_ms": 20765,
+        "llm_tokens": 4667,
+        "llm_cost_usd": 0.002962
+      }
+    },
+    {
+      "title": "Les spots de Meccha Chameleon qui défient toute logique",
+      "hook": "J'ai trouvé des positions tellement stupides qu'elles deviennent géniales.",
+      "introduction": "Dans Meccha Chameleon, un jeu où l'évitement est clé, certains spots sont si débiles qu'ils marchent. Découvrons-les.",
+      "conclusion": "Ces spots montrent que parfois, le génie naît de l'absurde. Alors, prêt à repenser votre stratégie ?",
+      "call_to_action": "Quel est le spot le plus WTF que vous ayez trouvé ? Partagez-le en commentaire, on fera le meilleur montage !",
+      "estimated_duration": 95,
+      "language": "fr",
+      "target_audience": "Gamers",
+      "style": "Innovant",
+      "scenes": [
+        {
+          "order": 1,
+          "title": "Le mur invisible",
+          "narration": "Ce spot est caché derrière un arbre. Les ennemis vous ignorent, même si vous êtes en pleine vue.",
+          "visual_description": "Un joueur se tient derrière un arbre pixelisé, un ennemi passe à côté sans réagir.",
+          "image_prompt": "Pixel art of a chameleon hiding behind a tree, enemy walking past, 8-bit style, vibrant colors",
+          "animation_notes": "Faire apparaître l'ennemi de gauche à droite, le chameleon reste immobile.",
+          "sound_effects": "Bruit de pas étouffés, puis silence",
+          "duration_seconds": 10
+        },
+        {
+          "order": 2,
+          "title": "Le piège à sauts",
+          "narration": "Un trou dans le sol ? Sautez dedans. Vous atterrissez dans une zone où les ennemis ne peuvent pas entrer.",
+          "visual_description": "Le chameleon saute dans un trou, la caméra suit la chute, atterrissage dans une petite salle sombre.",
+          "image_prompt": "Pixel art of a chameleon jumping into a hole, underground room visible below, 8-bit",
+          "animation_notes": "Animation de chute rapide, puis ralentissement à l'atterrissage.",
+          "sound_effects": "Bruit de saut, puis impact sourd",
+          "duration_seconds": 11
+        },
+        {
+          "order": 3,
+          "title": "La plateforme invisible",
+          "narration": "Une plateforme transparente flotte dans le vide. On ne la voit pas, mais elle existe.",
+          "visual_description": "Le chameleon marche sur l'air, des particules apparaissent sous ses pieds pour montrer la plateforme.",
+          "image_prompt": "Pixel art, chameleon walking on air with glowing particles under feet, transparent platform, 8-bit",
+          "animation_notes": "Particules clignotantes sous les pas du chameleon.",
+          "sound_effects": "Pas sur du verre, tintement léger",
+          "duration_seconds": 10
+        },
+        {
+          "order": 4,
+          "title": "La collision cassée",
+          "narration": "Un mur en apparence solide a une faille. Si vous vous collez au bord, vous passez à travers.",
+          "visual_description": "Le chameleon se frotte contre un mur, puis passe à travers comme un fantôme.",
+          "image_prompt": "Pixel art, chameleon phasing through a wall, glitch effect, 8-bit",
+          "animation_notes": "Effet de distorsion sur le mur au moment du passage.",
+          "sound_effects": "Bruit de glitch électronique",
+          "duration_seconds": 10
+        },
+        {
+          "order": 5,
+          "title": "Le spawn point secret",
+          "narration": "Après une mort, vous réapparaissez parfois dans un endroit inattendu, loin de la zone de danger.",
+          "visual_description": "Le chameleon meurt, écran noir, puis réapparaît dans un coin paisible avec des fleurs.",
+          "image_prompt": "Pixel art, chameleon respawning in a flower field, peaceful, 8-bit",
+          "animation_notes": "Fondu au noir, puis transition vers le nouveau spawn.",
+          "sound_effects": "Son de mort classique, puis musique calme",
+          "duration_seconds": 11
+        },
+        {
+          "order": 6,
+          "title": "La porte secrète",
+          "narration": "Un mur qui semble normal cache une porte. Il faut attendre un cycle pour qu'elle s'ouvre.",
+          "visual_description": "Le chameleon attend devant un mur, une ligne orange apparaît, la porte s'ouvre.",
+          "image_prompt": "Pixel art, chameleon in front of a wall with a glowing orange line, door opening, 8-bit",
+          "animation_notes": "La ligne orange s'intensifie puis la porte coulisse.",
+          "sound_effects": "Grincement mécanique, puis click",
+          "duration_seconds": 12
+        },
+        {
+          "order": 7,
+          "title": "Le raccourci temporel",
+          "narration": "Un saut précis au bon moment vous téléporte à la fin du niveau. Chronométrage parfait.",
+          "visual_description": "Le chameleon saute au bord d'une plateforme, un flash lumineux, puis il atterrit près de l'arrivée.",
+          "image_prompt": "Pixel art, chameleon jumping with a flash, arriving near a flag, 8-bit",
+          "animation_notes": "Flash blanc rapide, puis fondu enchaîné vers la nouvelle position.",
+          "sound_effects": "Qui, puis cloche de victoire",
+          "duration_seconds": 10
+        },
+        {
+          "order": 8,
+          "title": "L'ennemi allié",
+          "narration": "Un ennemi peut être poussé pour bloquer un passage, créant une cachette temporaire.",
+          "visual_description": "Le chameleon pousse un ennemi carré dans un couloir, l'ennemi bloque le passage, le chameleon se cache derrière.",
+          "image_prompt": "Pixel art, chameleon pushing a block-like enemy, using it as cover, 8-bit",
+          "animation_notes": "Mouvement de poussée lent, l'ennemi se déplace de quelques pixels.",
+          "sound_effects": "Grincement, puis soupir de soulagement",
+          "duration_seconds": 11
+        },
+        {
+          "order": 9,
+          "title": "Le glitch qui sauve",
+          "narration": "Un bug fait que les ennemis vous ignorent si vous bougez en diagonale. Exploitez-le.",
+          "visual_description": "Le chameleon se déplace en diagonale, les ennemis tournent en rond sans le voir.",
+          "image_prompt": "Pixel art, chameleon moving diagonally, enemies confused, 8-bit",
+          "animation_notes": "Mouvement en zigzag, les ennemis ont des points d'interrogation au-dessus de la tête.",
+          "sound_effects": "Bruit de confusion, 'bing'",
+          "duration_seconds": 10
+        }
+      ],
+      "metadata": {
+        "generator": "llm_v1",
+        "llm_provider": "deepseek",
+        "llm_model": "deepseek-v4-flash",
+        "angle": "Challenge",
+        "niche": "Gaming & Esports",
+        "brand_id": "ia_fr",
+        "brand_name": "IA FR",
+        "opportunity_score": 0.7126,
+        "urgency": 0.9413,
+        "scene_count": 9,
+        "opportunity_id": "aBV80RTgSNQ",
+        "llm_time_ms": 30282,
+        "llm_tokens": 4216,
+        "llm_cost_usd": 0.002447
+      }
+    },
+    {
+      "title": "Fr : L'IA qui défie les lois de la physique ?",
+      "hook": "Et si une IA décidait de changer les règles du jeu ?",
+      "introduction": "Pas de science-fiction. C'est déjà là. Et ça s'appelle Fr.",
+      "conclusion": "Fr est la preuve qu'on a sous-estimé l'IA. Alors, prêt à repenser votre rapport à la technologie ?",
+      "call_to_action": "Dites-nous en commentaire : quelle est la tâche que vous aimeriez déléguer à Fr aujourd'hui ?",
+      "estimated_duration": 115,
+      "language": "fr",
+      "target_audience": "Curieux technophiles et professionnels 20-40 ans voulant comprendre et utiliser l'IA",
+      "style": "Innovant",
+      "scenes": [
+        {
+          "order": 1,
+          "title": "Le constat qui dérange",
+          "narration": "On pensait que l'IA était limitée. Qu'elle ne pourrait jamais être vraiment créative.",
+          "visual_description": "Montage rapide de robots qui plantent, d'IA qui font des erreurs, puis un gros plan sur un écran noir.",
+          "image_prompt": "A robot with a frustrated expression, making a mistake on a computer screen, cinematic lighting, photorealistic",
+          "animation_notes": "Zoom avant sur l'écran, puis fondu au noir.",
+          "sound_effects": "Bruit de disque dur qui gratte, puis silence",
+          "duration_seconds": 8
+        },
+        {
+          "order": 2,
+          "title": "L'IA qui pense autrement",
+          "narration": "Fr n'apprend pas par reproduction. Elle apprend par compréhension.",
+          "visual_description": "Animation d'un réseau de neurones qui se transforme en une structure lumineuse complexe et organique.",
+          "image_prompt": "Abstract neural network transforming into a glowing organic structure, blue and purple colors, digital art",
+          "animation_notes": "Les connexions se réorganisent dynamiquement, des particules lumineuses s'envolent.",
+          "sound_effects": "Son électrique léger, puis une note de piano",
+          "duration_seconds": 10
+        },
+        {
+          "order": 3,
+          "title": "Révolution dans la création",
+          "narration": "Les premiers résultats ? Fr crée de la musique que même les compositeurs humains trouvent émouvante.",
+          "visual_description": "Split screen : à gauche, un musicien en studio ; à droite, une interface qui génère des notes en temps réel.",
+          "image_prompt": "Split screen: left a musician in a studio, right an AI interface generating musical notes, warm lighting",
+          "animation_notes": "Les notes s'illuminent sur la partition virtuelle, fondu enchaîné vers la scène suivante.",
+          "sound_effects": "Extrait de musique générée par IA, mélodieux, puis coupure nette",
+          "duration_seconds": 11
+        },
+        {
+          "order": 4,
+          "title": "Cap sur l'inattendu",
+          "narration": "Mais le plus surprenant, c'est sa capacité à résoudre des problèmes sans données préalables.",
+          "visual_description": "Animation d'un labyrinthe qui se résout tout seul, puis l'IA trouve un chemin non linéaire.",
+          "image_prompt": "A glowing AI entity navigating a complex maze, finding a non-linear path, neon lights, abstract",
+          "animation_notes": "Le labyrinthe se déforme, l'IA trace un chemin lumineux inattendu.",
+          "sound_effects": "Son de résolution de puzzle, puis un 'bing' satisfaisant",
+          "duration_seconds": 12
+        },
+        {
+          "order": 5,
+          "title": "Test grandeur nature",
+          "narration": "On a lancé Fr sur un défi médical : diagnostiquer une maladie rare. Résultat : 98% de précision.",
+          "visual_description": "Images d'hôpital, puis une interface montrant des données médicales défiler rapidement, avec un graphique qui monte.",
+          "image_prompt": "Medical data streaming on a holographic screen, with a rising accuracy graph, hospital background, futuristic",
+          "animation_notes": "Les chiffres défilent, le graphique s'élève jusqu'à 98%, puis s'arrête.",
+          "sound_effects": "Bip régulier, puis un long bip de confirmation",
+          "duration_seconds": 13
+        },
+        {
+          "order": 6,
+          "title": "L'humain reste maître",
+          "narration": "Attention : Fr n'est pas un dieu. Elle nécessite une supervision humaine. Mais elle repousse les limites.",
+          "visual_description": "Un humain et une interface IA se faisant face, l'humain valide une décision sur un écran tactile.",
+          "image_prompt": "A human and an AI interface facing each other, human hand pressing a button on a holographic screen, corporate setting",
+          "animation_notes": "L'interface clignote, l'humain appuie, une coche verte apparaît.",
+          "sound_effects": "Son de clic, puis un 'voix off' grave : 'Approbation humaine requise'",
+          "duration_seconds": 12
+        },
+        {
+          "order": 7,
+          "title": "Impact sur le quotidien",
+          "narration": "Concrètement, Fr peut automatiser des tâches complexes en entreprise, libérant du temps pour l'innovation.",
+          "visual_description": "Montage d'un bureau : des employés stressés, puis avec Fr, ils sourient et brainstorment.",
+          "image_prompt": "Before and after: left stressed employees, right happy employees brainstorming with a holographic AI, bright office",
+          "animation_notes": "Transition rapide avec un effet de glissement.",
+          "sound_effects": "Horloge qui tourne vite, puis musique entraînante",
+          "duration_seconds": 12
+        },
+        {
+          "order": 8,
+          "title": "La question qui tue",
+          "narration": "Mais peut-on lui faire confiance pour des décisions cruciales ? Les tests montrent un biais inférieur à 1%.",
+          "visual_description": "Graphiques comparant les biais de différentes IA, avec Fr en bas de l'échelle.",
+          "image_prompt": "Bar chart comparing AI biases, Fr at the bottom with less than 1%, clean infographic style",
+          "animation_notes": "Les barres des autres IA montent, celle de Fr reste basse.",
+          "sound_effects": "Son de compteur, puis un 'ding'",
+          "duration_seconds": 11
+        },
+        {
+          "order": 9,
+          "title": "Le futur est entre nos mains",
+          "narration": "Fr n'est pas une fin en soi. C'est un outil. À nous de l'utiliser pour repousser les frontières du possible.",
+          "visual_description": "Plan large d'une ville futuriste, avec des panneaux lumineux affichant 'Fr'. Puis vue sur un ciel étoilé.",
+          "image_prompt": "Futuristic cityscape with holographic signs saying 'Fr', starry sky, neon lights, wide angle",
+          "animation_notes": "Zoom arrière, puis fondu au noir.",
+          "sound_effects": "Musique épique qui monte, puis s'estompe",
+          "duration_seconds": 13
+        },
+        {
+          "order": 10,
+          "title": "Appel à l'action",
+          "narration": "Et vous, quelle tâche aimeriez-vous voir Fr accomplir ? Dites-le en commentaire, on vous répond.",
+          "visual_description": "Texte à l'écran : 'Quelle tâche pour Fr ?' avec le logo IA FR en bas.",
+          "image_prompt": "Text overlay: 'What task for Fr?' with IA FR logo, minimalist design, white background",
+          "animation_notes": "Le texte apparaît lettre par lettre, puis le logo pulse doucement.",
+          "sound_effects": "Son de notification",
+          "duration_seconds": 13
+        }
+      ],
+      "metadata": {
+        "generator": "llm_v1",
+        "llm_provider": "deepseek",
+        "llm_model": "deepseek-v4-flash",
+        "angle": "Liste",
+        "niche": "Fr",
+        "brand_id": "ia_fr",
+        "brand_name": "IA FR",
+        "opportunity_score": 0.7093,
+        "urgency": 0.9175,
+        "scene_count": 10,
+        "opportunity_id": "EiiIf7tDXW0",
+        "llm_time_ms": 19015,
+        "llm_tokens": 4470,
+        "llm_cost_usd": 0.002763
+      }
+    },
+    {
+      "title": "Top 5 : tout ce qu'il faut savoir sur Cinéma & Séries",
+      "hook": "Voici pourquoi Cinéma & Séries va tout changer.",
+      "introduction": "Aujourd'hui, on va parler de Cinéma & Séries. Tu vas découvrir les points essentiels sur Cinéma & Séries — directement actionnables.",
+      "conclusion": "Pour conclure, retenez ceci : Tu vas découvrir les points essentiels sur Cinéma & Séries — directement actionnables.",
+      "call_to_action": "Abonne-toi pour plus de contenu sur ce sujet.",
+      "estimated_duration": 117,
+      "language": "fr",
+      "target_audience": "Cinéphiles",
+      "style": "Innovant",
+      "scenes": [
+        {
+          "order": 1,
+          "title": "Hook",
+          "narration": "Voici pourquoi Cinéma & Séries va tout changer.",
+          "visual_description": "Plan d'accroche dynamique — visuel choc ou question à l'écran. Texte impactant superposé.",
+          "image_prompt": "Dynamic abstract composition with bold typography, high contrast lighting, cinematic depth of field",
+          "animation_notes": "Fade-in from black. Bold text animation (scale up + stabilize). 0.5s buildup.",
+          "sound_effects": "Whoosh + impact sound. Music starts strong then drops to background.",
+          "duration_seconds": 9
+        },
+        {
+          "order": 2,
+          "title": "Introduction",
+          "narration": "Aujourd'hui, on va parler de Cinéma & Séries. Tu vas découvrir les points essentiels sur Cinéma & Séries — directement actionnables.",
+          "visual_description": "Tête parlante face caméra OU écran titre avec musique douce en fond.",
+          "image_prompt": "Clean professional workspace with warm ambient lighting, shallow depth of field",
+          "animation_notes": "Crossfade transition. Gentle parallax on background. Soft text reveal.",
+          "sound_effects": "Background music at speaking volume. Subtle room tone.",
+          "duration_seconds": 14
+        },
+        {
+          "order": 3,
+          "title": "Point #1",
+          "narration": "Premier point clé : Cinéma & Séries — voici ce qu'il faut retenir.",
+          "visual_description": "Infographie ou liste animée. Numéro à l'écran.",
+          "image_prompt": "Numbered infographic #1, clean design, accent color highlighting",
+          "animation_notes": "Number flies in from left. Content fades below. Staggered bullet reveal.",
+          "sound_effects": "Soft chime on number reveal. Pop sound for text line.",
+          "duration_seconds": 19
+        },
+        {
+          "order": 4,
+          "title": "Point #2",
+          "narration": "Deuxième point : on creuse un peu plus.",
+          "visual_description": "Transition vers nouvelle infographie. Changement de couleur.",
+          "image_prompt": "Information card #2, continued visual theme, secondary color accent",
+          "animation_notes": "Number transition — slide right, new number enters from left.",
+          "sound_effects": "Different pitched chime. Content swoosh for new info.",
+          "duration_seconds": 16
+        },
+        {
+          "order": 5,
+          "title": "Point #3",
+          "narration": "Troisième point : celui qui change tout.",
+          "visual_description": "Point culminant visuel. Donnée choc en plein écran.",
+          "image_prompt": "Key insight reveal #3, strongest visual hierarchy, primary color impact",
+          "animation_notes": "Full screen number reveal. Particles or sparkle on '3'. Energetic.",
+          "sound_effects": "Triumphant chord. Sparkle sound effect. Crowd cheer optional.",
+          "duration_seconds": 21
+        },
+        {
+          "order": 6,
+          "title": "Point bonus",
+          "narration": "Un dernier pour la route — celui-ci va vous surprendre.",
+          "visual_description": "Plan plus léger, musique qui change. Tone shift.",
+          "image_prompt": "Bonus content card, playful lighter design, star or sparkle accent",
+          "animation_notes": "Slide in from right. Lighter animation style. Bouncy text.",
+          "sound_effects": "Bell sound — lighter, higher pitch. 'Ta-da' flourish.",
+          "duration_seconds": 12
+        },
+        {
+          "order": 7,
+          "title": "Conclusion",
+          "narration": "Pour conclure, retenez ceci : Tu vas découvrir les points essentiels sur Cinéma & Séries — directement actionnables.",
+          "visual_description": "Résumé visuel des points clés. Retour sur la promesse initiale.",
+          "image_prompt": "Summary card with key takeaways, clean organized layout, brand colors",
+          "animation_notes": "Summary cards stack. Check marks appear. Music swells slightly.",
+          "sound_effects": "Music swells slightly. Warm reverb on final words. Soft button click.",
+          "duration_seconds": 14
+        },
+        {
+          "order": 8,
+          "title": "CTA",
+          "narration": "Abonne-toi pour plus de contenu sur ce sujet.",
+          "visual_description": "Fond de chaîne ou miniature finale. Boutons abonnement animés. Liens à l'écran.",
+          "image_prompt": "Subscription call-to-action frame, brand colors, button visual, inviting composition",
+          "animation_notes": "Screen compresses to show subscribe button. Bell icon shakes. Links pulse gently.",
+          "sound_effects": "Subscribe sound effect. Bell ding. Music lift then fade to end.",
+          "duration_seconds": 12
+        }
+      ],
+      "metadata": {
+        "generator": "heuristic_v1",
+        "angle": "Liste",
+        "niche": "Cinéma & Séries",
+        "brand_id": "ia_fr",
+        "brand_name": "IA FR",
+        "opportunity_score": 0.7092,
+        "urgency": 0.94,
+        "structure": [
+          "Hook",
+          "Introduction",
+          "Point #1",
+          "Point #2",
+          "Point #3",
+          "Point bonus",
+          "Conclusion",
+          "CTA"
+        ],
+        "brand_duration_factor": 1.2,
+        "scene_count": 8,
+        "opportunity_id": "AyIZ9tiiN8I"
+      }
+    },
+    {
+      "title": "Pourquoi les bandes-annonces manipulent votre cerveau (exemple choc)",
+      "hook": "Cette bande-annonce de Noël cache un secret que les studios ne veulent pas que vous sachiez.",
+      "introduction": "On décortique ensemble les techniques de manipulation des bandes-annonces, avec un exemple concret qui a buzzé.",
+      "conclusion": "Alors, la prochaine fois que vous verrez une bande-annonce, rappelez-vous : votre émotion a été programmée.",
+      "call_to_action": "Quelle bande-annonce vous a le plus trompé ? Dites-le en commentaire, et on analyse la prochaine ensemble.",
+      "estimated_duration": 105,
+      "language": "fr",
+      "target_audience": "Cinéphiles",
+      "style": "Innovant",
+      "scenes": [
+        {
+          "order": 1,
+          "title": "Révélation choc",
+          "narration": "Une bande-annonce de 2 minutes peut coûter jusqu'à 1 million d'euros à produire. Et pourtant, 60% des spectateurs se sentent trompés après avoir vu le film.",
+          "visual_description": "Texte blanc sur fond noir : '1 million € pour 2 minutes' puis '60% se sentent trompés'.",
+          "image_prompt": "Dark background with bold white text: '1 MILLION € FOR 2 MINUTES' and '60% FEEL CHEATED', cinematic style",
+          "animation_notes": "Apparition du premier chiffre en fondu, puis du second avec un effet de choc (vibration).",
+          "sound_effects": "Compteur qui tourne, puis son de verre brisé.",
+          "duration_seconds": 10
+        },
+        {
+          "order": 2,
+          "title": "Le piège émotionnel",
+          "narration": "Les studios utilisent des 'ratings de test' pour choisir les scènes les plus émouvantes. Ils savent exactement quand vous allez pleurer.",
+          "visual_description": "Montage rapide de visages d'acteurs pleurant, souriant, criant, en accéléré.",
+          "image_prompt": "Collage of blurred faces showing extreme emotions: crying, laughing, screaming, fast motion effect",
+          "animation_notes": "Chaque visage apparaît 0.5 seconde, rythme saccadé.",
+          "sound_effects": "Battement de cœur accéléré, puis rire démoniaque.",
+          "duration_seconds": 9
+        },
+        {
+          "order": 3,
+          "title": "L'effet Mandela du trailer",
+          "narration": "Prenez la bande-annonce de 'Wonder Woman 1984' : elle montrait une scène de combat épique qui n'existe pas dans le film. C'est légal.",
+          "visual_description": "Split screen : à gauche extrait de la bande-annonce, à droite la scène réelle (vide) avec un grand X rouge.",
+          "image_prompt": "Split screen: left side shows epic battle scene from movie trailer, right side shows empty set with red X, movie poster style",
+          "animation_notes": "Transition brutale de la scène épique à la scène réelle.",
+          "sound_effects": "Cri de guerre, puis silence gênant.",
+          "duration_seconds": 10
+        },
+        {
+          "order": 4,
+          "title": "Le pouvoir du silence",
+          "narration": "Les bandes-annonces de Noël, comme celle de 'Werwulf', utilisent des silences stratégiques. 3 secondes de silence avant un cri = votre cerveau libère de l'adrénaline.",
+          "visual_description": "Graphique montrant une courbe de tension qui monte pendant un silence, puis flèche flash rouge.",
+          "image_prompt": "Line graph showing tension curve rising during silence, then sharp spike with red flash, clean design",
+          "animation_notes": "Courbe qui monte progressivement, puis pic brutal avec flash rouge.",
+          "sound_effects": "Silence, puis bruit fort soudain (cri, explosion).",
+          "duration_seconds": 11
+        },
+        {
+          "order": 5,
+          "title": "Les couleurs qui mentent",
+          "narration": "Les filtres de couleur changent votre perception. Un filtre bleu froid = film sérieux. Un filtre orange = aventure. Mais le film final est souvent terne.",
+          "visual_description": "Même scène passant par différents filtres : bleu, orange, vert, et version finale grise.",
+          "image_prompt": "Four panels of same scene with different color filters: cold blue, warm orange, green tint, and dull grey, side by side",
+          "animation_notes": "Transition fluide entre les filtres, s'arrêtant sur le gris.",
+          "sound_effects": "Note de synthé changeant de tonalité.",
+          "duration_seconds": 11
+        },
+        {
+          "order": 6,
+          "title": "La musique est une arme",
+          "narration": "80% des bandes-annonces utilisent une musique qui n'apparaît pas dans le film. Ils achètent des morceaux déjà connus pour créer un faux sentiment de familiarité.",
+          "visual_description": "Animation d'un lecteur audio avec une piste 'Trailer Mix' et une piste 'Film Score' complètement différentes.",
+          "image_prompt": "Audio player interface showing two tracks: 'Trailer Mix' with popular song waveform, 'Film Score' with different waveform, contrasting colors",
+          "animation_notes": "Les ondes des deux pistes s'animent en opposition.",
+          "sound_effects": "Extrait de musique épique, puis coupe brutale vers silence.",
+          "duration_seconds": 11
+        },
+        {
+          "order": 7,
+          "title": "Les acteurs fantômes",
+          "narration": "Parfois, des acteurs qui apparaissent dans la bande-annonce ont été coupés au montage final. C'est arrivé à 'Rogue One' : plusieurs personnages ont disparu.",
+          "visual_description": "Affiche de film avec un acteur entouré en rouge, puis l'affiche change et l'acteur disparaît.",
+          "image_prompt": "Movie poster with one actor circled in red, then same poster without that actor, ghostly effect",
+          "animation_notes": "L'acteur s'efface progressivement comme un fantôme.",
+          "sound_effects": "Voix qui chuchote 'coupé', puis rire.",
+          "duration_seconds": 10
+        },
+        {
+          "order": 8,
+          "title": "Le test du public",
+          "narration": "Les studios testent 5 à 10 versions différentes d'une bande-annonce sur des groupes de discussion. Ils mesurent votre pouls, votre regard, et même votre transpiration.",
+          "visual_description": "Personne assise avec des capteurs sur la tête, les poignets, un écran montrant des graphiques de données biométriques.",
+          "image_prompt": "Person sitting in dark room with sensors on head and wrists, monitor showing biometric data graphs, sci-fi style",
+          "animation_notes": "Les graphiques bougent en temps réel, lignes colorées.",
+          "sound_effects": "Bips électroniques, rythme cardiaque amplifié.",
+          "duration_seconds": 11
+        },
+        {
+          "order": 9,
+          "title": "La révélation finale",
+          "narration": "Le pire ? Les studios savent que vous serez déçu. Mais ils misent sur le fait que vous irez quand même voir le film, poussé par la promesse de la bande-annonce.",
+          "visual_description": "Split screen : à gauche une personne enthousiaste regardant un trailer, à droite la même personne déçue au cinéma.",
+          "image_prompt": "Split screen: left shows excited person watching trailer on phone, right shows same person disappointed in cinema, emotional contrast",
+          "animation_notes": "Transition de l'excitation à la déception avec un fondu au noir.",
+          "sound_effects": "Fanfare triomphale qui se transforme en grésillement.",
+          "duration_seconds": 11
+        },
+        {
+          "order": 10,
+          "title": "Challenge final",
+          "narration": "Maintenant, à vous de jouer. La prochaine bande-annonce que vous verrez, chronométrez les silences, notez les couleurs, écoutez la musique. Vous verrez, vous ne regarderez plus jamais un trailer de la même façon.",
+          "visual_description": "Texte défilant : 'Silence ? Couleur ? Musique ?' avec des icônes correspondantes, puis 'Vous avez le pouvoir'.",
+          "image_prompt": "Scrolling text with icons: stopwatch for silence, palette for color, music note, then bold text 'YOU HAVE THE POWER'",
+          "animation_notes": "Les icônes apparaissent une par une, puis le texte final en gros plan.",
+          "sound_effects": "Compte à rebours, puis 'ding' final.",
+          "duration_seconds": 11
+        }
+      ],
+      "metadata": {
+        "generator": "llm_v1",
+        "llm_provider": "deepseek",
+        "llm_model": "deepseek-v4-flash",
+        "angle": "Liste",
+        "niche": "Musique & Clips",
+        "brand_id": "ia_fr",
+        "brand_name": "IA FR",
+        "opportunity_score": 0.706,
+        "urgency": 0.9151,
+        "scene_count": 10,
+        "opportunity_id": "cmjpadVj-Vk",
+        "llm_time_ms": 50254,
+        "llm_tokens": 4623,
+        "llm_cost_usd": 0.002905
+      }
+    }
+  ]
+}

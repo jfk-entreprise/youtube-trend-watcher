@@ -1,0 +1,144 @@
+{
+  "opportunity_id": "_xNSHS1Hz9o",
+  "niche": "Gaming & Esports",
+  "brief_angle": "Challenge",
+  "script": {
+    "title": "30 jours dans le gaming compétitif : le vrai coût de la performance",
+    "hook": "J'ai gagné 50 000 euros en tournoi. Et tout perdu en un mois.",
+    "introduction": "Pendant 30 jours, j'ai vécu comme un pro du gaming. Voici ce que personne ne vous dit sur cette industrie.",
+    "scenes": [
+      {
+        "order": 1,
+        "title": "Le départ",
+        "narration": "Jour 1. Je signe un contrat avec une équipe esport. Salaire, coach, nutritionniste.",
+        "visual_description": "Plan d'une main signant un contrat, avec logo d'équipe en arrière-plan.",
+        "image_prompt": "Main signant un contrat esport, logo d'équipe flou en arrière-plan, lumière bleue, style professionnel.",
+        "animation_notes": "Zoom avant sur la signature, puis fondu.",
+        "sound_effects": "Son de stylo qui griffe, puis bruit de foule.",
+        "duration_seconds": 10
+      },
+      {
+        "order": 2,
+        "title": "L'entraînement intensif",
+        "narration": "8 heures par jour devant l'écran. Je joue, j'analyse, je recommence.",
+        "visual_description": "Gros plan sur un visage concentré, écran de jeu reflété dans les lunettes.",
+        "image_prompt": "Gros plan sur un joueur concentré, reflet d'écran de jeu dans les lunettes, éclairage RVB, style cinématique.",
+        "animation_notes": "Léger mouvement de caméra latéral, reflet qui scintille.",
+        "sound_effects": "Clics de souris rapides, bruit de clavier mécanique.",
+        "duration_seconds": 10
+      },
+      {
+        "order": 3,
+        "title": "La pression invisible",
+        "narration": "Mais le vrai combat n'est pas dans le jeu. C'est le stress. L'insomnie. L'isolement.",
+        "visual_description": "Plan d'un réveil affichant 3h du matin, joueur allongé les yeux ouverts.",
+        "image_prompt": "Réveil numérique 3h00, joueur dans son lit regardant le plafond, ambiance sombre, style réaliste.",
+        "animation_notes": "Transition lente, le réveil clignote.",
+        "sound_effects": "Tic-tac d'horloge, respiration lourde.",
+        "duration_seconds": 11
+      },
+      {
+        "order": 4,
+        "title": "La première compétition",
+        "narration": "Premier tournoi. 256 équipes. On atteint les quarts de finale.",
+        "visual_description": "Plan large d'une scène de tournoi avec écrans géants et public.",
+        "image_prompt": "Scène de tournoi esport avec écrans géants, public en arrière-plan, lumières bleues et violettes, style dynamique.",
+        "animation_notes": "Caméra qui descend du plafond vers la scène.",
+        "sound_effects": "Bruit de foule, commentateur en fond.",
+        "duration_seconds": 11
+      },
+      {
+        "order": 5,
+        "title": "La chute",
+        "narration": "On perd. Je suis éliminé. Mon contrat prévoit une clause : résultat insuffisant = rupture.",
+        "visual_description": "Plan d'un casque posé sur une table, écran noir, reflet de lumière tamisée.",
+        "image_prompt": "Casque gaming posé sur une table en bois, écran d'ordinateur éteint, ambiance tamisée, style mélancolique.",
+        "animation_notes": "Ralenti, fondu au noir progressif.",
+        "sound_effects": "Silence, puis un bip d'ordinateur.",
+        "duration_seconds": 11
+      },
+      {
+        "order": 6,
+        "title": "Le bilan financier",
+        "narration": "Bilan : 50 000 euros de gains, mais 45 000 de frais. Coach, déplacements, matériel.",
+        "visual_description": "Animation d'un graphique en barres montrant les gains et les dépenses.",
+        "image_prompt": "Graphique financier animé, barres vertes et rouges, style infographique moderne.",
+        "animation_notes": "Les barres apparaissent une par une avec un effet de compteur.",
+        "sound_effects": "Son de caisse enregistreuse, puis bruit de déchirure.",
+        "duration_seconds": 12
+      },
+      {
+        "order": 7,
+        "title": "La vérité du milieu",
+        "narration": "Sur 100 joueurs pros, seuls 3 vivent du jeu. Les autres ? Ils cumulent jobs et entraînements.",
+        "visual_description": "Split screen : un joueur pro dans un centre d'entraînement, l'autre dans une chambre étudiante.",
+        "image_prompt": "Split screen, gauche : joueur pro dans un centre high-tech, droite : joueur dans une chambre modeste, style documentaire.",
+        "animation_notes": "Transition en fondu enchaîné entre les deux plans.",
+        "sound_effects": "Bruit d'ambiance de centre d'entraînement, puis bruit de circulation.",
+        "duration_seconds": 12
+      },
+      {
+        "order": 8,
+        "title": "La décision",
+        "narration": "Alors j'ai arrêté. J'ai pris du recul. Et j'ai compris que le vrai jeu, c'est de construire quelque chose de durable.",
+        "visual_description": "Plan d'un joueur rangeant son équipement dans un carton, puis regardant par la fenêtre.",
+        "image_prompt": "Joueur rangeant son équipement gaming dans un carton, lumière du jour par la fenêtre, style épuré.",
+        "animation_notes": "Caméra recule lentement, puis s'arrête sur le visage.",
+        "sound_effects": "Bruit de carton qu'on ferme, puis silence.",
+        "duration_seconds": 12
+      },
+      {
+        "order": 9,
+        "title": "Leçons apprises",
+        "narration": "Le gaming compétitif, c'est 1% de talent, 99% de gestion mentale et financière. Et ça, personne ne l'enseigne.",
+        "visual_description": "Animation de texte : '1% talent' puis '99% gestion' qui apparaît en grand.",
+        "image_prompt": "Animation de texte minimaliste, fond sombre, lettres blanches et dorées, style motion design.",
+        "animation_notes": "Texte apparaît lettre par lettre, puis reste affiché.",
+        "sound_effects": "Son de clavier qui tape, puis un 'ding'.",
+        "duration_seconds": 12
+      }
+    ],
+    "conclusion": "Alors, est-ce que le gaming esport en vaut la peine ? Oui, si vous savez pourquoi vous le faites. Non, si vous cherchez juste l'argent facile.",
+    "call_to_action": "Et vous, quel est votre plus grand défi dans le gaming ? Dites-le moi en commentaire.",
+    "estimated_duration": 101,
+    "language": "fr",
+    "target_audience": "Gamers",
+    "style": "Professionnel",
+    "metadata": {
+      "generator": "llm_v1",
+      "llm_provider": "deepseek",
+      "llm_model": "deepseek-v4-flash",
+      "angle": "Challenge",
+      "niche": "Gaming & Esports",
+      "brand_id": "business_fr",
+      "brand_name": "Business FR",
+      "opportunity_score": 0.7487,
+      "urgency": 0.963,
+      "scene_count": 9,
+      "opportunity_id": "_xNSHS1Hz9o",
+      "llm_time_ms": 18227,
+      "llm_tokens": 6449,
+      "llm_cost_usd": 0.003156
+    }
+  },
+  "heuristic_score": {
+    "hook_score": 5.5,
+    "curiosity_score": 6.5,
+    "clarity_score": 7.5,
+    "rhythm_score": 9.0,
+    "cta_score": 6.0,
+    "retention_score": 7.5,
+    "emotion_score": 3.0,
+    "originality_score": 7.5,
+    "composite_score": 52.5,
+    "details": {
+      "hook_length": 61,
+      "total_length": 1264,
+      "scene_count": 9,
+      "avg_scene_duration": 11.222222222222221,
+      "duration_seconds": 101,
+      "generator": "llm_v1"
+    }
+  },
+  "llm_judge_score": null
+}

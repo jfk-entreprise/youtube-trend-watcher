@@ -1,0 +1,20 @@
+{
+  "camera_motion": "Static. Très léger zoom avant lent pour créer une sensation d'immersion dans le flux d'images.",
+  "subject_motion": "Les images (extraits de films, textes, symboles) défilent en fondu enchaîné rapide, s'arrêtant brièvement sur les références clés (monolithe, vaisseau, temple). Le visage d'Homère (ou son buste) reste fixe en surimpression ou en incrustation, légèrement animé par une respiration subtile.",
+  "environment_motion": "Aucun, fond neutre.",
+  "lighting_changes": "Légères pulsations lumineuses douces en rythme avec le défilement, accentuant les arrêts sur les images importantes.",
+  "effects": "Fondu enchaîné entre les images, grain cinéma très léger, halo lumineux autour du visage d'Homère.",
+  "sound_design": "Musique ambient minimaliste (cordes tenues, nappes) avec un léger souffle. Au rythme des arrêts, un son grave et sourd (cœur qui bat ou gong lointain).",
+  "transition": "Cut sec vers la scène suivante.",
+  "duration": 10,
+  "prompt": "Cinematic montage sequence. Static camera, slight slow push-in. A rapid succession of images fades in and out: a classical marble bust of Homer remains fixed in the center, superimposed. Images include: a spaceship from 2001, a monolith, a temple column, film clapperboards, text '2001: A Space Odyssey', 'Interstellar', 'Dune'. Each image holds for a fraction of a second, with brief pauses on key symbols. Lighting pulses softly. The bust breathes subtly. Color palette: sepia and cool blue. Grainy film texture. 9:16 aspect ratio. Professional, high detail, cinematic lighting.",
+  "metadata": {
+    "goal": "Illustrer la persistance du mythe d'Homère à travers le cinéma de science-fiction.",
+    "emotion": "Mélancolie contemplative mêlée d'émerveillement intemporel.",
+    "pace": "Soutenu mais fluide, avec des arrêts marqués sur les éléments clés.",
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "time_ms": 6798,
+    "cost_usd": 0.001243
+  }
+}

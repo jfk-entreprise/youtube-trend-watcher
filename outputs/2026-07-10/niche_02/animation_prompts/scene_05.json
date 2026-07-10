@@ -1,0 +1,20 @@
+{
+  "camera_motion": "Static, légèrement stabilisée pour maintenir la symétrie du split screen.",
+  "subject_motion": "À gauche : l'utilisateur regarde fixement l'écran, seul un léger clignement des yeux et une respiration subtile. À droite : le même utilisateur en transparence partielle, avec des mouvements lents de la tête comme s'il observait les silhouettes. Les icônes d'activité (bips, notifications) s'animent en temps réel : apparition/disparition, pulsations lumineuses. Les silhouettes des autres utilisateurs (contours bleu électrique) se déplacent lentement, comme des fantômes.",
+  "environment_motion": "Fond noir profond avec des reflets néon violets et blancs qui pulsent doucement. Lignes lumineuses animées en arrière-plan (effet de grille ou de flux de données).",
+  "lighting_changes": "Lumière bleue électrique à droite pulsant en intensité avec les icônes. Pas de changement brusque.",
+  "effects": "Effet de transparence et de flou de mouvement sur les silhouettes. Icônes avec effet de glow et de scintillement.",
+  "sound_design": "Bruissement numérique léger, bips réguliers, souffle basse fréquence, réverbération subtile.",
+  "transition": "Cut sec vers la scène suivante.",
+  "duration": 10,
+  "prompt": "Split screen symétrique, fond noir. À gauche, un homme en chemise bleu clair et lunettes regarde un écran lumineux, immobile, seul un léger clignement des yeux. À droite, le même homme en transparence fantomatique, entouré d'icônes d'activité lumineuses (bips, notifications) qui pulsent et apparaissent. Des silhouettes d'autres utilisateurs en contours bleu électrique se déplacent lentement autour de lui. L'éclairage est néon, bleu électrique et violet, avec des reflets et lignes lumineuses animées en arrière-plan. Qualité HDR 8K, format vertical 9:16, photorealistic, cinematic photography. Caméra statique, mouvement fluide et régulier.",
+  "metadata": {
+    "goal": "Révéler la puissance du mode invisible en montrant l'activité des autres utilisateurs via des icônes dynamiques et des silhouettes fantomatiques, renforçant l'idée de surveillance invisible.",
+    "emotion": "Émerveillement teinté de méfiance, le spectateur doit ressentir la fascination de voir l'invisible tout en comprenant le danger potentiel.",
+    "pace": "Modéré, avec des mouvements fluides et réguliers pour ne pas distraire du message.",
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "time_ms": 8474,
+    "cost_usd": 0.001427
+  }
+}

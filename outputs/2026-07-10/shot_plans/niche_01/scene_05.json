@@ -1,0 +1,23 @@
+{
+  "shot_type": "Wide Shot",
+  "camera_angle": "Low Angle",
+  "lens": "24mm",
+  "composition": "Center Composition",
+  "depth_of_field": "Deep focus, sharp from foreground to infinity",
+  "lighting_style": "Hard Directional Lighting",
+  "color_palette": "Deep Blue + Gold",
+  "focal_point": "Endurance spacecraft",
+  "visual_priority": [
+    "Endurance spacecraft",
+    "Black hole",
+    "Stars"
+  ],
+  "thumbnail_moment": "Endurance silhouetted against the glowing accretion disk of the black hole",
+  "cinematic_goal": "Emphasize the awe and scale of the black hole, mirroring the original Interstellar shot while maintaining continuity with previous sci-fi scenes.",
+  "metadata": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "time_ms": 2214,
+    "cost_usd": 0.000916
+  }
+}

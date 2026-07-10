@@ -1,0 +1,16 @@
+{
+  "subject": "Un montage dynamique d'images iconiques de 2001: L'Odyssée de l'espace : le monolithe noir, l'œil rouge de HAL 9000, et le passage dimensionnel psychédélique.",
+  "scene_description": "Un plan composite vertical (9:16) montre un montage rapide de trois images clés de 2001 : à gauche, le monolithe noir se découpant sur un paysage lunaire ; au centre, le gros plan de l'œil rouge de HAL 9000 ; à droite, le tourbillon coloré du passage dimensionnel. L'ensemble est baigné d'une lumière douce et diffuse, avec une palette dominante de bleu profond et de blanc, créant une atmosphère à la fois mystérieuse et sublime.",
+  "style": "Photorealistic cinematic montage, HDR, 8K, vertical 9:16, soft diffused lighting, deep blue and white color palette, center composition, static camera, movie poster quality, no text.",
+  "prompt": "A cinematic vertical composite shot of three iconic scenes from 2001: A Space Odyssey, arranged in a triptych. Left: a tall black monolith standing on a lunar surface under a starry sky, with soft diffused lighting. Center: extreme close-up of HAL 9000's red eye lens, glowing subtly against a dark background. Right: a swirling, colorful vortex of the star gate sequence, with abstract light patterns. The overall image has a deep blue and white color palette, HDR, 8K resolution, photorealistic, soft lighting, cinematic atmosphere, movie poster quality, no text or logos.",
+  "negative_prompt": "text, logos, watermark, cartoon, illustration, low quality, blurry, messy composition, cluttered, overexposed, underexposed, flat lighting, stock photo style, infographic, diagram, explanatory graphics., signature, deformed, distorted anatomy, extra limbs, low resolution, painting, 3d render, oversaturated colors, horizontal crop, incorrect aspect ratio, plastic skin, jpeg artifacts, schematic, chart, user interface, ui elements, app screenshot, bullet points, wall of text, powerpoint slide, presentation slide, flowchart, table layout",
+  "metadata": {
+    "goal": "Représenter l'impact et la révolution de 2001: L'Odyssée de l'espace à travers un montage rapide de ses images iconiques, en un seul plan composite.",
+    "emotion": "admiration",
+    "characters": [],
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "time_ms": 5379,
+    "cost_usd": 0.001198
+  }
+}

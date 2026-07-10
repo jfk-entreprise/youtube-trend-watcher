@@ -1,0 +1,23 @@
+{
+  "shot_type": "Close-Up",
+  "camera_angle": "High Angle",
+  "lens": "50mm",
+  "composition": "Center Composition",
+  "depth_of_field": "Shallow depth of field, background data streams blur into soft bokeh",
+  "lighting_style": "Neon",
+  "color_palette": "Blue Electric + Violet + Red Alert",
+  "focal_point": "Breaking padlock at center",
+  "visual_priority": [
+    "Breaking padlock",
+    "Data streams escaping",
+    "Red warning glow"
+  ],
+  "thumbnail_moment": "The exact frame where the padlock shatters, fragments suspended, data pouring out in neon streams",
+  "cinematic_goal": "Create a visceral sense of breach and vulnerability, making the threat feel immediate and tangible",
+  "metadata": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "time_ms": 2344,
+    "cost_usd": 0.000935
+  }
+}

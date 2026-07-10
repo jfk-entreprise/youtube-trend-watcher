@@ -1,0 +1,140 @@
+{
+  "opportunity_id": "0pg0raFMNIU",
+  "niche": "Musique & Clips",
+  "brief_angle": "Challenge",
+  "script": {
+    "title": "J'ai testé Musique & Clips pendant 30 jours — voici ce qui s'est passé",
+    "hook": "J'ai testé Musique & Clips pendant 30 jours. Voici ce qui s'est passé.",
+    "introduction": "Voici pourquoi c'est important. Grand public — ce sujet vous concerne directement.",
+    "scenes": [
+      {
+        "order": 1,
+        "title": "Hook",
+        "narration": "J'ai testé Musique & Clips pendant 30 jours. Voici ce qui s'est passé.",
+        "visual_description": "Plan d'accroche dynamique — visuel choc ou question à l'écran. Texte impactant superposé.",
+        "image_prompt": "Dynamic abstract composition with bold typography, high contrast lighting, cinematic depth of field",
+        "animation_notes": "Fade-in from black. Bold text animation (scale up + stabilize). 0.5s buildup.",
+        "sound_effects": "Whoosh + impact sound. Music starts strong then drops to background.",
+        "duration_seconds": 9
+      },
+      {
+        "order": 2,
+        "title": "Contexte",
+        "narration": "Voici pourquoi c'est important. Grand public — ce sujet vous concerne directement.",
+        "visual_description": "Images d'ambiance ou données contextuelles. Transition douce.",
+        "image_prompt": "Contextual environment illustration, atmospheric lighting, muted color palette",
+        "animation_notes": "Slow zoom on establishing shot. Text overlay fades in line by line.",
+        "sound_effects": "Ambient pad. Gentle underscore. Soft transition swoosh.",
+        "duration_seconds": 12
+      },
+      {
+        "order": 3,
+        "title": "Tentative #1",
+        "narration": "Étape 1 : on attaque par le plus simple.",
+        "visual_description": "Plan large pour montrer l'action. Texte de transition 'Étape 1'.",
+        "image_prompt": "First step visual, clean composition, directional lighting from left",
+        "animation_notes": "Simple wipe transition. Step counter animates from 1.",
+        "sound_effects": "Button click sound. Music builds slightly in energy.",
+        "duration_seconds": 14
+      },
+      {
+        "order": 4,
+        "title": "Tentative #2",
+        "narration": "Étape 2 : on monte en complexité.",
+        "visual_description": "Plan moyen. Chronomètre ou compteur visible. 'Étape 2'.",
+        "image_prompt": "Mid-process action shot, increased complexity visible, warm lighting",
+        "animation_notes": "Quick zoom transition. Step counter updates. Confidence builds.",
+        "sound_effects": "Progress tone. Brief riser. Music energy increases.",
+        "duration_seconds": 16
+      },
+      {
+        "order": 5,
+        "title": "Tentative #3",
+        "narration": "Étape 3 : la méthode avancée.",
+        "visual_description": "Gros plan. Tension. 'Étape 3' en overley.",
+        "image_prompt": "Climax of process, dramatic lighting, intense focus on subject",
+        "animation_notes": "Dramatic zoom. Step counter pulses. Suspense buildup.",
+        "sound_effects": "Drum roll build. Climactic chord on reveal. Silence then punch.",
+        "duration_seconds": 19
+      },
+      {
+        "order": 6,
+        "title": "Résultat",
+        "narration": "Le résultat est là — et il parle de lui-même.",
+        "visual_description": "Révélation. Donnée finale affichée. Pause de 2 secondes pour l'impact.",
+        "image_prompt": "Final result display, data visualization, success indicators, clean design",
+        "animation_notes": "Reveal animation — curtain or radial wipe. Hold for 2s. Then subtle bounce.",
+        "sound_effects": "Reveal impact sound. Sustained chord holds. Then satisfied exhale.",
+        "duration_seconds": 12
+      },
+      {
+        "order": 7,
+        "title": "Leçon",
+        "narration": "La leçon à tirer de tout ça : Musique & Clips, c'est accessible à tout le monde.",
+        "visual_description": "Voix off posée. Images d'archives ou de conclusion. Ralenti optionnel.",
+        "image_prompt": "Wisdom moment visual, soft lighting, reflective mood, open space",
+        "animation_notes": "Text types out slowly. Background fades to warm tone. Reflective pace.",
+        "sound_effects": "Soft piano. Gentle string pad. Reflective silence between sentences.",
+        "duration_seconds": 18
+      },
+      {
+        "order": 8,
+        "title": "CTA",
+        "narration": "Abonne-toi pour plus de contenu sur ce sujet.",
+        "visual_description": "Fond de chaîne ou miniature finale. Boutons abonnement animés. Liens à l'écran.",
+        "image_prompt": "Subscription call-to-action frame, brand colors, button visual, inviting composition",
+        "animation_notes": "Screen compresses to show subscribe button. Bell icon shakes. Links pulse gently.",
+        "sound_effects": "Subscribe sound effect. Bell ding. Music lift then fade to end.",
+        "duration_seconds": 12
+      }
+    ],
+    "conclusion": "La leçon à tirer de tout ça : Musique & Clips, c'est accessible à tout le monde.",
+    "call_to_action": "Abonne-toi pour plus de contenu sur ce sujet.",
+    "estimated_duration": 112,
+    "language": "fr",
+    "target_audience": "Grand public",
+    "style": "Innovant",
+    "metadata": {
+      "generator": "heuristic_v1",
+      "angle": "Challenge",
+      "niche": "Musique & Clips",
+      "brand_id": "ia_fr",
+      "brand_name": "IA FR",
+      "opportunity_score": 0.7178,
+      "urgency": 0.9585,
+      "structure": [
+        "Hook",
+        "Contexte",
+        "Tentative #1",
+        "Tentative #2",
+        "Tentative #3",
+        "Résultat",
+        "Leçon",
+        "CTA"
+      ],
+      "brand_duration_factor": 1.2,
+      "scene_count": 8,
+      "opportunity_id": "0pg0raFMNIU"
+    }
+  },
+  "heuristic_score": {
+    "hook_score": 4.0,
+    "curiosity_score": 5.0,
+    "clarity_score": 9.0,
+    "rhythm_score": 10.0,
+    "cta_score": 6.5,
+    "retention_score": 7.2,
+    "emotion_score": 3.0,
+    "originality_score": 4.0,
+    "composite_score": 48.7,
+    "details": {
+      "hook_length": 70,
+      "total_length": 783,
+      "scene_count": 8,
+      "avg_scene_duration": 14.0,
+      "duration_seconds": 112,
+      "generator": "heuristic_v1"
+    }
+  },
+  "llm_judge_score": null
+}

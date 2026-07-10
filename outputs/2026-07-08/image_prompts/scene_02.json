@@ -1,0 +1,16 @@
+{
+  "subject": "a gaming monitor displaying a Minecraft-style game screen overlaid with a futuristic AI analysis interface, featuring dynamic data lines, a heatmap cursor, and blinking red error zones",
+  "scene_description": "Deep black background (brand color) with ambient neon blue and violet glows emanating from the screen. The monitor is centered, filling most of the frame. The screen shows a first-person view of a Minecraft game (the game world visible with pixelated textures) but overlaid with semi-transparent holographic elements: flowing lines of code, a circular heatmap highlighting cursor positions, and flashing red polygons marking areas where mistakes occurred. The composition follows the rule of thirds: the crosshair is near the center, and data clusters occupy the upper and lower thirds. Lighting is exclusively from the screen, creating a volumetric haze and subtle lens flares. Textures are crisp and realistic, with a soft gradient blending the UI elements into the game view.",
+  "style": "Cinematic, photorealistic, HDR, 8K, vertical 9:16, neon color grading (blue and violet), volumetric lighting, sharp details, subtle chromatic aberration, anamorphic lens flare, realistic screen reflections",
+  "prompt": "Generate an image showing a first-person perspective of a Minecraft-style game screen overlaid with a futuristic AI analysis interface: dynamic data lines, a heatmap cursor, and blinking red error zones indicating the player's mistakes, all rendered in neon blue and violet on a deep black background.",
+  "negative_prompt": "cartoon, illustration, 3D render style, low resolution, blurry, characters, people, avatars, Minecraft characters, outdated graphics, flat lighting, too bright, unrealistic neon, no lens effects, text, watermark, logo, signature, deformed, distorted anatomy, extra limbs, low quality, painting, oversaturated colors, horizontal crop, incorrect aspect ratio, plastic skin, jpeg artifacts",
+  "metadata": {
+    "goal": "Montrer que l'IA Aegis analyse en temps réel le comportement du joueur, en identifiant les erreurs avant qu'elles ne se produisent, créant une atmosphère de surveillance high-tech et d'assistance proactive.",
+    "emotion": "Fascination mêlée de vulnérabilité, anticipation technologique",
+    "characters": [],
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "time_ms": 16745,
+    "cost_usd": 0.003645
+  }
+}

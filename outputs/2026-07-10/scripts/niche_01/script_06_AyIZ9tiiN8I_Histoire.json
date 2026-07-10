@@ -1,0 +1,134 @@
+{
+  "opportunity_id": "AyIZ9tiiN8I",
+  "niche": "Cinéma & Séries",
+  "brief_angle": "Histoire",
+  "script": {
+    "title": "L'Odyssée : le mythe qui a changé le cinéma",
+    "hook": "Et si le plus grand film de tous les temps n'avait jamais été tourné ?",
+    "introduction": "Stanley Kubrick voulait adapter L'Odyssée d'Homère. Mais le projet était trop ambitieux. Alors il a fait autre chose.",
+    "scenes": [
+      {
+        "order": 1,
+        "title": "Le rêve impossible",
+        "narration": "En 1960, Kubrick annonce son projet : un film sur l'épopée d'Ulysse. Mais les studios refusent. Trop cher, trop risqué.",
+        "visual_description": "Gros plan sur une vieille affiche de film avec Kubrick en arrière-plan, puis fondu sur une pile de billets qui brûle.",
+        "image_prompt": "a vintage movie poster of The Odyssey with Stanley Kubrick's face fading in, money burning, cinematic lighting",
+        "animation_notes": "L'affiche tremble légèrement, puis le billet se consume en cendres.",
+        "sound_effects": "Crépitement de feu, puis silence.",
+        "duration_seconds": 12
+      },
+      {
+        "order": 2,
+        "title": "La réinvention",
+        "narration": "Kubrick ne renonce pas. Il transforme Ulysse en astronaute, et les dieux en intelligence extraterrestre.",
+        "visual_description": "Transition vers un vaisseau spatial flottant dans l'espace, avec des colonnes grecques en arrière-plan.",
+        "image_prompt": "a spaceship with ancient Greek columns floating in space, surreal, cinematic",
+        "animation_notes": "Caméra tourne autour du vaisseau, les colonnes se brisent lentement.",
+        "sound_effects": "Bruit de vent spatial, puis pulsation grave.",
+        "duration_seconds": 10
+      },
+      {
+        "order": 3,
+        "title": "2001 naît",
+        "narration": "Ce film devient 2001 : L'Odyssée de l'espace. Un chef-d'œuvre qui révolutionne la science-fiction.",
+        "visual_description": "Montage rapide de scènes iconiques de 2001 : le monolithe, HAL 9000, le passage dimensionnel.",
+        "image_prompt": "iconic scenes from 2001 A Space Odyssey, monolith, HAL 9000, stargate sequence, vibrant colors",
+        "animation_notes": "Séquence rapide avec cuts dynamiques, musique de Also sprach Zarathustra en fond.",
+        "sound_effects": "Also sprach Zarathustra (extrait), puis bruit de respiration.",
+        "duration_seconds": 10
+      },
+      {
+        "order": 4,
+        "title": "Le paradoxe",
+        "narration": "Mais Kubrick n'a jamais tourné son Odyssée originale. Pourtant, le mythe a survécu autrement.",
+        "visual_description": "Split screen : d'un côté le script original de L'Odyssée, de l'autre le storyboard de 2001.",
+        "image_prompt": "split screen showing an ancient Greek script on one side and a sci-fi storyboard on the other, dramatic contrast",
+        "animation_notes": "Les deux images se rapprochent jusqu'à fusionner.",
+        "sound_effects": "Grincement de parchemin, puis son de clavier futuriste.",
+        "duration_seconds": 10
+      },
+      {
+        "order": 5,
+        "title": "L'héritage secret",
+        "narration": "Des années plus tard, Christopher Nolan avoue que son film Interstellar est directement inspiré de ce projet avorté.",
+        "visual_description": "Scène d'Interstellar : le vaisseau Endurance approchant un trou noir.",
+        "image_prompt": "the Endurance spacecraft approaching Gargantua black hole, Interstellar, epic",
+        "animation_notes": "Caméra s'approche lentement du trou noir, distorsion lumineuse.",
+        "sound_effects": "Tic-tac d'horloge, puis respiration haletante.",
+        "duration_seconds": 10
+      },
+      {
+        "order": 6,
+        "title": "Le monolithe moderne",
+        "narration": "Même le monolithe de 2001 est une réinterprétation des piliers du temple d'Ulysse.",
+        "visual_description": "Comparaison côte à côte : un temple grec et le monolithe noir, avec des lignes de correspondance.",
+        "image_prompt": "side by side comparison of a Greek temple pillar and the black monolith from 2001, matching lines",
+        "animation_notes": "Des lignes blanches relient les deux images, puis fondu.",
+        "sound_effects": "Son grave de tambour, puis silence.",
+        "duration_seconds": 11
+      },
+      {
+        "order": 7,
+        "title": "Le voyage continue",
+        "narration": "Aujourd'hui, des réalisateurs comme Denis Villeneuve continuent ce dialogue avec Homère.",
+        "visual_description": "Extrait de Dune : un vaisseau atterrit sur Arrakis, avec des motifs grecs dans le sable.",
+        "image_prompt": "Dune spaceship landing on Arrakis with Greek geometric patterns in the sand, epic scale",
+        "animation_notes": "Caméra suit le vaisseau en plan séquence, le sable forme des motifs.",
+        "sound_effects": "Vrombissement de moteur, puis chant de voix grecques.",
+        "duration_seconds": 11
+      },
+      {
+        "order": 8,
+        "title": "La boucle bouclée",
+        "narration": "L'Odyssée n'a jamais été filmée. Mais son fantôme hante chaque grand film de science-fiction.",
+        "visual_description": "Montage de plusieurs films : 2001, Interstellar, Dune, Blade Runner, avec le visage d'Homère en surimpression.",
+        "image_prompt": "montage of sci-fi movies including 2001, Interstellar, Dune, Blade Runner with Homer's face superimposed, haunting",
+        "animation_notes": "Les images défilent en accéléré, le visage d'Homère reste fixe.",
+        "sound_effects": "Musique épique montant en crescendo, puis arrêt brutal.",
+        "duration_seconds": 12
+      }
+    ],
+    "conclusion": "Parfois, les plus grandes histoires ne sont jamais racontées. Mais elles survivent dans celles qu'elles inspirent.",
+    "call_to_action": "Quel mythe antique aimerais-tu voir adapté au cinéma ? Réponds en commentaire.",
+    "estimated_duration": 86,
+    "language": "fr",
+    "target_audience": "Cinéphiles",
+    "style": "Professionnel",
+    "metadata": {
+      "generator": "llm_v1",
+      "llm_provider": "deepseek",
+      "llm_model": "deepseek-v4-flash",
+      "angle": "Histoire",
+      "niche": "Cinéma & Séries",
+      "brand_id": "business_fr",
+      "brand_name": "Business FR",
+      "opportunity_score": 0.7192,
+      "urgency": 0.9275,
+      "scene_count": 8,
+      "opportunity_id": "AyIZ9tiiN8I",
+      "llm_time_ms": 32259,
+      "llm_tokens": 6268,
+      "llm_cost_usd": 0.002964
+    }
+  },
+  "heuristic_score": {
+    "hook_score": 7.5,
+    "curiosity_score": 5.0,
+    "clarity_score": 9.0,
+    "rhythm_score": 7.5,
+    "cta_score": 6.0,
+    "retention_score": 8.8,
+    "emotion_score": 3.0,
+    "originality_score": 9.0,
+    "composite_score": 55.8,
+    "details": {
+      "hook_length": 70,
+      "total_length": 1227,
+      "scene_count": 8,
+      "avg_scene_duration": 10.75,
+      "duration_seconds": 86,
+      "generator": "llm_v1"
+    }
+  },
+  "llm_judge_score": null
+}

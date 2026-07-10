@@ -1,0 +1,20 @@
+{
+  "camera_motion": "Static, léger push-in très lent pour accentuer la profondeur et attirer le spectateur dans le couloir.",
+  "subject_motion": "La porte s'ouvre lentement, de l'intérieur vers l'extérieur, dévoilant progressivement le couloir. Une fois ouverte, un léger mouvement de lumière pulsante au bout du couloir.",
+  "environment_motion": "Les lignes lumineuses sur les murs, le sol et le plafond s'illuminent progressivement avec une légère ondulation, comme un flux d'énergie. Poussières lumineuses flottant doucement.",
+  "lighting_changes": "La lumière bleue et violette devient plus intense à mesure que la porte s'ouvre, créant un halo autour de l'ouverture. La source lumineuse au fond du couloir pulse doucement.",
+  "effects": "Volume light rays, lens flare subtil, particules lumineuses en suspension, légère brume au sol.",
+  "sound_design": "Un son grave et profond de mécanisme qui s'ouvre, suivi d'un souffle aérien, puis un bourdonnement électronique lointain et des résonances métalliques.",
+  "transition": "Cut sec vers la scène suivante, ou fondu au noir si fin du film.",
+  "duration": 10,
+  "prompt": "A monumental dark metal door, tall and narrow, set in a symmetrical wide shot, slowly opens inward, revealing a corridor stretching into infinite perspective. The corridor is bathed in electric blue and violet volumetric light, with smooth reflective walls, floor, and ceiling featuring dynamic glowing lines that pulse with energy. The light intensity increases as the door opens, creating a halo effect. Slow push-in camera movement, emphasizing depth and the vanishing point. Floating luminous dust particles and a subtle ground mist enhance the futuristic, neon-noir atmosphere. Cinematic, hyper-realistic, 8K, vertical 9:16 format, HDR, extended depth of field, photorealistic, cinematic photography.",
+  "metadata": {
+    "goal": "Révéler l'immensité et les secrets de Fr en ouvrant la porte sur un couloir infini, créant un sentiment de découverte et de mystère.",
+    "emotion": "Émerveillement, anticipation, curiosité, un peu de crainte face à l'inconnu.",
+    "pace": "Lent et majestueux, pour laisser le temps à la lumière et à la perspective d'impressionner.",
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "time_ms": 7752,
+    "cost_usd": 0.001342
+  }
+}

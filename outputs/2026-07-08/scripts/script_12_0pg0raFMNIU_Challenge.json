@@ -1,0 +1,176 @@
+{
+  "opportunity_id": "0pg0raFMNIU",
+  "niche": "Musique & Clips",
+  "brief_angle": "Challenge",
+  "script": {
+    "title": "J'ai testé une IA pour créer des clips musicaux — voici la vérité",
+    "hook": "J'ai laissé une IA créer un clip de A à Z. Le résultat m'a glacé le sang.",
+    "introduction": "On m'a défié de tester un outil qui promet des clips en 10 minutes. J'y suis allé avec un gros scepticisme.",
+    "scenes": [
+      {
+        "order": 1,
+        "title": "Le défi impossible",
+        "narration": "On me dit : 'Tu peux créer un clip pro sans aucune compétence en vidéo.' J'ai relevé le défi avec une chanson que j'avais sous la main.",
+        "visual_description": "Moi face cam, expression dubitative, puis un écran avec l'interface de l'outil IA qui s'ouvre.",
+        "image_prompt": "A person with a skeptical expression looking at a futuristic interface on a screen, digital art, vibrant colors",
+        "animation_notes": "Zoom avant sur le visage puis transition rapide vers l'écran",
+        "sound_effects": "Tic-tac horloge, puis bruit d'ouverture d'application",
+        "duration_seconds": 10
+      },
+      {
+        "order": 2,
+        "title": "L'outil mystérieux",
+        "narration": "L'outil s'appelle ClipForge AI. Il suffit d'importer ta chanson, de choisir un style, et il génère des images animées synchronisées.",
+        "visual_description": "Screen recording montrant l'import d'un fichier audio, puis sélection de styles (cyberpunk, nature, abstrait, etc.)",
+        "image_prompt": "A digital interface showing music file import and style selection buttons, glowing neon, dark background",
+        "animation_notes": "Survoler les boutons avec la souris, ralentir sur les options",
+        "sound_effects": "Clics de souris, transition musicale douce",
+        "duration_seconds": 11
+      },
+      {
+        "order": 3,
+        "title": "Premier essai catastrophique",
+        "narration": "J'ai cliqué sur 'Générer' sans trop y croire. Résultat : des images floues, un décalage de fou, un cauchemar visuel.",
+        "visual_description": "Vidéo montrant le résultat initial : images pixelisées, personnages déformés, incohérent avec la musique",
+        "image_prompt": "A chaotic glitchy music video with distorted faces and mismatched colors, low resolution, digital distortion",
+        "animation_notes": "Accéléré pour montrer les défauts, puis arrêt brusque",
+        "sound_effects": "Bruit de grésillement électronique, puis stop",
+        "duration_seconds": 10
+      },
+      {
+        "order": 4,
+        "title": "Le réglage secret",
+        "narration": "En fouillant les paramètres, j'ai découvert un curseur 'Créativité'. Je l'ai poussé à fond.",
+        "visual_description": "Gros plan sur le curseur 'Créativité' glissant de 0 à 100, puis animation fluide",
+        "image_prompt": "Close-up of a slider labeled 'Creativity' moving to maximum, colorful sparks flying out, sci-fi style",
+        "animation_notes": "Slider se déplace lentement, puis effet de particules",
+        "sound_effects": "Son mécanique puis whoosh",
+        "duration_seconds": 9
+      },
+      {
+        "order": 5,
+        "title": "Deuxième tentative bluffante",
+        "narration": "Là, l'IA m'a bluffé. Des images cohérentes, des mouvements qui collent au rythme, un rendu esthétique incroyable.",
+        "visual_description": "Extrait du clip amélioré : séquence avec un personnage stylisé dansant en synchro avec le beat, couleurs vives",
+        "image_prompt": "A stylized animated character dancing in a neon cityscape, synchronized with music beats, vibrant colors, high quality",
+        "animation_notes": "Montage court de 5-6 secondes du clip, coupe rapide",
+        "sound_effects": "Extrait de la chanson avec beat fort",
+        "duration_seconds": 11
+      },
+      {
+        "order": 6,
+        "title": "Le piège du rendu",
+        "narration": "Mais attention : le rendu final a pris 20 minutes et pas 10. Et j'ai dû ajuster certains plans qui partaient en vrille.",
+        "visual_description": "Chronomètre qui tourne, puis moi en train de modifier des plans sur une timeline",
+        "image_prompt": "A person editing a video timeline, frustrated, clock showing 20 minutes",
+        "animation_notes": "Time-lapse du chronomètre, puis ralentissement quand je modifie",
+        "sound_effects": "Tic-tac accéléré, puis soupir",
+        "duration_seconds": 10
+      },
+      {
+        "order": 7,
+        "title": "Comparaison avec un clip pro",
+        "narration": "J'ai montré le résultat à un réalisateur amateur. Il m'a dit : 'C'est pas mal, mais ça manque d'émotion humaine.'",
+        "visual_description": "Split screen : à gauche le clip IA, à droite un clip tourné en réel. Puis un homme (réalisateur) qui secoue la tête",
+        "image_prompt": "Split screen: left side AI-generated animation, right side real film footage, a man shaking head in between, comparison",
+        "animation_notes": "Transition split, puis zoom sur le réalisateur",
+        "sound_effects": "Musique d'ambiance puis voix off 'C'est pas mal'",
+        "duration_seconds": 10
+      },
+      {
+        "order": 8,
+        "title": "Le verdict final",
+        "narration": "Bilan : l'IA est un outil de prototypage incroyable, mais pour un clip artistique, il faut encore un humain.",
+        "visual_description": "Moi face cam, hochement de tête, puis graphique montrant IA vs Humain (qualité, temps, coût)",
+        "image_prompt": "A person nodding thoughtfully, next to a bar chart comparing IA and Human in quality, time, cost",
+        "animation_notes": "Apparition du graphique avec animation",
+        "sound_effects": "Son de clic, puis note musicale finale",
+        "duration_seconds": 10
+      },
+      {
+        "order": 9,
+        "title": "La surprise de la semaine",
+        "narration": "Mais le plus surprenant ? Un ami m'a dit que ce clip a eu plus de vues que ses clips tournés. L'IA attire l'œil.",
+        "visual_description": "Statistiques de vues qui montent sur un écran, puis moi étonné",
+        "image_prompt": "A digital screen showing increasing view count graph, a surprised person looking, digital art",
+        "animation_notes": "Graphique qui monte rapidement, puis zoom arrière sur moi",
+        "sound_effects": "Son de notification, puis woosh",
+        "duration_seconds": 10
+      }
+    ],
+    "conclusion": "L'IA n'est pas parfaite, mais elle change la donne pour les artistes indépendants.",
+    "call_to_action": "Teste toi-même l'outil et partage ton clip en commentaire — je veux voir ce que tu obtiens.",
+    "estimated_duration": 91,
+    "language": "fr",
+    "target_audience": "Curieux technophiles et professionnels 20-40 ans voulant comprendre et utiliser l'IA pour la création musicale et vidéo",
+    "style": "Innovant",
+    "metadata": {
+      "generator": "llm_v1",
+      "llm_provider": "deepseek",
+      "llm_model": "deepseek-v4-flash",
+      "angle": "Challenge",
+      "niche": "Musique & Clips",
+      "brand_id": "ia_fr",
+      "brand_name": "IA FR",
+      "opportunity_score": 0.7206,
+      "urgency": 0.9645,
+      "scene_count": 9,
+      "opportunity_id": "0pg0raFMNIU",
+      "llm_time_ms": 61616,
+      "llm_tokens": 4867,
+      "llm_cost_usd": 0.006334
+    }
+  },
+  "heuristic_score": {
+    "hook_score": 5.0,
+    "curiosity_score": 5.5,
+    "clarity_score": 9.0,
+    "rhythm_score": 8.0,
+    "cta_score": 7.5,
+    "retention_score": 7.1,
+    "emotion_score": 4.0,
+    "originality_score": 6.0,
+    "composite_score": 52.1,
+    "details": {
+      "hook_length": 73,
+      "total_length": 1470,
+      "scene_count": 9,
+      "avg_scene_duration": 10.11111111111111,
+      "duration_seconds": 91,
+      "generator": "llm_v1"
+    }
+  },
+  "llm_judge_score": {
+    "hook": 9.0,
+    "curiosity": 8.0,
+    "storytelling": 8.0,
+    "rhythm": 7.0,
+    "clarity": 8.0,
+    "cta": 8.0,
+    "retention": 8.0,
+    "viral": 7.0,
+    "global_score": 63.0,
+    "strengths": [
+      "Hook fort avec promesse de révélation",
+      "Structure narrative avec rebond (échec puis succès)",
+      "CTA spécifique et engageant"
+    ],
+    "weaknesses": [
+      "Rythme un peu lent sur les scènes 2-3",
+      "Manque de tension dramatique sur la fin",
+      "Viralité limitée par le sujet technique"
+    ],
+    "suggestions": [
+      "Accélérer les premières scènes pour arriver plus vite au réglage secret",
+      "Ajouter un élément de surprise ou de conflit dans le verdict final",
+      "Rendre le titre plus accrocheur en mentionnant un résultat choquant"
+    ],
+    "metadata": {
+      "llm_provider": "deepseek",
+      "llm_model": "deepseek-v4-flash",
+      "llm_time_ms": 3478,
+      "llm_tokens": 1485,
+      "llm_cost_usd": 0.000579
+    }
+  }
+}

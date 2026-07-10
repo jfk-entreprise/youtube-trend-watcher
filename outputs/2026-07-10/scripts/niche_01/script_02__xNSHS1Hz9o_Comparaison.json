@@ -1,0 +1,154 @@
+{
+  "opportunity_id": "_xNSHS1Hz9o",
+  "niche": "Gaming & Esports",
+  "brief_angle": "Comparaison",
+  "script": {
+    "title": "Pourquoi le gaming dans les Backrooms terrifie les joueurs ?",
+    "hook": "Vous n'êtes pas prêt pour ce qui se cache dans les Backrooms.",
+    "introduction": "Un jeu d'horreur dans un univers infini de bureaux jaunes. Mais ce n'est pas qu'un simple couloir qui rend ce jeu angoissant.",
+    "scenes": [
+      {
+        "order": 1,
+        "title": "L'horreur de l'infini",
+        "narration": "Les Backrooms sont un labyrinthe sans fin. Chaque couloir identique au précédent. Pas de sortie.",
+        "visual_description": "Un plan fixe d'un couloir de bureaux jaunes, s'étendant à l'infini, avec un léger mouvement de caméra lent.",
+        "image_prompt": "Corridor infini de bureaux aux murs jaunes, éclairage fluorescent, perspective fuyante, style horreur, photoréaliste",
+        "animation_notes": "Caméra avance lentement, léger effet de flou de mouvement",
+        "sound_effects": "Bruit sourd de ventilation, bourdonnement électrique",
+        "duration_seconds": 10
+      },
+      {
+        "order": 2,
+        "title": "Le piège du silence",
+        "narration": "Le silence est assourdissant. Chaque pas résonne. Votre cerveau cherche du danger partout.",
+        "visual_description": "Plan rapproché des pieds du personnage marchant sur un sol en moquette grise, puis vue d'ensemble vide.",
+        "image_prompt": "Pieds marchant sur moquette grise, couloir jaune vide, ambiance inquiétante, vue à la première personne",
+        "animation_notes": "Léger tremblement de la caméra à chaque pas",
+        "sound_effects": "Pas sur moquette, silence pesant, puis bruit de souffle",
+        "duration_seconds": 10
+      },
+      {
+        "order": 3,
+        "title": "Le premier signe",
+        "narration": "Mais soudain, un bruit. Derrière vous. Vous vous retournez. Rien.",
+        "visual_description": "Le personnage se retourne brusquement, le couloir est vide. L'image tremble légèrement.",
+        "image_prompt": "Personnage se retournant dans un couloir jaune vide, expression paniquée, éclairage jaune sale",
+        "animation_notes": "Mouvement rapide de caméra, puis arrêt brusque",
+        "sound_effects": "Bruit de grincement, puis silence absolu",
+        "duration_seconds": 9
+      },
+      {
+        "order": 4,
+        "title": "L'entité",
+        "narration": "Vous n'êtes pas seul. Une entité vous observe. Elle attend le moment où vous baisserez la garde.",
+        "visual_description": "Ombre humaine difforme au bout du couloir, qui disparaît quand on la regarde directement.",
+        "image_prompt": "Ombre humanoïde déformée au bout d'un couloir jaune, atmosphère menaçante, style horreur",
+        "animation_notes": "L'ombre bouge légèrement, puis s'évanouit",
+        "sound_effects": "Chuchotements inintelligibles, respiration rapide",
+        "duration_seconds": 10
+      },
+      {
+        "order": 5,
+        "title": "Le comportement de l'entité",
+        "narration": "Elle ne court pas. Elle marche. Lentement. Mais elle sait toujours où vous êtes.",
+        "visual_description": "Caméra subjective, on voit l'entité s'approcher pas à pas, inexorablement.",
+        "image_prompt": "Créature humanoïde pâle marchant lentement dans un couloir jaune, éclairage tamisé",
+        "animation_notes": "Mouvement de caméra lent, zoom avant sur l'entité",
+        "sound_effects": "Pas lourds, bruit de succion",
+        "duration_seconds": 10
+      },
+      {
+        "order": 6,
+        "title": "Course contre la montre",
+        "narration": "Vous courez. Mais chaque porte que vous ouvrez mène au même couloir. Vous tournez en rond.",
+        "visual_description": "Montage rapide de portes qui s'ouvrent, révélant toujours le même couloir jaune.",
+        "image_prompt": "Main ouvrant une porte, derrière elle un couloir jaune identique, expression de panique",
+        "animation_notes": "Coupes rapides, caméra tremblante",
+        "sound_effects": "Portes qui claquent, respiration haletante",
+        "duration_seconds": 11
+      },
+      {
+        "order": 7,
+        "title": "Le piège se referme",
+        "narration": "Le couloir rétrécit. Les murs se rapprochent. L'entité est derrière vous. Vous êtes coincé.",
+        "visual_description": "Les murs se déforment, se resserrent, le couloir devient oppressant.",
+        "image_prompt": "Murs jaunes se refermant, vue subjective, sentiment de claustrophobie",
+        "animation_notes": "Effet de distorsion, pression visuelle",
+        "sound_effects": "Bruit de déchirure, grondement sourd",
+        "duration_seconds": 10
+      },
+      {
+        "order": 8,
+        "title": "L'issue de secours",
+        "narration": "Mais une issue existe. Un jeu dans les Backrooms n'est pas qu'une prison. Il y a des niveaux, des secrets, et des fuites possibles.",
+        "visual_description": "Plan large d'une porte faiblement éclairée au bout d'un couloir, avec un panneau 'Sortie'.",
+        "image_prompt": "Porte de sortie faiblement éclairée au bout d'un couloir jaune, panneau lumineux, espoir",
+        "animation_notes": "Caméra avance vers la porte, lumière qui pulse",
+        "sound_effects": "Bip électronique, bourdonnement qui s'intensifie",
+        "duration_seconds": 12
+      },
+      {
+        "order": 9,
+        "title": "Le prix de la survie",
+        "narration": "Mais chaque sortie a un prix. Certains niveaux sont pires que d'autres. Savoir où aller est la clé.",
+        "visual_description": "Montage de différents niveaux des Backrooms : zones humides, sombres, ou étrangement colorées.",
+        "image_prompt": "Collage de plusieurs environnements Backrooms : moquette, eau, néons, ambiance angoissante",
+        "animation_notes": "Transitions rapides entre les scènes",
+        "sound_effects": "Bruit d'eau qui goutte, craquements",
+        "duration_seconds": 11
+      },
+      {
+        "order": 10,
+        "title": "La révélation finale",
+        "narration": "La vraie horreur des Backrooms, ce n'est pas l'entité. C'est de savoir que vous n'êtes jamais vraiment sorti.",
+        "visual_description": "Le personnage franchit la porte, se retrouve dans un couloir jaune identique. Boucle infinie.",
+        "image_prompt": "Personnage franchissant une porte, se retrouvant dans un couloir jaune similaire, désespoir",
+        "animation_notes": "Caméra recule, montre le personnage minuscule dans un labyrinthe infini",
+        "sound_effects": "Rire lointain, puis silence",
+        "duration_seconds": 11
+      }
+    ],
+    "conclusion": "Les Backrooms ne sont pas qu'un jeu. C'est une expérience qui joue avec votre perception de la réalité.",
+    "call_to_action": "Quel niveau des Backrooms voudriez-vous explorer ? Dites-le en commentaire.",
+    "estimated_duration": 104,
+    "language": "fr",
+    "target_audience": "Gamers",
+    "style": "Professionnel",
+    "metadata": {
+      "generator": "llm_v1",
+      "llm_provider": "deepseek",
+      "llm_model": "deepseek-v4-flash",
+      "angle": "Comparaison",
+      "niche": "Gaming & Esports",
+      "brand_id": "business_fr",
+      "brand_name": "Business FR",
+      "opportunity_score": 0.7487,
+      "urgency": 0.963,
+      "scene_count": 10,
+      "opportunity_id": "_xNSHS1Hz9o",
+      "llm_time_ms": 39352,
+      "llm_tokens": 6491,
+      "llm_cost_usd": 0.003213
+    }
+  },
+  "heuristic_score": {
+    "hook_score": 5.0,
+    "curiosity_score": 5.0,
+    "clarity_score": 7.5,
+    "rhythm_score": 9.0,
+    "cta_score": 6.0,
+    "retention_score": 8.3,
+    "emotion_score": 3.0,
+    "originality_score": 6.0,
+    "composite_score": 49.8,
+    "details": {
+      "hook_length": 61,
+      "total_length": 1385,
+      "scene_count": 10,
+      "avg_scene_duration": 10.4,
+      "duration_seconds": 104,
+      "generator": "llm_v1"
+    }
+  },
+  "llm_judge_score": null
+}

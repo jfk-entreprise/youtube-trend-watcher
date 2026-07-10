@@ -1,0 +1,16 @@
+{
+  "subject": "Bouton d'abonnement animé avec texte 'Abonne-toi' en néon bleu électrique et violet",
+  "scene_description": "Close-up sur un bouton d'abonnement lumineux au centre de l'écran, entouré de lignes animées et de particules flottantes. Le fond est noir profond. Le bouton vibre doucement avec un halo violet. Des icônes de gaming (manette, casque) apparaissent en arrière-plan de manière subtile.",
+  "style": "Cinématique, néon, futuriste, fond noir profond, éclairage néon bleu électrique et violet, HDR, 8K, format vertical 9:16, photorealistic, cinematic photography.",
+  "prompt": "Close-up of a glowing neon 'Abonne-toi' button in electric blue and violet, center composition, deep black background, animated neon lines and floating particles, subtle gaming icons silhouette in background, cinematic lighting, HDR, 8K resolution, vertical 9:16 format, photorealistic, motion blur effect for animation feel",
+  "negative_prompt": "text, watermark, logo, low quality, blurry, cartoon, anime, 3D render, infographic, diagram, presentation, stock photo, realistic human face, cluttered, overexposed, underexposed, flat lighting, signature, deformed, distorted anatomy, extra limbs, low resolution, illustration, painting, oversaturated colors, horizontal crop, incorrect aspect ratio, plastic skin, jpeg artifacts, schematic, chart, user interface, ui elements, app screenshot, bullet points, wall of text, powerpoint slide, presentation slide, flowchart, table layout",
+  "metadata": {
+    "goal": "Inciter l'utilisateur à s'abonner pour plus de contenu sur le Gaming & Esports",
+    "emotion": "Curiosité et anticipation",
+    "characters": [],
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "time_ms": 3862,
+    "cost_usd": 0.001012
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "shot_type": "Montage rapide",
+  "camera_angle": "Eye Level",
+  "lens": "35mm",
+  "composition": "Center Composition",
+  "depth_of_field": "Profondeur de champ modérée, arrière-plan légèrement flou",
+  "lighting_style": "Soft Diffused Lighting",
+  "color_palette": "Deep Blue + White",
+  "focal_point": "Monolithe",
+  "visual_priority": [
+    "Monolithe",
+    "HAL 9000",
+    "Passage dimensionnel"
+  ],
+  "thumbnail_moment": "Le monolithe noir se dresse verticalement au centre, éclairé par une lumière mystérieuse, créant un contraste saisissant avec l'obscurité environnante.",
+  "cinematic_goal": "Capturer l'essence révolutionnaire de 2001 en un montage dynamique, avec un focus sur le monolithe comme symbole de mystère et de transformation.",
+  "metadata": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "time_ms": 2576,
+    "cost_usd": 0.000953
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "subject": "Un réseau de nœuds lumineux bleu électrique et violet s'illumine progressivement en forme de cerveau ou de constellation, symbolisant l'algorithme prédictif.",
+  "scene_description": "Fond noir profond. Au centre, un réseau complexe de lignes et de points lumineux (bleu électrique et violet) commence à s'illuminer en cascade, comme un circuit qui s'active. La lumière se propage de l'intérieur vers l'extérieur, créant une forme organique et futuriste. Des particules lumineuses flottent autour. L'éclairage néon souligne les contours. La composition est centrée, symétrique, avec un effet de profondeur.",
+  "style": "Cinématique, néon, HDR, 8K, fond noir, lignes lumineuses animées, ambiance futuriste et accessible, qualité premium, vertical 9:16 aspect ratio, portrait orientation, photorealistic, cinematic photography.",
+  "prompt": "Cinematic close-up, center composition, black background, a network of electric blue and violet neon nodes and lines gradually lighting up in a cascade, forming a brain-like or constellation shape, particles floating, neon lighting, HDR, 8K, vertical 9:16, photorealistic, futuristic, accessible, high-end commercial look.",
+  "negative_prompt": "Infographic, diagram, flowchart, text, UI, dashboard, technical illustration, stock photo, dull colors, low contrast, blurry, cartoon, 3D render, low quality., watermark, logo, signature, deformed, distorted anatomy, extra limbs, low resolution, painting, oversaturated colors, horizontal crop, incorrect aspect ratio, plastic skin, jpeg artifacts, schematic, user interface, ui elements, app screenshot, bullet points, wall of text, powerpoint slide, presentation slide, table layout",
+  "metadata": {
+    "goal": "Visualiser l'activation d'un algorithme prédictif caché, rendant tangible l'idée de découverte et de puissance inexploitée.",
+    "emotion": "Curiosité mêlée de surprise",
+    "characters": [],
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "time_ms": 5219,
+    "cost_usd": 0.001094
+  }
+}

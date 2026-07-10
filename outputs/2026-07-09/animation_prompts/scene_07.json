@@ -1,0 +1,20 @@
+{
+  "camera_motion": "Crane down très lent, accompagnant l'apparition du texte.",
+  "subject_motion": "Le texte 'À retenir' apparaît lettre par lettre, puis s'illumine doucement. Le texte final 'Gaming & Esports, c'est accessible à tout le monde' s'affiche en dessous avec un fondu.",
+  "environment_motion": "Les lignes néon bleu/violet pulsent doucement, créant un mouvement de fond subtil. Des particules lumineuses montent lentement.",
+  "lighting_changes": "Le fond néon passe progressivement d'un violet froid à un bleu plus chaud et doré, évoquant l'aube ou la chaleur.",
+  "effects": "Particles lumineuses ascendantes, glow subtil sur le texte, transition de couleur du fond.",
+  "sound_design": "Musique douce et montante, nappes synthétiques chaleureuses, un léger 'ding' à chaque lettre apparaissant.",
+  "transition": "Dissolve vers la scène suivante (abonnement) avec un fondu au blanc.",
+  "duration": 6,
+  "prompt": "A 9:16 video, medium wide shot, center composition. The scene starts with a dark background with animated electric blue and violet neon lines, pulsing gently. A text overlay 'À retenir' types out slowly letter by letter in a glowing futuristic font. The camera performs a very slow crane down. As the camera moves, the neon background gradually shifts from cool violet to a warmer blue with golden undertones. Small luminous particles float upward. After 'À retenir' is fully displayed, the main text 'Gaming & Esports, c'est accessible à tout le monde' fades in below it with a soft glow. The overall mood is inspirational and warm, with a reflective pace. Cinematic lighting, high detail, professional photography style.",
+  "metadata": {
+    "goal": "Renforcer le sentiment d'accessibilité et d'ouverture, conclure la narration avec une note positive et inspirante.",
+    "emotion": "Inspiration, sérénité, accessibilité, chaleur.",
+    "pace": "Lent, réfléchi, contemplatif.",
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "time_ms": 5795,
+    "cost_usd": 0.001193
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "camera_motion": "Léger push-in très lent pour attirer le regard vers le centre de l'explosion",
+  "subject_motion": "L'interface se fissure puis se désintègre en particules lumineuses qui flottent lentement, révélant un réseau de connexions complexes en arrière-plan",
+  "environment_motion": "Les lignes lumineuses du réseau en arrière-plan s'animent doucement, pulsant comme un organisme vivant",
+  "lighting_changes": "La lumière passe d'un éclairage d'écran froid à une lueur ambiante néon plus organique, avec des reflets dansants sur les particules",
+  "effects": "Particules lumineuses scintillantes avec un léger flou de mouvement, traînées lumineuses des connexions, profondeur de champ pour isoler l'interface qui se désagrège",
+  "sound_design": "Bruit de verre qui se fissure puis un bourdonnement grave qui s'élève, accompagné de légères tonalités cristallines lorsque les particules se dispersent",
+  "transition": "Fondu enchaîné vers la scène suivante, les particules se fondant dans le nouveau décor",
+  "duration": 10,
+  "prompt": "Cinematic shot, medium wide shot, slow push-in camera movement. An Fr interface on a dark computer screen suddenly cracks and disintegrates into thousands of luminous blue and violet particles floating gently in space. Behind the interface, a complex network of glowing lines and connections pulses like a living organism. The particles drift slowly, revealing the intricate web. Neon lights, deep black background, 8K, HDR, photorealistic, shallow depth of field. The transition is calm and magical, emphasizing the revelation that Fr is a living ecosystem.",
+  "metadata": {
+    "goal": "Révéler que Fr est un écosystème vivant, pas une simple interface",
+    "emotion": "Émerveillement et révélation",
+    "pace": "Lent et contemplatif",
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "time_ms": 5715,
+    "cost_usd": 0.001206
+  }
+}

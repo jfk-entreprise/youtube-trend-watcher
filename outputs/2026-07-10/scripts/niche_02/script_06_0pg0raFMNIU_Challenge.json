@@ -1,0 +1,144 @@
+{
+  "opportunity_id": "0pg0raFMNIU",
+  "niche": "Musique & Clips",
+  "brief_angle": "Challenge",
+  "script": {
+    "title": "J'ai testé le clip 'Toz Pembe' avec l'IA : voici ce que j'ai découvert",
+    "hook": "Ce clip a été créé sans aucun acteur ni caméra.",
+    "introduction": "Et pourtant, il a été visionné des millions de fois. Comment est-ce possible ?",
+    "scenes": [
+      {
+        "order": 1,
+        "title": "Le mystère du clip",
+        "narration": "Le morceau 'Toz Pembe' du groupe Manifest cartonne. Mais ce qui intrigue, c'est son clip.",
+        "visual_description": "Extrait du clip officiel avec des visuels abstraits et colorés.",
+        "image_prompt": "Scène abstraite et psychédélique du clip 'Toz Pembe' avec des formes fluides et des couleurs vives.",
+        "animation_notes": "Léger zoom avant sur le clip, avec des particules flottantes.",
+        "sound_effects": "Extrait musical de 'Toz Pembe' en fond, volume modéré.",
+        "duration_seconds": 10
+      },
+      {
+        "order": 2,
+        "title": "Aucun tournage traditionnel",
+        "narration": "Aucun plateau, aucun comédien, aucune caméra. Tout a été généré par intelligence artificielle.",
+        "visual_description": "Transition vers une animation montrant une IA générant des images à partir de texte.",
+        "image_prompt": "Interface d'IA générant des images, lignes de code et formes émergeant.",
+        "animation_notes": "Animation de lignes de code défilant, puis apparition d'images abstraites.",
+        "sound_effects": "Son de clavier rapide et bruit de transformation numérique.",
+        "duration_seconds": 12
+      },
+      {
+        "order": 3,
+        "title": "Le prompt qui a tout changé",
+        "narration": "Le réalisateur a utilisé un simple prompt textuel pour décrire l'ambiance du morceau.",
+        "visual_description": "Texte du prompt apparaissant en surimpression sur une scène abstraite.",
+        "image_prompt": "Texte 'ambiance onirique, poussière rose, mouvement lent' sur fond de paysage désertique rosé.",
+        "animation_notes": "Le texte s'écrit lettre par lettre, puis l'arrière-plan se met en mouvement.",
+        "sound_effects": "Son de clavier et souffle doux.",
+        "duration_seconds": 11
+      },
+      {
+        "order": 4,
+        "title": "L'IA a tout interprété",
+        "narration": "L'IA a généré des séquences visuelles correspondant à chaque parole, chaque émotion.",
+        "visual_description": "Split screen : paroles du morceau à gauche, images générées à droite en synchronisation.",
+        "image_prompt": "Split screen avec paroles en turc et images abstraites changeant rapidement.",
+        "animation_notes": "Chaque mot déclenche une nouvelle image, rythme rapide.",
+        "sound_effects": "Musique de fond avec beats synchronisés aux transitions.",
+        "duration_seconds": 13
+      },
+      {
+        "order": 5,
+        "title": "Un résultat bluffant",
+        "narration": "Le résultat est un clip hypnotique, parfaitement en phase avec la musique.",
+        "visual_description": "Enchaînement de plusieurs plans du clip, montrant la fluidité et la cohérence.",
+        "image_prompt": "Série d'images oniriques : poussière rose, silhouettes floues, paysages désertiques.",
+        "animation_notes": "Transitions fluides entre les plans, effet de fondu enchaîné.",
+        "sound_effects": "Musique montant en intensité.",
+        "duration_seconds": 12
+      },
+      {
+        "order": 6,
+        "title": "Le coût ? Presque rien",
+        "narration": "Le budget de production était de quelques centaines d'euros, contre des milliers pour un clip traditionnel.",
+        "visual_description": "Graphique comparatif : barre 'traditionnel' haute, barre 'IA' très basse.",
+        "image_prompt": "Graphique à barres minimaliste avec des icônes de caméra et d'IA.",
+        "animation_notes": "Animation des barres qui se remplissent, la barre IA reste faible.",
+        "sound_effects": "Son de 'ding' pour chaque barre, puis bruit de caisse enregistreuse.",
+        "duration_seconds": 11
+      },
+      {
+        "order": 7,
+        "title": "Les limites de l'IA",
+        "narration": "Mais l'IA a ses limites : elle ne comprend pas toujours la narration, et certains plans sont incohérents.",
+        "visual_description": "Montage de quelques incohérences visuelles : objets qui disparaissent, visages déformés.",
+        "image_prompt": "Image déformée avec un visage fondu, des membres flous.",
+        "animation_notes": "Effet de glitch et distorsion sur les images.",
+        "sound_effects": "Son de grésillement et de déchirure numérique.",
+        "duration_seconds": 13
+      },
+      {
+        "order": 8,
+        "title": "La réaction du public",
+        "narration": "Malgré cela, le clip a été salué pour son audace. Les fans parlent d'une nouvelle ère.",
+        "visual_description": "Montage de commentaires positifs sous le clip, likes qui s'envolent.",
+        "image_prompt": "Interface YouTube avec commentaires élogieux et compteur de likes en hausse.",
+        "animation_notes": "Les commentaires défilent, le compteur de likes augmente rapidement.",
+        "sound_effects": "Son de notification et applaudissements.",
+        "duration_seconds": 11
+      },
+      {
+        "order": 9,
+        "title": "Ce que ça change pour les artistes",
+        "narration": "Désormais, des artistes sans gros budget peuvent créer des clips de qualité. La création devient accessible.",
+        "visual_description": "Artiste dans son studio, ordinateur avec logiciel d'IA ouvert, regardant son clip terminé.",
+        "image_prompt": "Artiste souriant devant un écran d'ordinateur affichant une interface d'IA de génération vidéo.",
+        "animation_notes": "Léger zoom avant sur l'écran, puis sur le visage de l'artiste.",
+        "sound_effects": "Musique douce et inspirante en fond.",
+        "duration_seconds": 12
+      }
+    ],
+    "conclusion": "L'IA n'est pas juste un outil, c'est un véritable partenaire créatif. Et ce n'est que le début.",
+    "call_to_action": "Et toi, quel clip aimerais-tu voir généré par IA ? Dis-le en commentaire.",
+    "estimated_duration": 105,
+    "language": "fr",
+    "target_audience": "Grand public",
+    "style": "Innovant",
+    "metadata": {
+      "generator": "llm_v1",
+      "llm_provider": "deepseek",
+      "llm_model": "deepseek-v4-flash",
+      "angle": "Challenge",
+      "niche": "Musique & Clips",
+      "brand_id": "ia_fr",
+      "brand_name": "IA FR",
+      "opportunity_score": 0.7176,
+      "urgency": 0.958,
+      "scene_count": 9,
+      "opportunity_id": "0pg0raFMNIU",
+      "llm_time_ms": 35660,
+      "llm_tokens": 6306,
+      "llm_cost_usd": 0.002992
+    }
+  },
+  "heuristic_score": {
+    "hook_score": 5.5,
+    "curiosity_score": 6.0,
+    "clarity_score": 9.0,
+    "rhythm_score": 9.0,
+    "cta_score": 6.5,
+    "retention_score": 7.5,
+    "emotion_score": 3.0,
+    "originality_score": 6.0,
+    "composite_score": 52.5,
+    "details": {
+      "hook_length": 47,
+      "total_length": 1208,
+      "scene_count": 9,
+      "avg_scene_duration": 11.666666666666666,
+      "duration_seconds": 105,
+      "generator": "llm_v1"
+    }
+  },
+  "llm_judge_score": null
+}

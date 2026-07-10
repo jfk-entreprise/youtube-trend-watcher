@@ -1,0 +1,247 @@
+{
+  "niches": [
+    {
+      "name": "US",
+      "volume": 84,
+      "avg_views": 359460.2738095238,
+      "avg_engagement": 5.857557904400522,
+      "avg_growth_speed": 10122.330186888836,
+      "niche_score": 26.628048741116874
+    },
+    {
+      "name": "FR",
+      "volume": 79,
+      "avg_views": 224351.20253164557,
+      "avg_engagement": 5.962470015207258,
+      "avg_growth_speed": 7416.75489959096,
+      "niche_score": 25.52579865751939
+    }
+  ],
+  "opportunities_by_niche": {
+    "US": [
+      {
+        "title": "We Played Zombies in The Backrooms",
+        "niche": "Gaming & Esports",
+        "source_video_id": "_xNSHS1Hz9o",
+        "overall_score": 0.7519,
+        "virality_score": 0.8617,
+        "growth_score": 1.0,
+        "evergreen_score": 0.7,
+        "trend_score": 0.939,
+        "competition_score": 0.354,
+        "production_difficulty": 0.35,
+        "urgency": 0.9695,
+        "recommendation": "Produire aujourd'hui — tendance active et croissance mesurée.",
+        "rationale": [
+          "Potentiel viral élevé (score composite 0.86)",
+          "Croissance mesurée : 61,841 vues/heure entre snapshots",
+          "Sujet pérenne — audience durable garantie (evergreen 0.70)",
+          "En tendance active (trend 0.94)",
+          "Niche 'Gaming & Esports' : 37 vidéos (7.4% du corpus) — trend moyen 0.81"
+        ],
+        "metadata": {
+          "raw_scores": {
+            "virality": 0.8617,
+            "growth": 1.0,
+            "evergreen": 0.7,
+            "trend": 0.939,
+            "competition": 0.354,
+            "difficulty": 0.35,
+            "knowledge": 0.0
+          },
+          "base_score": 0.7554,
+          "content_type": "Gameplay",
+          "language": "en",
+          "target_audience": "Gamers",
+          "emotion": "Neutre"
+        }
+      },
+      {
+        "title": "I Got Trained By a Minecraft Combat Master",
+        "niche": "Gaming & Esports",
+        "source_video_id": "yBy5NnLTiWQ",
+        "overall_score": 0.7335,
+        "virality_score": 0.8991,
+        "growth_score": 1.0,
+        "evergreen_score": 0.7,
+        "trend_score": 0.939,
+        "competition_score": 0.354,
+        "production_difficulty": 0.75,
+        "urgency": 0.9695,
+        "recommendation": "Produire aujourd'hui — tendance active et croissance mesurée. Production exigeante — prévoir les ressources adaptées.",
+        "rationale": [
+          "Potentiel viral élevé (score composite 0.90)",
+          "Croissance mesurée : 64,160 vues/heure entre snapshots",
+          "Sujet pérenne — audience durable garantie (evergreen 0.70)",
+          "En tendance active (trend 0.94)",
+          "Niche 'Gaming & Esports' : 37 vidéos (7.4% du corpus) — trend moyen 0.81"
+        ],
+        "metadata": {
+          "raw_scores": {
+            "virality": 0.8991,
+            "growth": 1.0,
+            "evergreen": 0.7,
+            "trend": 0.939,
+            "competition": 0.354,
+            "difficulty": 0.75,
+            "knowledge": 0.0
+          },
+          "base_score": 0.7369,
+          "content_type": "Long",
+          "language": "en",
+          "target_audience": "Gamers",
+          "emotion": "Neutre"
+        }
+      },
+      {
+        "title": "The Odyssey | Official Countdown Trailer",
+        "niche": "Cinéma & Séries",
+        "source_video_id": "AyIZ9tiiN8I",
+        "overall_score": 0.7221,
+        "virality_score": 0.8553,
+        "growth_score": 0.9358,
+        "evergreen_score": 0.6,
+        "trend_score": 0.913,
+        "competition_score": 0.2784,
+        "production_difficulty": 0.45,
+        "urgency": 0.934,
+        "recommendation": "Produire aujourd'hui — tendance active et croissance mesurée.",
+        "rationale": [
+          "Potentiel viral élevé (score composite 0.86)",
+          "Croissance mesurée : 24,957 vues/heure entre snapshots",
+          "En tendance active (trend 0.91)",
+          "Niche 'Cinéma & Séries' : 29 vidéos (5.8% du corpus) — trend moyen 0.83"
+        ],
+        "metadata": {
+          "raw_scores": {
+            "virality": 0.8553,
+            "growth": 0.9358,
+            "evergreen": 0.6,
+            "trend": 0.913,
+            "competition": 0.2784,
+            "difficulty": 0.45,
+            "knowledge": 0.0
+          },
+          "base_score": 0.7293,
+          "content_type": "Standard",
+          "language": "en",
+          "target_audience": "Cinéphiles",
+          "emotion": "Sensationnel"
+        }
+      }
+    ],
+    "FR": [
+      {
+        "title": "The Odyssey - Oh, Dear...",
+        "niche": "Cinéma & Séries",
+        "source_video_id": "BkGOs3_q79I",
+        "overall_score": 0.7532,
+        "virality_score": 0.8957,
+        "growth_score": 1.0,
+        "evergreen_score": 0.6,
+        "trend_score": 0.938,
+        "competition_score": 0.2784,
+        "production_difficulty": 0.45,
+        "urgency": 0.969,
+        "recommendation": "Produire aujourd'hui — tendance active et croissance mesurée.",
+        "rationale": [
+          "Potentiel viral élevé (score composite 0.90)",
+          "Croissance mesurée : 59,859 vues/heure entre snapshots",
+          "En tendance active (trend 0.94)",
+          "Niche 'Cinéma & Séries' : 29 vidéos (5.8% du corpus) — trend moyen 0.83"
+        ],
+        "metadata": {
+          "raw_scores": {
+            "virality": 0.8957,
+            "growth": 1.0,
+            "evergreen": 0.6,
+            "trend": 0.938,
+            "competition": 0.2784,
+            "difficulty": 0.45,
+            "knowledge": 0.0
+          },
+          "base_score": 0.7567,
+          "content_type": "Standard",
+          "language": "en",
+          "target_audience": "Cinéphiles",
+          "emotion": "Neutre"
+        }
+      },
+      {
+        "title": "『劇場版 薬屋のひとりごと 亡妃の秘宝』予告｜2026年12月11日（金）公開",
+        "niche": "Fr",
+        "source_video_id": "HP5wg0kTh54",
+        "overall_score": 0.7404,
+        "virality_score": 0.9574,
+        "growth_score": 0.8643,
+        "evergreen_score": 0.35,
+        "trend_score": 0.929,
+        "competition_score": 0.1254,
+        "production_difficulty": 0.15,
+        "urgency": 0.917,
+        "recommendation": "Produire aujourd'hui — tendance active et croissance mesurée. Niche peu exploitée — positionnement privilégié disponible. Production accessible — idéal pour tester rapidement.",
+        "rationale": [
+          "Potentiel viral élevé (score composite 0.96)",
+          "Croissance mesurée : 11,519 vues/heure entre snapshots",
+          "En tendance active (trend 0.93)",
+          "Niche 'Fr' : 13 vidéos (2.6% du corpus) — trend moyen 0.85",
+          "Faible concurrence dans cette niche — opportunité rare",
+          "Accélération de croissance positive (+97.3 vues/h²)"
+        ],
+        "metadata": {
+          "raw_scores": {
+            "virality": 0.9574,
+            "growth": 0.8643,
+            "evergreen": 0.35,
+            "trend": 0.929,
+            "competition": 0.1254,
+            "difficulty": 0.15,
+            "knowledge": 0.0
+          },
+          "base_score": 0.7498,
+          "content_type": "Short",
+          "language": "inconnu",
+          "target_audience": "Grand public",
+          "emotion": "Neutre"
+        }
+      },
+      {
+        "title": "manifest - Toz Pembe | Official Music Video",
+        "niche": "Musique & Clips",
+        "source_video_id": "0pg0raFMNIU",
+        "overall_score": 0.7206,
+        "virality_score": 0.9654,
+        "growth_score": 1.0,
+        "evergreen_score": 0.6,
+        "trend_score": 0.929,
+        "competition_score": 0.4014,
+        "production_difficulty": 0.85,
+        "urgency": 0.9645,
+        "recommendation": "Produire aujourd'hui — tendance active et croissance mesurée. Production exigeante — prévoir les ressources adaptées.",
+        "rationale": [
+          "Potentiel viral élevé (score composite 0.97)",
+          "Croissance mesurée : 141,100 vues/heure entre snapshots",
+          "En tendance active (trend 0.93)",
+          "Niche 'Musique & Clips' : 42 vidéos (8.3% du corpus) — trend moyen 0.81"
+        ],
+        "metadata": {
+          "raw_scores": {
+            "virality": 0.9654,
+            "growth": 1.0,
+            "evergreen": 0.6,
+            "trend": 0.929,
+            "competition": 0.4014,
+            "difficulty": 0.85,
+            "knowledge": 0.0
+          },
+          "base_score": 0.7244,
+          "content_type": "Clip Musical",
+          "language": "en",
+          "target_audience": "Grand public",
+          "emotion": "Neutre"
+        }
+      }
+    ]
+  },
+  "total_opportunities": 6
+}

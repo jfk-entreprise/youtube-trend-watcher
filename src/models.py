@@ -14,26 +14,22 @@ from typing import Optional
 class VideoSnapshot:
     """Capture instantanée d'une vidéo YouTube à un instant t."""
 
-    # --- Identité ---
+    # --- Champs obligatoires (sans valeur par défaut) ---
     video_id: str
     title: str
     channel_id: str
     channel_title: str
-    published_at: str       # ISO 8601, ex: "2026-06-21T10:10:13Z"
-    description: str        # Tronquée à 500 caractères
+    published_at: str           # ISO 8601, ex: "2026-06-21T10:10:13Z"
+    description: str            # Tronquée à 500 caractères
+    duration_iso: str           # Format brut de l'API, ex: "PT9M33S"
+    duration_seconds: int       # Converti en secondes, ex: 573
+    keyword: str                # Mot-clé ayant ramené la vidéo ; vide ("") pour les agents sans recherche
 
-    # --- Durée ---
-    duration_iso: str       # Format brut de l'API, ex: "PT9M33S"
-    duration_seconds: int   # Converti en secondes, ex: 573
-
-    # --- Statistiques (Optional : le créateur peut les masquer) ---
-    view_count: Optional[int]
-    like_count: Optional[int]
-    comment_count: Optional[int]
-
-    # --- Contexte de collecte ---
-    keyword: str            # Mot-clé ayant ramené la vidéo ; vide ("") pour les agents sans recherche
-    source: str = "keyword" # Agent source : 'keyword' | 'trending'
+    # --- Champs optionnels (avec valeurs par défaut, doivent être en dernier) ---
+    view_count: Optional[int] = None
+    like_count: Optional[int] = None
+    comment_count: Optional[int] = None
+    source: str = "keyword"     # Agent source : 'keyword' | 'trending'
     collected_at: str = field(
         default_factory=lambda: datetime.now(timezone.utc).isoformat()
     )

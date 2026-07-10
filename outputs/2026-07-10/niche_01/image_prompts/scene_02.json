@@ -1,0 +1,16 @@
+{
+  "subject": "Un vaisseau spatial élégant, aux lignes épurées et aux panneaux solaires dorés, flottant dans l'espace devant des colonnes grecques imposantes et partiellement effondrées.",
+  "scene_description": "Plan large symétrique. Un vaisseau spatial argenté et doré, rappelant les formes classiques, se tient au centre. En arrière-plan, un temple grec en ruine flotte dans l'espace, avec des colonnes ioniques brisées. L'éclairage dur du soleil crée des ombres nettes et des reflets sur le vaisseau. La palette de couleurs est dominée par un bleu profond et un or chaud. La composition est parfaitement symétrique, renforçant le caractère épique et intemporel.",
+  "style": "Photographique, cinématographique, HDR, 8K, ratio 9:16, éclairage directionnel dur, couleurs profondes (bleu et or), rendu réaliste avec une touche de grandeur classique, photorealistic, cinematic photography.",
+  "prompt": "A wide shot, symmetrical composition, a futuristic spaceship with golden solar panels floating in deep space, ancient Greek temple ruins with broken ionic columns in the background, hard directional lighting from a distant star, deep blue and gold color palette, cinematic, HDR, 8K, photorealistic, vertical 9:16 aspect ratio, epic atmosphere, no text.",
+  "negative_prompt": "Cartoon, illustration, painting, 2D, low quality, blurry, cluttered, text, watermark, diagram, infographic, UI, dashboard, explanatory graphics, multiple subjects, crowded composition, soft lighting, pastel colors, oversaturated, fisheye lens, distortion., logo, signature, deformed, distorted anatomy, extra limbs, low resolution, 3d render, oversaturated colors, horizontal crop, incorrect aspect ratio, plastic skin, jpeg artifacts, schematic, chart, user interface, ui elements, app screenshot, bullet points, wall of text, powerpoint slide, presentation slide, flowchart, table layout",
+  "metadata": {
+    "goal": "Montrer la transformation épique d'Ulysse en aventure spatiale, avec un vaisseau futuriste flottant devant des ruines grecques, symbolisant la fusion entre mythologie et science-fiction.",
+    "emotion": "Merveille et révélation",
+    "characters": [],
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "time_ms": 5696,
+    "cost_usd": 0.001174
+  }
+}

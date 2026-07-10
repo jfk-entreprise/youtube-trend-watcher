@@ -1,0 +1,144 @@
+{
+  "opportunity_id": "BkGOs3_q79I",
+  "niche": "Cinéma & Séries",
+  "brief_angle": "Liste",
+  "script": {
+    "title": "L'Odyssée : le secret que personne ne raconte",
+    "hook": "Et si le plus grand film de science-fiction était en réalité un documentaire ?",
+    "introduction": "Oui, vous avez bien entendu. En 1968, Stanley Kubrick a réalisé 2001 : L'Odyssée de l'espace. Mais ce que vous ne savez pas, c'est que le film cache un secret qui défie la logique.",
+    "scenes": [
+      {
+        "order": 1,
+        "title": "L'impossible prédiction",
+        "narration": "Le film montre un ordinateur qui prend le contrôle d'un vaisseau spatial. En 1968, l'idée d'une IA capable de parler et de raisonner était de la pure science-fiction.",
+        "visual_description": "Montage rapide de scènes de 2001 avec HAL 9000, puis coupure sur un écran d'ordinateur des années 60.",
+        "image_prompt": "1960s computer room with large mainframe, glowing lights, retrofuturistic aesthetic",
+        "animation_notes": "Transition rapide entre le film et l'ordinateur réel, effet de glitch",
+        "sound_effects": "Bruit de bande magnétique, puis silence",
+        "duration_seconds": 10
+      },
+      {
+        "order": 2,
+        "title": "La révélation",
+        "narration": "Mais voici le twist : le film est sorti un an avant qu'Intel ne crée le premier microprocesseur. Kubrick a anticipé l'IA sans même savoir comment la construire.",
+        "visual_description": "Image du premier microprocesseur Intel 4004, puis fondu sur le visage de HAL.",
+        "image_prompt": "Intel 4004 microprocessor close-up, macro photography, gold pins, vintage tech",
+        "animation_notes": "Zoom lent sur le microprocesseur, puis transition morphing vers HAL",
+        "sound_effects": "Bip électronique, puis respiration artificielle",
+        "duration_seconds": 12
+      },
+      {
+        "order": 3,
+        "title": "Le conseiller secret",
+        "narration": "Kubrick a consulté des scientifiques du MIT et de la NASA. Mais l'un d'eux, Marvin Minsky, a prédit que l'IA dépasserait l'homme en 30 ans. Il avait raison.",
+        "visual_description": "Photo de Marvin Minsky dans un laboratoire du MIT, puis animation d'un réseau de neurones.",
+        "image_prompt": "Marvin Minsky in MIT AI lab, 1960s, black and white, surrounded by early computers",
+        "animation_notes": "Transition de la photo vers une animation de neurones qui s'activent",
+        "sound_effects": "Bruit de machine à écrire, puis pulsations électroniques",
+        "duration_seconds": 12
+      },
+      {
+        "order": 4,
+        "title": "Le monolithe réel",
+        "narration": "Le monolithe noir du film représente une intelligence extraterrestre. Mais dans la réalité, un objet similaire existe : le disque de Phaistos, une ancienne tablette crétoise non déchiffrée.",
+        "visual_description": "Image du monolithe de 2001, puis transition vers le disque de Phaistos.",
+        "image_prompt": "Phaistos disc, ancient Minoan artifact, clay, spiral inscription, dramatic lighting",
+        "animation_notes": "Rotation lente du disque, puis superposition du monolithe",
+        "sound_effects": "Son grave et mystérieux, puis grattement de pierre",
+        "duration_seconds": 12
+      },
+      {
+        "order": 5,
+        "title": "Le voyage temporel",
+        "narration": "Mais le plus étrange, c'est que Kubrick a caché un message dans le film. La séquence psychédélique finale, où Bowman voyage à travers un tunnel de lumière, est une représentation exacte d'une expérience de mort imminente.",
+        "visual_description": "La séquence du tunnel lumineux de 2001, puis coupure sur un témoignage de NDE.",
+        "image_prompt": "Vibrant colorful tunnel of light, cosmic journey, psychedelic, starfield",
+        "animation_notes": "Animation fluide du tunnel, puis transition vers un électroencéphalogramme",
+        "sound_effects": "Musique cosmique de Ligeti, puis battement de cœur",
+        "duration_seconds": 14
+      },
+      {
+        "order": 6,
+        "title": "La coïncidence",
+        "narration": "Des années plus tard, des astronautes de la Station Spatiale Internationale ont rapporté avoir vu des flashs lumineux en orbite. Exactement comme dans le film.",
+        "visual_description": "Vue de la Terre depuis l'ISS, avec des flashs lumineux dans le ciel.",
+        "image_prompt": "Earth from ISS, aurora borealis, cosmic rays, space station window reflection",
+        "animation_notes": "Caméra subjective depuis l'ISS, flashs soudains",
+        "sound_effects": "Silence spatial, puis sifflement aigu",
+        "duration_seconds": 10
+      },
+      {
+        "order": 7,
+        "title": "Le message caché",
+        "narration": "Kubrick a inséré un code morse dans la bande sonore du film. Traduit, il donne : 'I AM ALIVE'. Un message de HAL ? Ou de Kubrick lui-même ?",
+        "visual_description": "Spectrogramme audio montrant les motifs morse, puis texte en surimpression.",
+        "image_prompt": "Audio waveform visualization, morse code patterns, digital glitch art, dark background",
+        "animation_notes": "Animation du spectrogramme, apparition du texte lettre par lettre",
+        "sound_effects": "Bips en morse, puis respiration mécanique",
+        "duration_seconds": 12
+      },
+      {
+        "order": 8,
+        "title": "La prophétie",
+        "narration": "En 1968, Kubrick a prédit les tablettes, les appels vidéo et l'IA. Mais il a aussi prédit que l'humanité se tournerait vers les étoiles. Aujourd'hui, SpaceX et la NASA préparent Mars.",
+        "visual_description": "Montage de scènes de 2001 avec des technologies modernes : iPad, Skype, SpaceX rocket.",
+        "image_prompt": "Split screen: left side 2001 space scene, right side modern SpaceX launch, futuristic contrast",
+        "animation_notes": "Split screen dynamique, chaque élément apparaît en fondu",
+        "sound_effects": "Compteur qui tourne, puis bruit de fusée",
+        "duration_seconds": 14
+      },
+      {
+        "order": 9,
+        "title": "Le dernier secret",
+        "narration": "Mais le plus fou, c'est que Kubrick a détruit toutes les copies du scénario original. Personne ne saura jamais ce qu'il avait vraiment en tête. Le mystère reste entier.",
+        "visual_description": "Image d'un scénario qui brûle, puis fondu au noir.",
+        "image_prompt": "Burning script pages, flames, dramatic shadows, cinematic lighting",
+        "animation_notes": "Plan fixe, le feu consume le papier, puis noir",
+        "sound_effects": "Crépitement de feu, puis silence",
+        "duration_seconds": 10
+      }
+    ],
+    "conclusion": "Alors, la prochaine fois que vous regarderez 2001, écoutez attentivement. Kubrick nous a peut-être laissé un message que nous ne sommes pas encore prêts à comprendre.",
+    "call_to_action": "Et vous, quel film cache selon vous le plus grand secret ? Dites-le en commentaire.",
+    "estimated_duration": 106,
+    "language": "fr",
+    "target_audience": "Cinéphiles",
+    "style": "Innovant",
+    "metadata": {
+      "generator": "llm_v1",
+      "llm_provider": "deepseek",
+      "llm_model": "deepseek-v4-flash",
+      "angle": "Liste",
+      "niche": "Cinéma & Séries",
+      "brand_id": "ia_fr",
+      "brand_name": "IA FR",
+      "opportunity_score": 0.75,
+      "urgency": 0.9625,
+      "scene_count": 9,
+      "opportunity_id": "BkGOs3_q79I",
+      "llm_time_ms": 20626,
+      "llm_tokens": 6540,
+      "llm_cost_usd": 0.003268
+    }
+  },
+  "heuristic_score": {
+    "hook_score": 6.5,
+    "curiosity_score": 7.0,
+    "clarity_score": 9.0,
+    "rhythm_score": 9.0,
+    "cta_score": 6.0,
+    "retention_score": 8.8,
+    "emotion_score": 3.0,
+    "originality_score": 6.5,
+    "composite_score": 55.8,
+    "details": {
+      "hook_length": 78,
+      "total_length": 2106,
+      "scene_count": 9,
+      "avg_scene_duration": 11.777777777777779,
+      "duration_seconds": 106,
+      "generator": "llm_v1"
+    }
+  },
+  "llm_judge_score": null
+}

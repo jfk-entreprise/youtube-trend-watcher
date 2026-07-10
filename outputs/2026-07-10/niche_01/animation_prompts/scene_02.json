@@ -1,0 +1,20 @@
+{
+  "camera_motion": "Orbite lente autour du vaisseau spatial, pivotant de 30 degrés sur la droite, tout en maintenant le temple en arrière-plan partiellement visible.",
+  "subject_motion": "Le vaisseau reste immobile, mais ses panneaux solaires dorés pivotent très légèrement pour capter la lumière.",
+  "environment_motion": "Les colonnes grecques se brisent lentement : des fissures apparaissent, des fragments de pierre se détachent et flottent en apesanteur.",
+  "lighting_changes": "La lumière du soleil reste dure, mais des ombres mobiles glissent sur le vaisseau à mesure que la caméra tourne, créant un jeu de reflets changeants.",
+  "effects": "Particules de poussière scintillantes en suspension, reflets lumineux sur les surfaces métalliques du vaisseau, légère lueur ambiante autour du temple.",
+  "sound_design": "Vent spatial sourd et continu, craquements lointains des colonnes qui se brisent, résonance métallique grave du vaisseau.",
+  "transition": "Fondu au noir progressif, puis cut sec vers la scène suivante.",
+  "duration": 10,
+  "prompt": "A wide shot of a sleek silver and gold spaceship with golden solar panels floating symmetrically in front of a ruined Greek temple with broken Ionic columns, floating in deep space. The camera slowly orbits 30 degrees to the right around the spaceship, while the columns begin to crack and break apart, sending stone fragments drifting in zero gravity. Hard directional sunlight creates sharp shadows and glints on the spaceship's surface. Dust particles sparkle in the light. The composition remains epic and timeless, with deep blue and warm gold colors. Cinematic, photorealistic, 8K, HDR, 9:16 aspect ratio.",
+  "metadata": {
+    "goal": "Montrer la transformation visuelle du mythe antique en science-fiction, symbolisant la réinvention de l'Odyssée.",
+    "emotion": "Émerveillement, majesté, révélation",
+    "pace": "Lent et solennel",
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "time_ms": 5533,
+    "cost_usd": 0.001254
+  }
+}

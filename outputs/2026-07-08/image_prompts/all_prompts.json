@@ -1,0 +1,154 @@
+[
+  {
+    "subject": "Le visage du joueur humain en gros plan, bouche bée de stupéfaction",
+    "scene_description": "Split screen vertical. À gauche, vue à la première personne dans Minecraft : un paysage en blocs (herbe, arbres cubiques, ciel pixelisé). Le joueur humain (invisible depuis cette vue) est attaqué par Aegis, dont les mouvements sont saccadés et mécaniques, épée levée. À droite, un gros plan du visage du joueur humain. Fond neutre légèrement flou, éclairé par la lumière bleutée de l'écran. L'expression est figée, bouche ouverte, yeux fixant l'écran avec incrédulité. La composition suit la règle des tiers. L'ambiance est tendue, avec un léger contre-jour de l'écran. Couleurs dominantes : bleus profonds (fond écran) et teintes chair sur le visage. L'image capte le moment de défaite et de révélation.",
+    "style": "Cinématographique, photoréaliste, HDR, 8K, ratio vertical 9:16. Éclairage naturel diffus, textures réalistes sur le visage. Légère aberration chromatique pour un rendu immersif. Ambiance néon futuriste (bleu électrique, violet) en accord avec l'identité de marque IA FR, photorealistic, cinematic photography.",
+    "prompt": "Generate an image where a human player is being dominated in a Minecraft PvP match, shown as a vertical split screen: on the left, first-person Minecraft view with an AI opponent (robotic movements) attacking the player; on the right, a close-up of the player's face with mouth agape and wide eyes, expressing shock and awe. The player is seated in front of a computer screen, the blue light illuminating his face.",
+    "negative_prompt": "Cartoon, illustration, 3D render, low quality, blurry, overexposed, anime style, unrealistic textures, no split screen effect, missing Minecraft elements, flat lighting., watermark, logo, signature, deformed, distorted anatomy, extra limbs, low resolution, painting, oversaturated colors, horizontal crop, incorrect aspect ratio, plastic skin, jpeg artifacts",
+    "metadata": {
+      "goal": "Montrer la domination de l'IA sur le joueur humain et la réaction de choc de ce dernier, menant à sa décision de devenir l'élève de l'IA.",
+      "emotion": "Choc, humilité, admiration mêlée de détermination",
+      "characters": [
+        "Le joueur humain : jeune homme d'une vingtaine d'années, visage expressif, bouche ouverte, yeux écarquillés de surprise, sourcils levés. Cheveux bruns en désordre, t-shirt blanc décontracté. Assis devant un écran d'ordinateur, mains positionnées sur le clavier.",
+        "Aegis (avatar Minecraft) : personnage Minecraft au skin sombre (noir et violet), mouvements saccadés et mécaniques, tenant une épée en diamant. Présence robotique et intimidante."
+      ],
+      "provider": "deepseek",
+      "model": "deepseek-v4-flash",
+      "time_ms": 17283,
+      "cost_usd": 0.003786
+    }
+  },
+  {
+    "subject": "a gaming monitor displaying a Minecraft-style game screen overlaid with a futuristic AI analysis interface, featuring dynamic data lines, a heatmap cursor, and blinking red error zones",
+    "scene_description": "Deep black background (brand color) with ambient neon blue and violet glows emanating from the screen. The monitor is centered, filling most of the frame. The screen shows a first-person view of a Minecraft game (the game world visible with pixelated textures) but overlaid with semi-transparent holographic elements: flowing lines of code, a circular heatmap highlighting cursor positions, and flashing red polygons marking areas where mistakes occurred. The composition follows the rule of thirds: the crosshair is near the center, and data clusters occupy the upper and lower thirds. Lighting is exclusively from the screen, creating a volumetric haze and subtle lens flares. Textures are crisp and realistic, with a soft gradient blending the UI elements into the game view.",
+    "style": "Cinematic, photorealistic, HDR, 8K, vertical 9:16, neon color grading (blue and violet), volumetric lighting, sharp details, subtle chromatic aberration, anamorphic lens flare, realistic screen reflections",
+    "prompt": "Generate an image showing a first-person perspective of a Minecraft-style game screen overlaid with a futuristic AI analysis interface: dynamic data lines, a heatmap cursor, and blinking red error zones indicating the player's mistakes, all rendered in neon blue and violet on a deep black background.",
+    "negative_prompt": "cartoon, illustration, 3D render style, low resolution, blurry, characters, people, avatars, Minecraft characters, outdated graphics, flat lighting, too bright, unrealistic neon, no lens effects, text, watermark, logo, signature, deformed, distorted anatomy, extra limbs, low quality, painting, oversaturated colors, horizontal crop, incorrect aspect ratio, plastic skin, jpeg artifacts",
+    "metadata": {
+      "goal": "Montrer que l'IA Aegis analyse en temps réel le comportement du joueur, en identifiant les erreurs avant qu'elles ne se produisent, créant une atmosphère de surveillance high-tech et d'assistance proactive.",
+      "emotion": "Fascination mêlée de vulnérabilité, anticipation technologique",
+      "characters": [],
+      "provider": "deepseek",
+      "model": "deepseek-v4-flash",
+      "time_ms": 16745,
+      "cost_usd": 0.003645
+    }
+  },
+  {
+    "subject": "human brain with glowing neural connections reforming",
+    "scene_description": "Dark background with deep blue and violet neon accents. A translucent, stylized human brain is centered, with intricate neural connections lighting up in bright blue and electric purple, reconfiguring in real-time. Neural pathways branch out like digital vines. In the background, a faint overlay of a Minecraft landscape with blocky terrain, but overlaid with glowing predictive trajectories and dashed lines showing optimal paths. The brain and Minecraft scene blend together, suggesting cognitive mapping. Composition follows rule of thirds, with brain offset to left, trajectories extending to right. Volumetric fog and subtle particle effects. Lighting is soft and diffused with a key light from upper left, creating depth. Colors: deep navy (#1A1A2E), dark blue (#16213E), electric blue (#0F3460), neon red (#E94560) accents on neural synapses, white (#FFFFFF) for trajectory highlights.",
+    "style": "Cinematic, photorealistic, HDR, 8K, volumetric lighting, realistic textures, color grading with neon blue and purple palette, vertical 9:16 aspect ratio, futuristic aesthetic.",
+    "prompt": "Generate an image showing a human brain with glowing neural connections reforming, transitioning into a Minecraft landscape with predictive trajectories revealing patterns. The scene should feel like cognitive retraining and pattern recognition.",
+    "negative_prompt": "Cartoon style, 3D render, low resolution, blurry, static, unrealistic anatomy, no text or watermarks, no illustrations, no anime., logo, signature, deformed, distorted anatomy, extra limbs, low quality, painting, oversaturated colors, horizontal crop, incorrect aspect ratio, plastic skin, jpeg artifacts",
+    "metadata": {
+      "goal": "Montrer la reprogrammation cognitive du joueur, visualisant l'entraînement de son cerveau à reconnaître des patterns dans Minecraft.",
+      "emotion": "émerveillement, compréhension, éveil",
+      "characters": [],
+      "provider": "deepseek",
+      "model": "deepseek-v4-flash",
+      "time_ms": 16299,
+      "cost_usd": 0.00391
+    }
+  },
+  {
+    "subject": "",
+    "scene_description": "Composition standard. Règle des tiers. Fond neutre. Lumière naturelle diffusée. Key à 30°, fill à 90%. Ambiance soft. Style: cinematic, professional photography, high detail. Color palette: #1A1A2E, #16213E, #0F3460, #E94560. Aspect ratio: 9:16 (720x1280).",
+    "style": "Fond noir profond, lignes lumineuses animées, ambiance néon — bleu électrique et violet, futuriste mais accessible",
+    "prompt": "",
+    "negative_prompt": "blurry, low quality, distorted, ugly, deformed, bad anatomy",
+    "metadata": {
+      "goal": "",
+      "emotion": "",
+      "characters": [],
+      "provider": "heuristic_image_v1",
+      "model": "",
+      "time_ms": 0,
+      "cost_usd": 0.0
+    }
+  },
+  {
+    "subject": "",
+    "scene_description": "Composition standard. Règle des tiers. Fond neutre. Lumière naturelle diffusée. Key à 30°, fill à 90%. Ambiance soft. Style: cinematic, professional photography, high detail. Color palette: #1A1A2E, #16213E, #0F3460, #E94560. Aspect ratio: 9:16 (720x1280).",
+    "style": "Fond noir profond, lignes lumineuses animées, ambiance néon — bleu électrique et violet, futuriste mais accessible",
+    "prompt": "",
+    "negative_prompt": "blurry, low quality, distorted, ugly, deformed, bad anatomy",
+    "metadata": {
+      "goal": "",
+      "emotion": "",
+      "characters": [],
+      "provider": "heuristic_image_v1",
+      "model": "",
+      "time_ms": 0,
+      "cost_usd": 0.0
+    }
+  },
+  {
+    "subject": "les doigts du joueur sur le clavier et l'écran du jeu affichant un pattern unique",
+    "scene_description": "Gros plan sur les doigts du joueur frappant le clavier mécanique rétroéclairé, au ralenti. En arrière-plan, l'écran du jeu Minecraft PvP montre un pattern lumineux complexe, avec des indicateurs néon bleu électrique et violet. L'éclairage est doux, venant de l'écran et du clavier, créant des reflets sur les doigts. Fond sombre, ambiance futuriste et intense. Composition centrée sur les doigts et le pattern à l'écran, règle des tiers respectée.",
+    "style": "cinematic, photorealistic, HDR, 8K, vertical 9:16, dark background, neon lights, blue and purple color grading, sharp focus, depth of field, volumetric lighting, realistic textures",
+    "prompt": "Generate an image showing a close-up of a young man's fingers typing on a mechanical keyboard in slow motion, with the computer screen in the background displaying a rare pattern in Minecraft PvP gameplay, glowing indicators in blue and purple neon, the player's expression is surprised and hopeful, the scene is dark and cinematic.",
+    "negative_prompt": "blurry, cartoon, 3D render, low resolution, distorted hands, missing fingers, bad anatomy, oversaturated, noise, artifacts, text, watermark, signature, logo, deformed, distorted anatomy, extra limbs, low quality, illustration, painting, oversaturated colors, horizontal crop, incorrect aspect ratio, plastic skin, jpeg artifacts",
+    "metadata": {
+      "goal": "Montrer le moment de découverte du pattern unique que l'IA n'a jamais vu, créant un sentiment de percée et d'espoir.",
+      "emotion": "excitation, espoir, détermination",
+      "characters": [
+        "Le joueur humain : jeune homme d'une vingtaine d'années, visage expressif, bouche ouverte, yeux écarquillés de surprise, sourcils levés. Cheveux bruns en désordre, t-shirt blanc décontracté. Assis devant un écran d'ordinateur, mains positionnées sur le clavier."
+      ],
+      "provider": "deepseek",
+      "model": "deepseek-v4-flash",
+      "time_ms": 8679,
+      "cost_usd": 0.002698
+    }
+  },
+  {
+    "subject": "",
+    "scene_description": "Composition standard. Règle des tiers. Fond neutre. Lumière naturelle diffusée. Key à 30°, fill à 90%. Ambiance soft. Style: cinematic, professional photography, high detail. Color palette: #1A1A2E, #16213E, #0F3460, #E94560. Aspect ratio: 9:16 (720x1280).",
+    "style": "Fond noir profond, lignes lumineuses animées, ambiance néon — bleu électrique et violet, futuriste mais accessible",
+    "prompt": "",
+    "negative_prompt": "blurry, low quality, distorted, ugly, deformed, bad anatomy",
+    "metadata": {
+      "goal": "",
+      "emotion": "",
+      "characters": [],
+      "provider": "heuristic_image_v1",
+      "model": "",
+      "time_ms": 0,
+      "cost_usd": 0.0
+    }
+  },
+  {
+    "subject": "Holographic screen displaying an exponential growth curve with data visualizations",
+    "scene_description": "A futuristic clean room with white walls and smooth surfaces. A large holographic screen floats in the center, displaying a bright exponential curve that glows in electric blue and violet, with abstract data points and charts. Ambient neon lighting from the screen and ceiling casts soft reflections. The room feels spacious and modern, with minimalistic design. The background is neutral but with subtle grid lines. The overall ambiance is calm yet futuristic, with a sense of progress and achievement.",
+    "style": "Cinematic, photorealistic, HDR, 8K, volumetric lighting, neon color grading, 9:16 vertical",
+    "prompt": "Generate an image where a futuristic holographic screen shows an exponential growth curve with data visualizations in a clean, white room with neon blue and violet ambient lighting.",
+    "negative_prompt": "cluttered, noisy, characters, people, cartoon, 3D render style, dark, messy, low quality, blurry, text, watermark, logo, signature, deformed, distorted anatomy, extra limbs, low resolution, illustration, painting, oversaturated colors, horizontal crop, incorrect aspect ratio, plastic skin, jpeg artifacts",
+    "metadata": {
+      "goal": "To visually represent the realization that the AI has expanded the player's potential, showing progress through data visualization in a futuristic setting.",
+      "emotion": "inspiration and awe",
+      "characters": [],
+      "provider": "deepseek",
+      "model": "deepseek-v4-flash",
+      "time_ms": 12580,
+      "cost_usd": 0.003639
+    }
+  },
+  {
+    "subject": "Split screen: left side traditional gamer on PC with post-its, right side VR gamer with data overlays",
+    "scene_description": "Split screen composition, fond noir profond. À gauche : un bureau modeste avec un écran d'ordinateur, des post-its jaunes collés sur le moniteur et le mur, une souris filaire, lumière tamisée bleutée. Le joueur est penché, concentré mais tendu. À droite : espace futuriste ouvert, éclairage néon bleu électrique et violet, des lignes lumineuses animées traversent l'écran. Le joueur VR est debout, casque sur les yeux, mains tenant des contrôleurs invisibles, des graphiques et données holographiques flottent autour de lui en couleurs vives. Ambiance high-tech et propre. Motif de l'IA représenté par des particules lumineuses. Pas de fenêtre, pas de décor supplémentaire.",
+    "style": "Cinematic, photorealistic, HDR, 8K, vertical 9:16, color grading bleu/violet, volumetric lighting, realistic textures, subsurface scattering, depth of field léger, glow des éléments néon.",
+    "prompt": "Generate a vertical 9:16 split screen image. Left side: a young man in a white t-shirt sitting at a computer desk with yellow post-it notes on the monitor, focused but frustrated expression, dim blue light. Right side: a confident man with a VR headset standing in a dark room with neon blue and purple lights, surrounded by floating holographic data charts and graphs, smiling. Both sides have a black background. The overall mood is futuristic and hopeful.",
+    "negative_prompt": "Cartoon, illustration, 3D render, low quality, blurry, messy details, cluttered background, multiple people, text on screen, watermarks, lens flare, fish-eye, distortion, asymmetrical split uneven, post-its blocking face, ugly VR headset, dark shadows losing details., logo, signature, deformed, distorted anatomy, extra limbs, low resolution, painting, oversaturated colors, horizontal crop, incorrect aspect ratio, plastic skin, jpeg artifacts",
+    "metadata": {
+      "goal": "Montrer le contraste entre l'entraînement traditionnel solitaire et l'entraînement assisté par IA, et suggérer que ce dernier est l'avenir inévitable.",
+      "emotion": "Espoir et détermination pour le futur, avec une pointe de nostalgie pour le passé.",
+      "characters": [
+        "Le joueur humain : jeune homme d'une vingtaine d'années, visage expressif, bouche ouverte, yeux écarquillés de surprise, sourcils levés. Cheveux bruns en désordre, t-shirt blanc décontracté. Assis devant un écran d'ordinateur, mains positionnées sur le clavier.",
+        "Pro gamer VR : homme de 25-30 ans, sourire confiant, regard concentré mais joyeux. Cheveux courts bruns, barbe légère. Porte un casque VR noir et blanc, un t-shirt technique ajusté sombre. Entouré de données holographiques flottantes."
+      ],
+      "provider": "deepseek",
+      "model": "deepseek-v4-flash",
+      "time_ms": 12760,
+      "cost_usd": 0.003412
+    }
+  }
+]

@@ -1,0 +1,22 @@
+{
+  "shot_type": "Medium Wide Shot",
+  "camera_angle": "Eye Level",
+  "lens": "35mm",
+  "composition": "Center Composition",
+  "depth_of_field": "deep depth of field, sharp throughout",
+  "lighting_style": "Neon",
+  "color_palette": "Electric Blue + Violet + Black",
+  "focal_point": "Horizon line with neon grid",
+  "visual_priority": [
+    "Neon grid landscape",
+    "Calm atmosphere"
+  ],
+  "thumbnail_moment": "A vast neon grid landscape stretching to the horizon, calm and resolved",
+  "cinematic_goal": "Provide a moment of calm and resolution, visually summarizing the journey with a wide, serene view of the neon world.",
+  "metadata": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "time_ms": 2138,
+    "cost_usd": 0.000893
+  }
+}

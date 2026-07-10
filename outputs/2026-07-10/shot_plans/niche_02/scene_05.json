@@ -1,0 +1,23 @@
+{
+  "shot_type": "Split Screen",
+  "camera_angle": "Eye Level",
+  "lens": "35mm",
+  "composition": "Symmetry",
+  "depth_of_field": "Deep focus",
+  "lighting_style": "Neon",
+  "color_palette": "Blue Electric + Violet + Transparent White",
+  "focal_point": "Left side: normal user interface",
+  "visual_priority": [
+    "Normal interface",
+    "Invisible mode interface",
+    "Activity icons"
+  ],
+  "thumbnail_moment": "Left side shows normal interface, right side shows invisible mode with activity icons glowing",
+  "cinematic_goal": "Reveal the contrast between normal and invisible mode, emphasizing the hidden power of the feature",
+  "metadata": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "time_ms": 2275,
+    "cost_usd": 0.00091
+  }
+}

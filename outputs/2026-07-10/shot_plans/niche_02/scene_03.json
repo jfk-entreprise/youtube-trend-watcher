@@ -1,0 +1,23 @@
+{
+  "shot_type": "Close-Up",
+  "camera_angle": "Eye Level",
+  "lens": "50mm",
+  "composition": "Leading Lines",
+  "depth_of_field": "shallow depth of field, subject in focus with slight bokeh on background",
+  "lighting_style": "Neon",
+  "color_palette": "Blue Electric + Violet + White",
+  "focal_point": "Climbing bar graph",
+  "visual_priority": [
+    "Bar graph",
+    "Blinking percentage",
+    "Grid lines"
+  ],
+  "thumbnail_moment": "Bar graph cresting with 73% blinking in neon blue",
+  "cinematic_goal": "Emphasize the dramatic impact of the data through dynamic composition and a single compelling moment.",
+  "metadata": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "time_ms": 2213,
+    "cost_usd": 0.000892
+  }
+}
