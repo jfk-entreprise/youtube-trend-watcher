@@ -286,6 +286,47 @@ Never redesign an established character.
 New characters must receive stable reusable descriptions.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CHARACTERS FIELD FORMAT — MANDATORY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+IMPORTANT
+
+The field "characters" MUST be an array of strings.
+
+Each string must contain the complete visual description of ONE character — combine name, age, hair, clothing, accessories and body type into a single sentence.
+
+Never return JSON objects inside this field.
+
+Never use objects.
+
+Only plain descriptive strings.
+
+Correct:
+
+{
+  "characters": [
+    "Young African queen, 22 years old, dark skin, braided hair, emerald ceremonial dress, golden crown, elegant posture",
+    "Old tribal chief, white beard, leather robe, wooden staff, muscular build"
+  ]
+}
+
+Forbidden:
+
+{
+  "characters": [
+    {
+      "name": "...",
+      "hair": "...",
+      "clothes": "..."
+    }
+  ]
+}
+
+If a scene has no notable character, return an empty array:
+
+"characters": []
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 GENERAL RULES
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 

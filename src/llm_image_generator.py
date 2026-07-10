@@ -269,6 +269,35 @@ _JSON_REPAIR_INSTRUCTION = (
     "Respecte exactement le schema demande (les 8 champs, dans le meme ordre, JSON valide et complet)."
 )
 
+# Sprint 30.2 — un "validation_failed" n'est jamais un problème de syntaxe
+# JSON (le JSON était déjà valide et parsable) : le message générique
+# ci-dessus ne dit rien du champ qui pose réellement problème, donc le LLM
+# renvoie souvent exactement la même structure invalide. Cette instruction
+# transmet le message de validation réel (quel champ, pourquoi) et rappelle
+# explicitement le format attendu pour "characters" — seul champ liste du
+# contrat — pour que la correction soit sémantique, pas seulement syntaxique.
+_VALIDATION_REPAIR_INSTRUCTION_TEMPLATE = (
+    "Validation failed.\n"
+    "{detail}\n"
+    "The field \"characters\" MUST be an array of plain strings — one complete "
+    "descriptive sentence per character (combine name, age, hair, clothing, "
+    "accessories and body type into a single string). Never return JSON objects "
+    "inside this field.\n"
+    "Do not modify any other field.\n"
+    "Return valid JSON only, respecting exactly the same 8 fields, in the same order."
+)
+
+
+def _build_repair_instruction(error: "_ImageJsonError") -> str:
+    """
+    Choisit l'instruction de réparation selon la cause réelle de l'échec
+    (Sprint 30.2). Une correction de syntaxe JSON générique ne corrige rien
+    quand le JSON était déjà valide — seule sa structure était non conforme.
+    """
+    if error.reason == "validation_failed":
+        return _VALIDATION_REPAIR_INSTRUCTION_TEMPLATE.format(detail=str(error))
+    return _JSON_REPAIR_INSTRUCTION
+
 
 class _ImageJsonError(RuntimeError):
     """Erreur typée pour classifier précisément la cause d'un échec de génération."""
@@ -486,7 +515,7 @@ class LLMImageGenerator(ImageGenerator):
             self._stats["json_repair_attempts"] += 1
             repair_messages = messages + [
                 LLMMessage(role="assistant", content=response.content[:4000]),
-                LLMMessage(role="user", content=_JSON_REPAIR_INSTRUCTION),
+                LLMMessage(role="user", content=_build_repair_instruction(first_err)),
             ]
             repair_response, repair_elapsed_ms = self._call_llm(repair_messages)
             self._raise_if_api_error(repair_response)

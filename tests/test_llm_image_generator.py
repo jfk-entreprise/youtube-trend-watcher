@@ -41,6 +41,8 @@ from src.llm_image_generator import (
     _REQUIRED_LIST_FIELDS,
     _finalize_style_for_render,
     _finalize_negative_prompt,
+    _build_repair_instruction,
+    _JSON_REPAIR_INSTRUCTION,
 )
 from src.image_engine import GeneratedImage, HeuristicImageGenerator, ImageGenerator
 from src.visual_engine import VisualPlan, VisualScene
@@ -723,6 +725,131 @@ class TestIntelligentRetry:
         gen.generate_from_scenes(script_scene, visual_scene, brand)
 
         assert gen.characters_bible  # le personnage de valid_llm_json a bien été verrouillé
+
+
+# ── Tests : réparation sémantique du champ "characters" (Sprint 30.2) ────────
+# Régression du bug confirmé par l'audit du run GitHub Actions réel (#5,
+# 29120900792) : 10/10 fallbacks observés venaient de "characters" renvoyé
+# comme une liste d'objets structurés au lieu d'une liste de chaînes, et le
+# message de réparation générique ("Corrige UNIQUEMENT le JSON") ne corrigeait
+# jamais ce cas car le JSON était déjà syntaxiquement valide (0/10 réparations
+# réussies). Ces tests verrouillent : (1) le validateur continue de rejeter
+# la structure fautive, (2) l'instruction de réparation cible maintenant ce
+# problème sémantique précis, (3) le flux complet se rétablit sans fallback
+# quand le second appel corrige correctement le format.
+
+_CHARACTERS_AS_OBJECTS = json.dumps({
+    "hair": "Long black braids",
+    "clothes": "Blue ceremonial robe",
+})
+
+
+class TestBuildRepairInstruction:
+    def test_validation_failed_gets_semantic_instruction(self):
+        error = _ImageJsonError(
+            "validation_failed",
+            "Le champ 'characters' doit être une liste de chaînes "
+            "(le LLM a renvoyé des objets structurés au lieu de descriptions textuelles)",
+        )
+        instruction = _build_repair_instruction(error)
+        assert "array of plain strings" in instruction
+        assert "characters" in instruction
+        assert "descriptions textuelles" in instruction  # message de validation réel transmis
+        assert instruction != _JSON_REPAIR_INSTRUCTION
+
+    def test_non_validation_reason_keeps_generic_syntax_instruction(self):
+        error = _ImageJsonError("json_invalid", "Expecting value: line 1 column 1 (char 0)")
+        instruction = _build_repair_instruction(error)
+        assert instruction == _JSON_REPAIR_INSTRUCTION
+
+
+class TestCharactersObjectRegression:
+    """Reproduit exactement le bug de production (Sprint 30.1/30.2)."""
+
+    def test_validator_still_rejects_character_objects(self, valid_llm_json):
+        """Le validateur n'a pas été assoupli (contrainte du sprint) — il
+        continue de rejeter des objets structurés dans 'characters'."""
+        data = dict(valid_llm_json)
+        data["characters"] = [json.loads(_CHARACTERS_AS_OBJECTS)]
+        with pytest.raises(ValueError, match="characters"):
+            LLMImageGenerator._validate_json_structure(data)
+
+    def test_repair_prompt_targets_characters_when_that_is_the_cause(
+        self, script_scene, visual_scene, brand, valid_llm_json,
+    ):
+        """Quand le premier échec est bien 'characters' en objets, le message
+        de réparation envoyé au LLM doit nommer précisément ce problème —
+        pas l'instruction générique de syntaxe JSON."""
+        first_attempt = dict(valid_llm_json)
+        first_attempt["characters"] = [json.loads(_CHARACTERS_AS_OBJECTS)]
+
+        provider = _ScriptedProvider([
+            _make_llm_response(json.dumps(first_attempt)),
+            _make_llm_response(json.dumps(valid_llm_json)),
+        ])
+        gen = LLMImageGenerator(max_retries=1)
+        gen._provider = provider
+
+        captured_messages = []
+        original_generate = provider.generate
+
+        def spy_generate(messages, **kwargs):
+            captured_messages.append(messages)
+            return original_generate(messages, **kwargs)
+
+        provider.generate = spy_generate
+        gen.generate_from_scenes(script_scene, visual_scene, brand)
+
+        repair_call_messages = captured_messages[1]
+        repair_instruction = repair_call_messages[-1].content
+        assert "array of plain strings" in repair_instruction
+        assert "characters" in repair_instruction
+        assert "Corrige UNIQUEMENT le JSON" not in repair_instruction
+
+    def test_end_to_end_recovers_without_fallback_when_repair_flattens_characters(
+        self, script_scene, visual_scene, brand, valid_llm_json,
+    ):
+        """Bout en bout : première réponse avec des objets dans 'characters',
+        seconde réponse (corrigée) avec des chaînes — le résultat final doit
+        respecter le contrat List[str], sans jamais tomber en fallback."""
+        first_attempt = dict(valid_llm_json)
+        first_attempt["characters"] = [json.loads(_CHARACTERS_AS_OBJECTS)]
+
+        gen = LLMImageGenerator(max_retries=1)
+        gen._provider = _ScriptedProvider([
+            _make_llm_response(json.dumps(first_attempt)),
+            _make_llm_response(json.dumps(valid_llm_json)),
+        ])
+
+        image_prompt = gen.generate_from_scenes(script_scene, visual_scene, brand)
+
+        assert image_prompt.metadata["provider"] != "heuristic_image_v1"
+        assert gen.stats["fallbacks"] == 0
+        assert gen.stats["json_repair_attempts"] == 1
+        assert gen.stats["json_repairs_success"] == 1
+        characters = image_prompt.metadata["characters"]
+        assert isinstance(characters, list)
+        assert all(isinstance(item, str) for item in characters)
+
+    def test_falls_back_if_second_attempt_still_returns_objects(
+        self, script_scene, visual_scene, brand, valid_llm_json,
+    ):
+        """Si la réparation échoue elle aussi, le fallback heuristique reste
+        le filet de sécurité — aucune régression sur ce comportement."""
+        broken = dict(valid_llm_json)
+        broken["characters"] = [json.loads(_CHARACTERS_AS_OBJECTS)]
+
+        gen = LLMImageGenerator(max_retries=1)
+        gen._provider = _ScriptedProvider([
+            _make_llm_response(json.dumps(broken)),
+            _make_llm_response(json.dumps(broken)),
+        ])
+
+        image_prompt = gen.generate_from_scenes(script_scene, visual_scene, brand)
+
+        assert image_prompt.metadata["provider"] == "heuristic_image_v1"
+        assert image_prompt.metadata["fallback_reason"] == "validation_failed"
+        assert "characters" in image_prompt.metadata["fallback_detail"]
 
 
 # ── Tests : generate(scene, plan) — interface ImageGenerator ──────────────────
