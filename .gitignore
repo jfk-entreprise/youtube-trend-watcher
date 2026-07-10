@@ -43,3 +43,10 @@ logs/
 
 # Données collectées (ne pas versionner le CSV)
 data/*.csv
+
+# Sorties du pipeline quotidien (générées à chaque run, jamais des sources —
+# voir GitHub Actions "upload-artifact" dans daily_pipeline.yml pour la
+# conservation réelle des runs. Sprint 29.2 : des runs locaux avaient été
+# committés par erreur, ce qui rendait un ancien run indiscernable d'un
+# nouveau quand on regardait le dépôt plutôt que l'artefact du run.)
+outputs/

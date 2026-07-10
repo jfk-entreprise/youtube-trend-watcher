@@ -1,10 +1,11 @@
 """
-Notification Service — Sprint 29.1 (résumé enrichi + lien Drive + diagnostic).
+Notification Service — Sprint 29.1 (résumé enrichi + lien de stockage + diagnostic),
+mis à jour Sprint 30 (Google Drive → Supabase Storage).
 
 Envoie automatiquement le résumé de production quotidien via un bot Telegram
 (voir .env.example : TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID), avec un lien
-direct vers le package de production sur Google Drive quand il a été
-uploadé avec succès (voir src/google_drive_uploader.py, UploadResult.remote_url).
+direct vers le package de production sur Supabase Storage quand il a été
+uploadé avec succès (voir src/supabase_storage_uploader.py, UploadResult.remote_url).
 
 LoggingNotificationService reste l'implémentation de repli tant que Telegram
 n'est pas configuré (dev local, CI sans secrets, etc.) — aucune régression.
@@ -65,7 +66,7 @@ class ChannelSummary:
     subject: str
     duration_seconds: int
     scene_count: int
-    drive_link: Optional[str] = None  # lien du package Drive de cette production, si uploadé avec succès
+    storage_link: Optional[str] = None  # lien Supabase Storage de cette production, si uploadé avec succès
 
 
 @dataclass
@@ -116,9 +117,9 @@ def format_summary_text(summary: DailyProductionSummary) -> str:
         "Ready",
     ]
 
-    links = [(c.niche_name, c.drive_link) for c in summary.channels if c.drive_link]
+    lines += ["", "📦 Storage:", "Supabase Storage"]
+    links = [(c.niche_name, c.storage_link) for c in summary.channels if c.storage_link]
     if links:
-        lines += ["", "📁 Production package"]
         if len(links) == 1:
             lines.append(links[0][1])
         else:

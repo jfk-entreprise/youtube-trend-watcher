@@ -29,12 +29,12 @@ def _summary(with_links=False, duration=684.0) -> DailyProductionSummary:
             ChannelSummary(
                 niche_name="IA", channel_name="IA FR", subject="L'IA va-t-elle nous remplacer ?",
                 duration_seconds=90, scene_count=9,
-                drive_link="https://drive.google.com/drive/folders/abc123" if with_links else None,
+                storage_link="https://proj.supabase.co/storage/v1/object/public/production/abc123" if with_links else None,
             ),
             ChannelSummary(
                 niche_name="Histoire", channel_name="Histoire FR", subject="La chute de Rome",
                 duration_seconds=120, scene_count=10,
-                drive_link="https://drive.google.com/drive/folders/def456" if with_links else None,
+                storage_link="https://proj.supabase.co/storage/v1/object/public/production/def456" if with_links else None,
             ),
         ],
         pipeline_duration_seconds=duration,
@@ -83,33 +83,38 @@ class TestFormatSummaryTextStructure:
         assert "⏱ Pipeline duration" not in text
 
 
-class TestFormatSummaryTextDriveLink:
-    def test_message_with_drive_links(self):
-        text = format_summary_text(_summary(with_links=True))
-
-        assert "📁 Production package" in text
-        assert "https://drive.google.com/drive/folders/abc123" in text
-        assert "https://drive.google.com/drive/folders/def456" in text
-        # Plusieurs liens → préfixés par niche pour rester lisibles.
-        assert "• IA: https://drive.google.com/drive/folders/abc123" in text
-
-    def test_message_without_drive_link_omits_section(self):
+class TestFormatSummaryTextStorageLink:
+    def test_message_always_names_supabase_storage(self):
+        # Le bloc "📦 Storage: / Supabase Storage" doit apparaître même sans lien
+        # (upload non configuré/échoué) — le résumé reste utile, jamais silencieux.
         text = format_summary_text(_summary(with_links=False))
 
-        assert "📁 Production package" not in text
-        assert "drive.google.com" not in text
+        assert "📦 Storage:" in text
+        assert "Supabase Storage" in text
+
+    def test_message_with_storage_links(self):
+        text = format_summary_text(_summary(with_links=True))
+
+        assert "https://proj.supabase.co/storage/v1/object/public/production/abc123" in text
+        assert "https://proj.supabase.co/storage/v1/object/public/production/def456" in text
+        # Plusieurs liens → préfixés par niche pour rester lisibles.
+        assert "• IA: https://proj.supabase.co/storage/v1/object/public/production/abc123" in text
+
+    def test_message_without_storage_link_omits_link_lines(self):
+        text = format_summary_text(_summary(with_links=False))
+
+        assert "supabase.co/storage" not in text
 
     def test_single_link_shown_without_niche_prefix(self):
         summary = _summary(with_links=False)
         summary.channels = [summary.channels[0]]
-        summary.channels[0].drive_link = "https://drive.google.com/drive/folders/solo"
+        summary.channels[0].storage_link = "https://proj.supabase.co/storage/v1/object/public/production/solo"
 
         text = format_summary_text(summary)
 
-        assert "📁 Production package" in text
         lines = text.splitlines()
-        idx = lines.index("📁 Production package")
-        assert lines[idx + 1] == "https://drive.google.com/drive/folders/solo"
+        idx = lines.index("Supabase Storage")
+        assert lines[idx + 1] == "https://proj.supabase.co/storage/v1/object/public/production/solo"
 
 
 class TestLoggingNotificationService:
@@ -141,7 +146,7 @@ class TestLoggingNotificationService:
 
 
 class TestTelegramNotificationService:
-    def test_sends_expected_payload_with_drive_link(self):
+    def test_sends_expected_payload_with_storage_link(self):
         service = TelegramNotificationService(bot_token="123:ABC", chat_id="42")
 
         with patch("requests.post", return_value=_fake_response(200)) as mock_post:
@@ -151,18 +156,20 @@ class TestTelegramNotificationService:
         args, kwargs = mock_post.call_args
         assert args[0] == "https://api.telegram.org/bot123:ABC/sendMessage"
         assert kwargs["data"]["chat_id"] == "42"
-        assert "drive.google.com" in kwargs["data"]["text"]
+        assert "supabase.co/storage" in kwargs["data"]["text"]
+        assert "Supabase Storage" in kwargs["data"]["text"]
         assert result.success is True
         assert result.status == "sent"
 
-    def test_sends_expected_payload_without_drive_link(self):
+    def test_sends_expected_payload_without_storage_link(self):
         service = TelegramNotificationService(bot_token="123:ABC", chat_id="42")
 
         with patch("requests.post", return_value=_fake_response(200)) as mock_post:
             result = service.send_daily_summary(_summary(with_links=False))
 
         _, kwargs = mock_post.call_args
-        assert "drive.google.com" not in kwargs["data"]["text"]
+        assert "supabase.co/storage" not in kwargs["data"]["text"]
+        assert "Supabase Storage" in kwargs["data"]["text"]
         assert result.status == "sent"
 
     def test_network_failure_reports_network_error(self):

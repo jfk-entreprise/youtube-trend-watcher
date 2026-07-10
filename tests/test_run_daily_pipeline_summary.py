@@ -1,6 +1,6 @@
 """
-Tests du résumé de fin de run (Issue 5, Sprint 29.1) — build_production_summary_text()
-dans scripts/run_daily_pipeline.py.
+Tests du résumé de fin de run (Issue 5, Sprint 29.1 ; Storage renommé Sprint 30)
+— build_production_summary_text() dans scripts/run_daily_pipeline.py.
 
 scripts/ n'est pas un package Python — le module est chargé directement
 depuis son chemin de fichier (importlib), comme le ferait `python scripts/run_daily_pipeline.py`.
@@ -28,7 +28,7 @@ _spec.loader.exec_module(run_daily_pipeline)
 os.environ.clear()
 os.environ.update(_env_backup)
 
-from src.google_drive_uploader import UploadResult
+from src.supabase_storage_uploader import UploadResult
 from src.notification_service import NotificationResult
 
 
@@ -65,15 +65,15 @@ class TestCountLlmVsFallback:
 class TestBuildProductionSummaryText:
     def test_full_success(self):
         prods = [_prod(["deepseek"] * 9, ["deepseek"] * 9), _prod(["deepseek"] * 9, ["deepseek"] * 9)]
-        drive_results = [
-            UploadResult(success=True, remote_path="a", message="21/21", remote_url="https://drive/a",
-                         uploaded_count=21, total_count=21),
-            UploadResult(success=True, remote_path="b", message="21/21", remote_url="https://drive/b",
-                         uploaded_count=21, total_count=21),
+        storage_results = [
+            UploadResult(success=True, uploaded_count=21, total_count=21,
+                         remote_url="https://proj.supabase.co/storage/v1/object/public/production/a"),
+            UploadResult(success=True, uploaded_count=21, total_count=21,
+                         remote_url="https://proj.supabase.co/storage/v1/object/public/production/b"),
         ]
         telegram_result = NotificationResult(success=True, status="sent")
 
-        text = run_daily_pipeline.build_production_summary_text(prods, drive_results, telegram_result, 684.0)
+        text = run_daily_pipeline.build_production_summary_text(prods, storage_results, telegram_result, 684.0)
 
         assert "Videos produced: 2" in text
         assert "LLM: 18" in text
@@ -85,15 +85,16 @@ class TestBuildProductionSummaryText:
         assert "Overall status:\nSUCCESS" in text
         assert "Overall status:\nSUCCESS (with warnings)" not in text
 
-    def test_partial_drive_upload_flags_warning(self):
+    def test_partial_storage_upload_flags_warning(self):
         prods = [_prod(["deepseek", "heuristic_image_v1"], ["deepseek"])]
-        drive_results = [
-            UploadResult(success=False, remote_path="a", message="2/3", remote_url="https://drive/a",
-                         uploaded_count=2, total_count=3),
+        storage_results = [
+            UploadResult(success=False, uploaded_count=2, total_count=3,
+                         remote_url="https://proj.supabase.co/storage/v1/object/public/production/a",
+                         error="1 fichier(s) en échec"),
         ]
         telegram_result = NotificationResult(success=True, status="sent")
 
-        text = run_daily_pipeline.build_production_summary_text(prods, drive_results, telegram_result, 60.0)
+        text = run_daily_pipeline.build_production_summary_text(prods, storage_results, telegram_result, 60.0)
 
         assert "Fallback: 1" in text
         assert "Uploaded files: 2/3" in text
@@ -102,18 +103,18 @@ class TestBuildProductionSummaryText:
 
     def test_telegram_failure_flags_warning_without_breaking(self):
         prods = [_prod(["deepseek"], ["deepseek"])]
-        drive_results = [
-            UploadResult(success=True, remote_path="a", message="3/3", remote_url="https://drive/a",
-                         uploaded_count=3, total_count=3),
+        storage_results = [
+            UploadResult(success=True, uploaded_count=3, total_count=3,
+                         remote_url="https://proj.supabase.co/storage/v1/object/public/production/a"),
         ]
         telegram_result = NotificationResult(success=False, status="invalid_bot_token", detail="401 Unauthorized")
 
-        text = run_daily_pipeline.build_production_summary_text(prods, drive_results, telegram_result, 45.0)
+        text = run_daily_pipeline.build_production_summary_text(prods, storage_results, telegram_result, 45.0)
 
         assert "Status: INVALID_BOT_TOKEN" in text
         assert "Overall status:\nSUCCESS (with warnings)" in text
 
-    def test_no_drive_results_reports_skipped(self):
+    def test_no_storage_results_reports_skipped(self):
         prods = [_prod(["deepseek"], ["deepseek"])]
         telegram_result = NotificationResult(success=True, status="sent")
 

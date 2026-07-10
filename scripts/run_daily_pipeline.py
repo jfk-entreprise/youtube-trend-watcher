@@ -25,16 +25,18 @@ produire exactement 2 vidéos/jour (une par niche/chaîne active) :
         animation_prompts/, report.md} — ProductionPackageBuilder) + sauvegarde
         des sorties techniques internes (shot_plans, scripts intermédiaires,
         benchmark.json, rapport.md) séparément.
-    7.  Envoi vers Google Drive (GoogleDriveUploader) — upload réel si
-        GOOGLE_DRIVE_SERVICE_ACCOUNT_JSON/GOOGLE_DRIVE_FOLDER_ID sont configurés
-        (RealGoogleDriveUploader), sinon NoOpGoogleDriveUploader (aucune
-        régression). Échec d'upload capturé : n'interrompt jamais le pipeline.
+    7.  Envoi vers Supabase Storage (StorageUploader, Sprint 30 — remplace
+        Google Drive, qui n'a aucun quota de stockage utilisable par un
+        compte de service) — upload réel si SUPABASE_URL/SUPABASE_SERVICE_ROLE_KEY
+        sont configurés (SupabaseStorageUploader), sinon NoOpStorageUploader
+        (aucune régression). Échec d'upload capturé : n'interrompt jamais le
+        pipeline.
     8.  Notification du résumé quotidien (NotificationService) — envoi réel
         via Telegram si TELEGRAM_BOT_TOKEN/TELEGRAM_CHAT_ID sont configurés
-        (TelegramNotificationService, avec lien direct vers le package Drive
-        de l'étape 7 quand l'upload a réussi), sinon LoggingNotificationService
-        journalise le résumé formaté. Échec réseau/API capturé : n'interrompt
-        jamais le pipeline.
+        (TelegramNotificationService, avec lien direct vers le package
+        Supabase Storage de l'étape 7 quand l'upload a réussi), sinon
+        LoggingNotificationService journalise le résumé formaté. Échec
+        réseau/API capturé : n'interrompt jamais le pipeline.
 
 Le ShotPlan (VisualDirector) est la source de vérité du cadrage : ce script
 d'orchestration reconstruit, PAR COMPOSITION, une VisualScene « dirigée »
@@ -88,7 +90,7 @@ from src.niche_intelligence import Niche, NicheAnalyzer
 from src.niche_selector import NicheSelector
 from src.opportunity_engine import Opportunity, OpportunityEngine
 from src.production_package_builder import NicheProductionResult, ProductionPackageBuilder
-from src.google_drive_uploader import UploadResult, build_google_drive_uploader
+from src.supabase_storage_uploader import UploadResult, build_storage_uploader
 from src.notification_service import (
     ChannelSummary,
     DailyProductionSummary,
@@ -875,15 +877,15 @@ def _count_llm_vs_fallback(
 
 def build_production_summary_text(
     niche_productions: List[Dict[str, Any]],
-    drive_results: List[UploadResult],
+    storage_results: List[UploadResult],
     telegram_result: NotificationResult,
     elapsed_seconds: float,
 ) -> str:
     """
     Construit le résumé final affiché dans les logs GitHub Actions (Issue 5) —
     seul indicateur qui condense en un coup d'œil l'état complet du run :
-    vidéos produites, part LLM vs fallback (image/animation), résultat Drive,
-    résultat Telegram, durée, statut global.
+    vidéos produites, part LLM vs fallback (image/animation), résultat
+    Supabase Storage, résultat Telegram, durée, statut global.
     """
     images_llm, images_fallback = _count_llm_vs_fallback(
         niche_productions, "images", "image_prompt", _IMAGE_FALLBACK_PROVIDER,
@@ -892,20 +894,20 @@ def build_production_summary_text(
         niche_productions, "animations", "animation_prompt", _ANIMATION_FALLBACK_PROVIDER,
     )
 
-    drive_uploaded = sum(r.uploaded_count for r in drive_results)
-    drive_total = sum(r.total_count for r in drive_results)
-    if not drive_results:
-        drive_status = "SKIPPED"
-    elif all(r.success for r in drive_results):
-        drive_status = "SUCCESS"
-    elif drive_uploaded > 0:
-        drive_status = "PARTIAL"
+    storage_uploaded = sum(r.uploaded_count for r in storage_results)
+    storage_total = sum(r.total_count for r in storage_results)
+    if not storage_results:
+        storage_status = "SKIPPED"
+    elif all(r.success for r in storage_results):
+        storage_status = "SUCCESS"
+    elif storage_uploaded > 0:
+        storage_status = "PARTIAL"
     else:
-        drive_status = "FAILED"
+        storage_status = "FAILED"
 
     telegram_status = "SENT" if telegram_result.success else telegram_result.status.upper()
 
-    warnings = drive_status != "SUCCESS" or not telegram_result.success
+    warnings = storage_status != "SUCCESS" or not telegram_result.success
     overall_status = "SUCCESS (with warnings)" if warnings else "SUCCESS"
 
     lines = [
@@ -925,10 +927,10 @@ def build_production_summary_text(
         f"LLM: {animations_llm}",
         f"Fallback: {animations_fallback}",
         "",
-        "Drive",
-        "-" * 5,
-        f"Uploaded files: {drive_uploaded}/{drive_total}",
-        f"Upload status: {drive_status}",
+        "Supabase Storage",
+        "-" * 16,
+        f"Uploaded files: {storage_uploaded}/{storage_total}",
+        f"Upload status: {storage_status}",
         "",
         "Telegram",
         "-" * 8,
@@ -1020,18 +1022,21 @@ def main() -> None:
         )
         step_save_technical_outputs(output_dir, args, kb, candidate_niches, niches, opportunities_by_niche, niche_productions)
 
-        drive_uploader = build_google_drive_uploader()
+        storage_uploader = build_storage_uploader()
 
         def _upload_packages() -> List[UploadResult]:
             results = []
             for package_dir, prod in zip(package_dirs, niche_productions):
-                remote_folder_name = f"{date.today().isoformat()}_{prod['niche'].name}"
-                result = drive_uploader.upload_package(package_dir, remote_folder_name)
-                logger.info("  Drive [%s] : success=%s message=%s", prod["niche"].name, result.success, result.message)
+                remote_folder_name = f"production/{date.today().isoformat()}/{package_dir.name}"
+                result = storage_uploader.upload_package(package_dir, remote_folder_name)
+                logger.info(
+                    "  Supabase Storage [%s] : success=%s uploaded=%d/%d error=%s",
+                    prod["niche"].name, result.success, result.uploaded_count, result.total_count, result.error,
+                )
                 results.append(result)
             return results
 
-        drive_results = run_step(7, "Envoi Google Drive (upload des packages de production)", _upload_packages)
+        storage_results = run_step(7, "Envoi Supabase Storage (upload des packages de production)", _upload_packages)
 
         notifier = build_notification_service()
 
@@ -1043,7 +1048,7 @@ def main() -> None:
                     subject=prod["final_script"].title,
                     duration_seconds=prod["final_script"].estimated_duration,
                     scene_count=len(prod["final_script"].scenes),
-                    drive_link=(drive_results[i].remote_url if drive_results[i].success else None),
+                    storage_link=(storage_results[i].remote_url if storage_results[i].success else None),
                 )
                 for i, prod in enumerate(niche_productions)
             ]
@@ -1064,7 +1069,7 @@ def main() -> None:
         sys.exit(1)
 
     elapsed = time.time() - t_start
-    summary_text = build_production_summary_text(niche_productions, drive_results, telegram_result, elapsed)
+    summary_text = build_production_summary_text(niche_productions, storage_results, telegram_result, elapsed)
     print()
     print(summary_text)
     print()

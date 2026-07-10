@@ -1,0 +1,178 @@
+"""
+Supabase Storage Uploader — Sprint 30 (remplace Google Drive).
+
+Google Drive a atteint une limitation de plateforme définitive : un compte
+de service n'a AUCUN quota de stockage propre (voir l'audit Sprint 29.2 dans
+l'historique du projet) — chaque upload de fichier échouait avec
+HTTP 403 storageQuotaExceeded, sans solution possible côté code (seule une
+migration vers un Shared Drive Google Workspace l'aurait résolu). Supabase
+Storage remplace entièrement Google Drive comme backend d'upload des packages
+de production, en réutilisant les identifiants Supabase déjà configurés pour
+la persistance des données (SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY — voir
+src/storage.py) : aucun nouveau secret à provisionner.
+
+Architecture identique à l'ancien src/google_drive_uploader.py (Sprint 29) :
+    StorageUploader (interface) → NoOpStorageUploader (repli, non configuré) /
+    SupabaseStorageUploader (upload réel) — build_storage_uploader() choisit
+    automatiquement selon la configuration disponible.
+
+Fiabilité (même principe que Sprint 29.1) : chaque fichier du package est
+envoyé individuellement — l'échec de l'un n'interrompt jamais l'envoi des
+autres. UploadResult.success ne vaut True que si tous les fichiers attendus
+ont été envoyés.
+
+Prérequis Supabase (hors code) : créer un bucket de Storage nommé "production"
+dans le Dashboard Supabase (Storage > New bucket) — voir docs/supabase_deployment.md.
+"""
+
+import logging
+import mimetypes
+import os
+from abc import ABC, abstractmethod
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any, List, Optional
+
+logger = logging.getLogger(__name__)
+
+DEFAULT_BUCKET = "production"
+
+
+@dataclass
+class UploadResult:
+    success: bool
+    uploaded_count: int
+    total_count: int
+    remote_url: Optional[str]
+    error: Optional[str] = None
+
+
+class StorageUploader(ABC):
+    """Interface abstraite d'envoi d'un package de production vers un stockage distant."""
+
+    @abstractmethod
+    def upload_package(self, package_dir: Path, remote_folder_name: str) -> UploadResult:
+        """Envoie le contenu de `package_dir` sous le préfixe `remote_folder_name`."""
+        ...
+
+
+class NoOpStorageUploader(StorageUploader):
+    """Implémentation active tant que Supabase Storage n'est pas configuré."""
+
+    def upload_package(self, package_dir: Path, remote_folder_name: str) -> UploadResult:
+        logger.info(
+            "Upload Supabase Storage non configuré — package prêt localement : %s (préfixe cible prévu : %s)",
+            package_dir, remote_folder_name,
+        )
+        return UploadResult(
+            success=False, uploaded_count=0, total_count=0,
+            remote_url=None, error="not_configured",
+        )
+
+
+class SupabaseStorageUploader(StorageUploader):
+    """
+    Upload réel via Supabase Storage (bucket configurable, "production" par défaut).
+
+    `client` peut être injecté directement (tests, réutilisation d'un client
+    existant) ; sinon il est construit depuis `url`/`key`.
+    """
+
+    def __init__(
+        self,
+        url: str = "",
+        key: str = "",
+        bucket: str = DEFAULT_BUCKET,
+        client: Any = None,
+    ) -> None:
+        self._bucket = bucket
+        self._url = url.rstrip("/") if url else url
+
+        if client is not None:
+            self._client = client
+        else:
+            if not url or not key:
+                raise ValueError("url et key sont requis (SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY).")
+            from supabase import create_client
+            self._client = create_client(url, key)
+
+    def upload_package(self, package_dir: Path, remote_folder_name: str) -> UploadResult:
+        package_dir = Path(package_dir)
+        files = sorted(f for f in package_dir.rglob("*") if f.is_file())
+        total = len(files)
+        logger.info(
+            "Uploading production package to Supabase Storage...\n\nFound:\n%d files",
+            total,
+        )
+
+        bucket_api = self._client.storage.from_(self._bucket)
+        uploaded = 0
+        failures: List[tuple] = []
+
+        for file_path in files:
+            relative = file_path.relative_to(package_dir).as_posix()
+            remote_path = f"{remote_folder_name}/{relative}"
+            try:
+                mime_type, _ = mimetypes.guess_type(str(file_path))
+                bucket_api.upload(
+                    path=remote_path,
+                    file=file_path,
+                    file_options={"content-type": mime_type or "application/octet-stream", "upsert": "true"},
+                )
+                uploaded += 1
+            except Exception as exc:
+                logger.warning("Échec de l'upload du fichier '%s' (%s).", file_path, exc)
+                failures.append((str(file_path), str(exc)))
+
+        remote_url = self._build_remote_url(remote_folder_name)
+        success = total > 0 and uploaded == total
+        error = None
+        if failures:
+            error = f"{len(failures)} fichier(s) en échec : " + "; ".join(
+                f"{path} ({reason})" for path, reason in failures
+            )
+            logger.warning(
+                "Upload Supabase Storage incomplet pour '%s' : %d/%d fichier(s) envoyé(s). Échecs : %s",
+                remote_folder_name, uploaded, total, failures,
+            )
+        logger.info(
+            "Uploaded:\n%d / %d\n\nStorage URL:\n%s\n\nStatus: %s",
+            uploaded, total, remote_url, "SUCCESS" if success else "PARTIAL",
+        )
+        return UploadResult(
+            success=success, uploaded_count=uploaded, total_count=total,
+            remote_url=remote_url, error=error,
+        )
+
+    def _build_remote_url(self, remote_folder_name: str) -> Optional[str]:
+        """Construit l'URL pointant vers le dossier distant (best effort)."""
+        try:
+            bucket_api = self._client.storage.from_(self._bucket)
+            return bucket_api.get_public_url(remote_folder_name)
+        except Exception as exc:
+            logger.debug("Impossible d'obtenir l'URL publique Supabase Storage (%s).", exc)
+            if self._url:
+                return f"{self._url}/storage/v1/object/public/{self._bucket}/{remote_folder_name}"
+            return None
+
+
+def build_storage_uploader() -> StorageUploader:
+    """
+    Construit l'uploader selon la configuration disponible dans l'environnement.
+
+    - SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY présents → SupabaseStorageUploader.
+    - Variables absentes (ou init impossible) → NoOpStorageUploader.
+    """
+    url = os.getenv("SUPABASE_URL")
+    key = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+
+    if url and key:
+        try:
+            uploader = SupabaseStorageUploader(url=url, key=key)
+            logger.info("Uploader Supabase Storage actif (bucket=%s).", DEFAULT_BUCKET)
+            return uploader
+        except Exception as exc:
+            logger.warning("Impossible d'initialiser Supabase Storage (%s) — repli NoOp.", exc)
+
+    logger.info("Supabase Storage non configuré — uploader NoOp actif.")
+    return NoOpStorageUploader()

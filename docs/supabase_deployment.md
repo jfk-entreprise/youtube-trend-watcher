@@ -49,6 +49,24 @@ persiste les niches actives d'un jour sur l'autre pour `run_daily_pipeline.py`
 pipeline bascule automatiquement sur un fichier JSON local
 (`.cache/active_niches.json`).
 
+### Sprint 30 — Bucket Storage `production` (remplace Google Drive)
+
+Google Drive a été abandonné : un compte de service Google n'a aucun quota
+de stockage propre (chaque upload de fichier échouait avec
+`HTTP 403 storageQuotaExceeded`, sans solution côté code). Les packages de
+production sont désormais envoyés vers **Supabase Storage**
+(`src/supabase_storage_uploader.py`), avec les mêmes identifiants que
+ci-dessus (`SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY`) — aucun secret
+supplémentaire.
+
+1. Dashboard Supabase → **Storage** → **New bucket**.
+2. Nommer le bucket `production`.
+3. Rien d'autre à faire : la clé `service_role` a déjà tous les droits requis.
+
+Sans bucket `production` (ou sans credentials Supabase), le pipeline bascule
+automatiquement sur `NoOpStorageUploader` (le package reste disponible
+uniquement en local, aucune régression).
+
 ---
 
 ## Étape 4 — Valider la connexion
