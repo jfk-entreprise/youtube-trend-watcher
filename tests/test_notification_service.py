@@ -1,14 +1,25 @@
 from unittest.mock import MagicMock, patch
 
+import requests
+
 from src.notification_service import (
     ChannelSummary,
     DailyProductionSummary,
     LoggingNotificationService,
+    NotificationResult,
     TelegramNotificationService,
     _format_duration,
     build_notification_service,
     format_summary_text,
 )
+
+
+def _fake_response(status_code=200, description=None):
+    response = MagicMock()
+    response.status_code = status_code
+    response.json.return_value = {"ok": status_code == 200, "description": description}
+    response.text = description or ""
+    return response
 
 
 def _summary(with_links=False, duration=684.0) -> DailyProductionSummary:
@@ -106,52 +117,100 @@ class TestLoggingNotificationService:
         service = LoggingNotificationService()
         service.send_daily_summary(_summary())  # no exception = pass
 
+    def test_reports_not_configured_status(self):
+        service = LoggingNotificationService(reason="not_configured")
+        result = service.send_daily_summary(_summary())
+        assert isinstance(result, NotificationResult)
+        assert result.success is False
+        assert result.status == "not_configured"
+
+    def test_reports_missing_secret_status(self):
+        service = LoggingNotificationService(reason="missing_secret")
+        result = service.send_daily_summary(_summary())
+        assert result.status == "missing_secret"
+
+    def test_formatting_failure_reports_formatting_error(self):
+        service = LoggingNotificationService()
+        broken_summary = MagicMock()
+        broken_summary.channels = None
+
+        result = service.send_daily_summary(broken_summary)
+
+        assert result.success is False
+        assert result.status == "formatting_error"
+
 
 class TestTelegramNotificationService:
     def test_sends_expected_payload_with_drive_link(self):
         service = TelegramNotificationService(bot_token="123:ABC", chat_id="42")
-        fake_response = MagicMock()
-        fake_response.raise_for_status.return_value = None
 
-        with patch("requests.post", return_value=fake_response) as mock_post:
-            service.send_daily_summary(_summary(with_links=True))
+        with patch("requests.post", return_value=_fake_response(200)) as mock_post:
+            result = service.send_daily_summary(_summary(with_links=True))
 
         mock_post.assert_called_once()
         args, kwargs = mock_post.call_args
         assert args[0] == "https://api.telegram.org/bot123:ABC/sendMessage"
         assert kwargs["data"]["chat_id"] == "42"
         assert "drive.google.com" in kwargs["data"]["text"]
+        assert result.success is True
+        assert result.status == "sent"
 
     def test_sends_expected_payload_without_drive_link(self):
         service = TelegramNotificationService(bot_token="123:ABC", chat_id="42")
-        fake_response = MagicMock()
-        fake_response.raise_for_status.return_value = None
 
-        with patch("requests.post", return_value=fake_response) as mock_post:
-            service.send_daily_summary(_summary(with_links=False))
+        with patch("requests.post", return_value=_fake_response(200)) as mock_post:
+            result = service.send_daily_summary(_summary(with_links=False))
 
         _, kwargs = mock_post.call_args
         assert "drive.google.com" not in kwargs["data"]["text"]
+        assert result.status == "sent"
 
-    def test_network_failure_does_not_raise(self):
+    def test_network_failure_reports_network_error(self):
         service = TelegramNotificationService(bot_token="123:ABC", chat_id="42")
 
-        with patch("requests.post", side_effect=ConnectionError("network down")):
-            service.send_daily_summary(_summary())  # no exception = pass
+        with patch("requests.post", side_effect=requests.exceptions.ConnectionError("network down")):
+            result = service.send_daily_summary(_summary())  # no exception = pass
 
-    def test_http_error_status_does_not_raise(self):
+        assert result.success is False
+        assert result.status == "network_error"
+
+    def test_invalid_bot_token_reports_precise_status(self):
+        service = TelegramNotificationService(bot_token="bad-token", chat_id="42")
+
+        with patch("requests.post", return_value=_fake_response(401, "Unauthorized")):
+            result = service.send_daily_summary(_summary())
+
+        assert result.success is False
+        assert result.status == "invalid_bot_token"
+        assert "Unauthorized" in result.detail
+
+    def test_invalid_chat_id_reports_precise_status(self):
+        service = TelegramNotificationService(bot_token="123:ABC", chat_id="0")
+
+        with patch("requests.post", return_value=_fake_response(400, "Bad Request: chat not found")):
+            result = service.send_daily_summary(_summary())
+
+        assert result.success is False
+        assert result.status == "invalid_chat_id"
+        assert "chat not found" in result.detail
+
+    def test_other_http_error_reports_generic_http_error(self):
         service = TelegramNotificationService(bot_token="123:ABC", chat_id="42")
-        fake_response = MagicMock()
-        fake_response.raise_for_status.side_effect = Exception("400 Bad Request")
 
-        with patch("requests.post", return_value=fake_response):
-            service.send_daily_summary(_summary())  # no exception = pass
+        with patch("requests.post", return_value=_fake_response(500, "Internal Server Error")):
+            result = service.send_daily_summary(_summary())
 
-    def test_timeout_does_not_raise(self):
+        assert result.success is False
+        assert result.status == "http_error"
+
+    def test_timeout_reports_timeout_status(self):
         service = TelegramNotificationService(bot_token="123:ABC", chat_id="42")
 
-        with patch("requests.post", side_effect=TimeoutError("timed out")):
-            service.send_daily_summary(_summary())  # no exception = pass
+        with patch("requests.post", side_effect=requests.exceptions.Timeout("timed out")):
+            result = service.send_daily_summary(_summary())  # no exception = pass
+
+        assert result.success is False
+        assert result.status == "timeout"
 
     def test_formatting_failure_does_not_raise(self):
         service = TelegramNotificationService(bot_token="123:ABC", chat_id="42")
@@ -159,9 +218,10 @@ class TestTelegramNotificationService:
         broken_summary.channels = None  # itérer sur None lève TypeError dans format_summary_text
 
         with patch("requests.post") as mock_post:
-            service.send_daily_summary(broken_summary)  # no exception = pass
+            result = service.send_daily_summary(broken_summary)  # no exception = pass
 
         mock_post.assert_not_called()
+        assert result.status == "formatting_error"
 
 
 class TestFactory:
@@ -180,3 +240,13 @@ class TestFactory:
         service = build_notification_service()
 
         assert isinstance(service, LoggingNotificationService)
+
+    def test_returns_logging_with_missing_secret_reason_when_partially_configured(self, monkeypatch):
+        monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "123:ABC")
+        monkeypatch.delenv("TELEGRAM_CHAT_ID", raising=False)
+
+        service = build_notification_service()
+
+        assert isinstance(service, LoggingNotificationService)
+        result = service.send_daily_summary(_summary())
+        assert result.status == "missing_secret"

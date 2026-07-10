@@ -512,6 +512,24 @@ class TestFromGeneratedImage:
         assert image_prompt.metadata["provider"] == "heuristic_image_v1"
         assert image_prompt.metadata["characters"] == []
 
+    def test_prompt_field_is_never_empty(self, visual_scene, brand):
+        """Sprint 29.1 — un ImagePrompt de secours doit rester exploitable en
+        production : le champ `prompt` ne doit jamais être vide."""
+        plan = VisualPlan(title="T", style=brand.visual_style, scenes=[visual_scene])
+        generated = HeuristicImageGenerator().generate(visual_scene, plan)
+        image_prompt = LLMImageGenerator._from_generated_image(generated, reason="validation_failed")
+        assert image_prompt.prompt
+        assert image_prompt.prompt == generated.prompt
+
+    def test_carries_fallback_detail(self, visual_scene, brand):
+        plan = VisualPlan(title="T", style=brand.visual_style, scenes=[visual_scene])
+        generated = HeuristicImageGenerator().generate(visual_scene, plan)
+        image_prompt = LLMImageGenerator._from_generated_image(
+            generated, reason="validation_failed", detail="Champ obligatoire manquant : 'prompt'",
+        )
+        assert image_prompt.metadata["fallback_reason"] == "validation_failed"
+        assert image_prompt.metadata["fallback_detail"] == "Champ obligatoire manquant : 'prompt'"
+
 
 class TestToGeneratedImage:
     def test_reconstruction(self, valid_llm_json, visual_scene, brand):
@@ -679,6 +697,21 @@ class TestIntelligentRetry:
         image_prompt = gen.generate_from_scenes(script_scene, visual_scene, brand)
 
         assert image_prompt.metadata["fallback_reason"] == "timeout"
+
+    def test_validation_failure_carries_precise_detail(self, script_scene, visual_scene, brand):
+        """Sprint 29.1 — 'validation_failed' seul ne suffit pas : le champ
+        manquant/invalide précis doit être exposé dans fallback_detail."""
+        incomplete_json = json.dumps({"subject": "a hero"})  # champs requis manquants
+        gen = LLMImageGenerator(max_retries=1)
+        gen._provider = _ScriptedProvider([
+            _make_llm_response(incomplete_json),  # 1ère tentative
+            _make_llm_response(incomplete_json),  # tentative de correction JSON — échoue aussi
+        ])
+
+        image_prompt = gen.generate_from_scenes(script_scene, visual_scene, brand)
+
+        assert image_prompt.metadata["fallback_reason"] == "validation_failed"
+        assert "Champ obligatoire manquant" in image_prompt.metadata["fallback_detail"]
 
     def test_repair_updates_characters_bible(self, script_scene, visual_scene, brand, valid_llm_json):
         gen = LLMImageGenerator(max_retries=1)

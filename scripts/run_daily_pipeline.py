@@ -89,7 +89,13 @@ from src.niche_selector import NicheSelector
 from src.opportunity_engine import Opportunity, OpportunityEngine
 from src.production_package_builder import NicheProductionResult, ProductionPackageBuilder
 from src.google_drive_uploader import UploadResult, build_google_drive_uploader
-from src.notification_service import ChannelSummary, DailyProductionSummary, build_notification_service
+from src.notification_service import (
+    ChannelSummary,
+    DailyProductionSummary,
+    NotificationResult,
+    _format_duration,
+    build_notification_service,
+)
 from src.rewrite_engine import RewriteEngine
 from src.script_engine import Script
 from src.script_evaluator import ScriptEvaluator
@@ -115,6 +121,11 @@ MAX_SCRIPTS_PER_OPPORTUNITY = 2  # nombre de CreativeBrief transformés en scrip
 
 TOTAL_STEPS = 8
 DEFAULT_CSV_FALLBACK = Path("data/videos.csv")
+
+# Identité des générateurs de secours (Sprint 26/29.1) — sert à distinguer
+# LLM vs fallback heuristique dans le résumé de fin de run (Issue 5).
+_IMAGE_FALLBACK_PROVIDER = "heuristic_image_v1"
+_ANIMATION_FALLBACK_PROVIDER = "fallback_heuristic"
 
 
 # ── Arrêt propre ─────────────────────────────────────────────────────────────
@@ -843,6 +854,95 @@ def build_report_markdown(
     return "\n".join(lines)
 
 
+# ── Résumé de fin de run (Issue 5, Sprint 29.1) ─────────────────────────────
+
+def _count_llm_vs_fallback(
+    niche_productions: List[Dict[str, Any]], list_key: str, prompt_key: str, fallback_provider: str,
+) -> tuple[int, int]:
+    """Compte, sur l'ensemble des niches produites, combien de prompts
+    viennent du LLM vs du générateur de secours (heuristique)."""
+    llm = 0
+    fallback = 0
+    for prod in niche_productions:
+        for entry in prod[list_key]:
+            provider = entry[prompt_key].metadata.get("provider", "")
+            if provider == fallback_provider:
+                fallback += 1
+            else:
+                llm += 1
+    return llm, fallback
+
+
+def build_production_summary_text(
+    niche_productions: List[Dict[str, Any]],
+    drive_results: List[UploadResult],
+    telegram_result: NotificationResult,
+    elapsed_seconds: float,
+) -> str:
+    """
+    Construit le résumé final affiché dans les logs GitHub Actions (Issue 5) —
+    seul indicateur qui condense en un coup d'œil l'état complet du run :
+    vidéos produites, part LLM vs fallback (image/animation), résultat Drive,
+    résultat Telegram, durée, statut global.
+    """
+    images_llm, images_fallback = _count_llm_vs_fallback(
+        niche_productions, "images", "image_prompt", _IMAGE_FALLBACK_PROVIDER,
+    )
+    animations_llm, animations_fallback = _count_llm_vs_fallback(
+        niche_productions, "animations", "animation_prompt", _ANIMATION_FALLBACK_PROVIDER,
+    )
+
+    drive_uploaded = sum(r.uploaded_count for r in drive_results)
+    drive_total = sum(r.total_count for r in drive_results)
+    if not drive_results:
+        drive_status = "SKIPPED"
+    elif all(r.success for r in drive_results):
+        drive_status = "SUCCESS"
+    elif drive_uploaded > 0:
+        drive_status = "PARTIAL"
+    else:
+        drive_status = "FAILED"
+
+    telegram_status = "SENT" if telegram_result.success else telegram_result.status.upper()
+
+    warnings = drive_status != "SUCCESS" or not telegram_result.success
+    overall_status = "SUCCESS (with warnings)" if warnings else "SUCCESS"
+
+    lines = [
+        "=" * 26,
+        "Production Summary",
+        "=" * 26,
+        "",
+        f"Videos produced: {len(niche_productions)}",
+        "",
+        "Image Prompts",
+        "-" * 13,
+        f"LLM: {images_llm}",
+        f"Fallback: {images_fallback}",
+        "",
+        "Animation Prompts",
+        "-" * 17,
+        f"LLM: {animations_llm}",
+        f"Fallback: {animations_fallback}",
+        "",
+        "Drive",
+        "-" * 5,
+        f"Uploaded files: {drive_uploaded}/{drive_total}",
+        f"Upload status: {drive_status}",
+        "",
+        "Telegram",
+        "-" * 8,
+        f"Status: {telegram_status}",
+        "",
+        "Pipeline duration:",
+        _format_duration(elapsed_seconds),
+        "",
+        "Overall status:",
+        overall_status,
+    ]
+    return "\n".join(lines)
+
+
 # ── Orchestration principale ────────────────────────────────────────────────
 
 def main() -> None:
@@ -935,7 +1035,7 @@ def main() -> None:
 
         notifier = build_notification_service()
 
-        def _send_notification() -> None:
+        def _send_notification() -> NotificationResult:
             channels = [
                 ChannelSummary(
                     niche_name=prod["niche"].name,
@@ -952,9 +1052,9 @@ def main() -> None:
                 channels=channels,
                 pipeline_duration_seconds=time.time() - t_start,
             )
-            notifier.send_daily_summary(summary)
+            return notifier.send_daily_summary(summary)
 
-        run_step(8, "Notification du résumé quotidien", _send_notification)
+        telegram_result = run_step(8, "Notification du résumé quotidien", _send_notification)
 
     except PipelineStepError as exc:
         logger.error("=" * 76)
@@ -964,6 +1064,9 @@ def main() -> None:
         sys.exit(1)
 
     elapsed = time.time() - t_start
+    summary_text = build_production_summary_text(niche_productions, drive_results, telegram_result, elapsed)
+    print()
+    print(summary_text)
     print()
     print("=" * 76)
     print(f"  PIPELINE TERMINÉ — {elapsed:.1f}s")

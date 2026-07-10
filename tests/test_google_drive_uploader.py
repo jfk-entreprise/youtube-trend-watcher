@@ -112,6 +112,47 @@ class TestRealGoogleDriveUploader:
         assert result.remote_url is None
         assert "quota exceeded" in result.message
 
+    def test_single_file_failure_does_not_abort_whole_package(self, tmp_path):
+        """Sprint 29.1 — auparavant, l'échec d'UN fichier interrompait tout
+        l'upload (dossiers déjà créés restant vides sur Drive). Désormais,
+        les autres fichiers doivent quand même être envoyés."""
+        package_dir = _make_package(tmp_path)
+        fake_service = _FakeDriveService()
+        real_create = fake_service._files.create
+        calls = {"n": 0}
+
+        def flaky_create(body, fields, media_body=None):
+            if media_body is not None:
+                calls["n"] += 1
+                if calls["n"] == 1:
+                    raise RuntimeError("transient network error")
+            return real_create(body, fields, media_body=media_body)
+
+        fake_service._files.create = flaky_create
+        uploader = RealGoogleDriveUploader(drive_service=fake_service, root_folder_id="root-123")
+
+        result = uploader.upload_package(package_dir, "2026-07-10_ia")
+
+        # 2 des 3 fichiers envoyés malgré l'échec du premier — pas d'abandon total.
+        assert len(fake_service._files.created_files) == 2
+        assert result.success is False  # incomplet : pas 3/3
+        assert result.remote_url is not None  # le dossier racine existe bien
+        assert "2/3" in result.message
+        assert result.uploaded_count == 2
+        assert result.total_count == 3
+
+    def test_all_files_uploaded_reports_success_status(self, tmp_path):
+        package_dir = _make_package(tmp_path)
+        fake_service = _FakeDriveService()
+        uploader = RealGoogleDriveUploader(drive_service=fake_service, root_folder_id="root-123")
+
+        result = uploader.upload_package(package_dir, "2026-07-10_ia")
+
+        assert result.success is True
+        assert "3/3" in result.message
+        assert result.uploaded_count == 3
+        assert result.total_count == 3
+
 
 class TestFactory:
     def test_returns_noop_when_unconfigured(self, monkeypatch):

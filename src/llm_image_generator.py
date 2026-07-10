@@ -427,11 +427,13 @@ class LLMImageGenerator(ImageGenerator):
         effective_script = script if script is not None else self._script
 
         last_reason = "unknown"
+        last_detail = ""
         for attempt in range(1, self._max_retries + 1):
             try:
                 return self._try_generate_llm(effective_script, script_scene, visual_scene, brand_profile)
             except Exception as exc:
                 last_reason = getattr(exc, "reason", "unknown") or "unknown"
+                last_detail = str(exc)
                 logger.warning(
                     "LLM Image Generator — tentative %d/%d échouée (scène #%d, raison=%s) : %s",
                     attempt, self._max_retries, visual_scene.scene_order, last_reason, exc,
@@ -439,14 +441,14 @@ class LLMImageGenerator(ImageGenerator):
                 self._stats["llm_failures"] += 1
 
         logger.info(
-            "LLM Image Generator — fallback vers %s pour la scène #%d (raison=%s)",
-            self._fallback.name, visual_scene.scene_order, last_reason,
+            "LLM Image Generator — fallback vers %s pour la scène #%d (raison=%s : %s)",
+            self._fallback.name, visual_scene.scene_order, last_reason, last_detail,
         )
         self._stats["fallbacks"] += 1
         self._stats["fallback_reasons"][last_reason] = self._stats["fallback_reasons"].get(last_reason, 0) + 1
         plan = VisualPlan(title=script_scene.title, style=brand_profile.visual_style, scenes=[visual_scene])
         fallback_image = self._fallback.generate(visual_scene, plan)
-        return self._from_generated_image(fallback_image, reason=last_reason)
+        return self._from_generated_image(fallback_image, reason=last_reason, detail=last_detail)
 
     # ── Logique LLM ────────────────────────────────────────────────────────────
 
@@ -717,7 +719,9 @@ class LLMImageGenerator(ImageGenerator):
         )
 
     @staticmethod
-    def _from_generated_image(generated_image: GeneratedImage, reason: str = "unknown") -> ImagePrompt:
+    def _from_generated_image(
+        generated_image: GeneratedImage, reason: str = "unknown", detail: str = "",
+    ) -> ImagePrompt:
         """
         Enveloppe un GeneratedImage (résultat du fallback heuristique) dans
         un ImagePrompt dégradé, pour garder un contrat de sortie uniforme.
@@ -726,12 +730,22 @@ class LLMImageGenerator(ImageGenerator):
         (ex: "json_invalid", "json_incomplete", "timeout", "api_error",
         "validation_failed", "empty_response") — utile pour le diagnostic,
         sans altérer le contrat des scènes générées avec succès par le LLM.
+
+        `detail` (Sprint 29.1) porte le message d'erreur précis à l'origine
+        du fallback (ex: "Champ obligatoire manquant : 'prompt'", "Expecting
+        value: line 1 column 1 (char 0)") — `reason` seul ne suffisait pas à
+        comprendre immédiatement la cause réelle d'une validation échouée.
+
+        Le générateur heuristique produit toujours un `prompt` complet et
+        exploitable (Sprint 29.1) : on le réutilise ici comme champ `prompt`
+        ET `scene_description` plutôt que de laisser `prompt` vide, pour
+        qu'aucun ImagePrompt de secours ne soit inutilisable en production.
         """
         return ImagePrompt(
             subject="",
             scene_description=generated_image.prompt,
             style=generated_image.style,
-            prompt="",
+            prompt=generated_image.prompt,
             negative_prompt=generated_image.negative_prompt,
             metadata={
                 "goal": "",
@@ -742,6 +756,7 @@ class LLMImageGenerator(ImageGenerator):
                 "time_ms": 0,
                 "cost_usd": 0.0,
                 "fallback_reason": reason,
+                "fallback_detail": detail,
             },
         )
 

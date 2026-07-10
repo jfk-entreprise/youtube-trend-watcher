@@ -19,6 +19,12 @@ sans Google Drive — dev local, CI sans secrets, etc.).
 RealGoogleDriveUploader n'interrompt jamais le pipeline : toute erreur réseau
 ou API est capturée et journalisée, le package restant disponible localement
 (voir UploadResult.success=False, message=<détail>).
+
+Fiabilité (Sprint 29.1) : l'échec d'un seul fichier ou sous-dossier
+n'interrompt plus l'upload des autres — chaque fichier/dossier est envoyé
+individuellement, les échecs sont comptés et journalisés, et
+UploadResult.success ne vaut True que si TOUS les fichiers attendus ont été
+envoyés (voir _upload_directory / upload_package).
 """
 
 import json
@@ -28,7 +34,7 @@ import os
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -42,6 +48,8 @@ class UploadResult:
     remote_path: Optional[str]
     message: str
     remote_url: Optional[str] = None  # lien Drive cliquable — Sprint 29.1 (NotificationService)
+    uploaded_count: int = 0  # fichiers réellement envoyés — Sprint 29.1 (résumé de fin de run)
+    total_count: int = 0     # fichiers attendus (comptage local du package)
 
 
 class GoogleDriveUploader(ABC):
@@ -94,17 +102,36 @@ class RealGoogleDriveUploader(GoogleDriveUploader):
             self._service = build("drive", "v3", credentials=credentials, cache_discovery=False)
 
     def upload_package(self, package_dir: Path, remote_folder_name: str) -> UploadResult:
+        package_dir = Path(package_dir)
+        total_dirs, total_files = self._count_entries(package_dir)
+        logger.info(
+            "Uploading production package...\n\nFound:\n%d directories\n%d files",
+            total_dirs, total_files,
+        )
         try:
             remote_folder_id = self._get_or_create_folder(remote_folder_name, self._root_folder_id)
-            uploaded = self._upload_directory(Path(package_dir), remote_folder_id)
+            uploaded, failed = self._upload_directory(package_dir, remote_folder_id)
             remote_url = f"https://drive.google.com/drive/folders/{remote_folder_id}"
+
+            if failed:
+                logger.warning(
+                    "Upload Google Drive incomplet pour '%s' : %d/%d fichier(s) envoyé(s). "
+                    "Échecs : %s",
+                    remote_folder_name, uploaded, total_files, failed,
+                )
+            success = uploaded == total_files and total_files > 0
             logger.info(
-                "Package Google Drive envoyé : %s (%d fichier(s), dossier=%s).",
-                remote_folder_name, uploaded, remote_folder_id,
+                "Uploaded:\n%d / %d\n\nDrive URL:\n%s\n\nStatus: %s",
+                uploaded, total_files, remote_url, "SUCCESS" if success else "PARTIAL",
             )
+
+            message = f"{uploaded}/{total_files} fichier(s) envoyé(s)"
+            if failed:
+                message += f" — {len(failed)} échec(s)"
             return UploadResult(
-                success=True, remote_path=remote_folder_name,
-                message=f"{uploaded} fichier(s) envoyé(s)", remote_url=remote_url,
+                success=success, remote_path=remote_folder_name,
+                message=message, remote_url=remote_url,
+                uploaded_count=uploaded, total_count=total_files,
             )
         except Exception as exc:
             logger.warning(
@@ -115,16 +142,49 @@ class RealGoogleDriveUploader(GoogleDriveUploader):
 
     # ── Interne ────────────────────────────────────────────────────────────────
 
-    def _upload_directory(self, local_dir: Path, parent_id: str) -> int:
+    @staticmethod
+    def _count_entries(local_dir: Path) -> tuple:
+        dirs = sum(1 for entry in local_dir.rglob("*") if entry.is_dir())
+        files = sum(1 for entry in local_dir.rglob("*") if entry.is_file())
+        return dirs, files
+
+    def _upload_directory(self, local_dir: Path, parent_id: str) -> tuple:
+        """
+        Envoie récursivement `local_dir` sous `parent_id`.
+
+        Chaque fichier et chaque sous-dossier est traité indépendamment :
+        l'échec de l'un n'empêche jamais l'envoi des autres (Sprint 29.1) —
+        auparavant, une seule erreur (réseau, quota, fichier verrouillé...)
+        interrompait tout l'upload en laissant des dossiers partiellement
+        vides sur Drive.
+
+        Returns:
+            (nombre de fichiers envoyés, liste des chemins locaux en échec).
+        """
         uploaded = 0
+        failed: List[str] = []
         for entry in sorted(local_dir.iterdir()):
             if entry.is_dir():
-                sub_folder_id = self._get_or_create_folder(entry.name, parent_id)
-                uploaded += self._upload_directory(entry, sub_folder_id)
+                try:
+                    sub_folder_id = self._get_or_create_folder(entry.name, parent_id)
+                except Exception as exc:
+                    logger.warning(
+                        "Impossible de créer le dossier Drive '%s' (%s) — contenu ignoré.",
+                        entry, exc,
+                    )
+                    failed.extend(str(f) for f in entry.rglob("*") if f.is_file())
+                    continue
+                sub_uploaded, sub_failed = self._upload_directory(entry, sub_folder_id)
+                uploaded += sub_uploaded
+                failed.extend(sub_failed)
             else:
-                self._upload_file(entry, parent_id)
-                uploaded += 1
-        return uploaded
+                try:
+                    self._upload_file(entry, parent_id)
+                    uploaded += 1
+                except Exception as exc:
+                    logger.warning("Échec de l'upload du fichier '%s' (%s).", entry, exc)
+                    failed.append(str(entry))
+        return uploaded, failed
 
     def _get_or_create_folder(self, name: str, parent_id: str) -> str:
         safe_name = name.replace("'", "\\'")
