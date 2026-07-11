@@ -19,10 +19,18 @@ Architecture identique à l'ancien src/google_drive_uploader.py (Sprint 29) :
 Fiabilité (même principe que Sprint 29.1) : chaque fichier du package est
 envoyé individuellement — l'échec de l'un n'interrompt jamais l'envoi des
 autres. UploadResult.success ne vaut True que si tous les fichiers attendus
-ont été envoyés.
+ont été envoyés ET VÉRIFIÉS présents sur Supabase Storage après coup.
 
 Prérequis Supabase (hors code) : créer un bucket de Storage nommé "production"
 dans le Dashboard Supabase (Storage > New bucket) — voir docs/supabase_deployment.md.
+
+Sprint 30.5 — un upload() qui ne lève pas d'exception ne prouve pas que
+l'objet existe réellement côté serveur (SDK, proxy, réponse tronquée...).
+Chaque upload est donc immédiatement vérifié via bucket.exists() : seul un
+fichier confirmé présent après coup est compté comme "uploaded". Le préfixe
+distant est aussi normalisé pour ne jamais dupliquer le nom du bucket dans
+la clé d'objet (ex: bucket "production" + dossier "production/2026-07-10/..."
+ne doit jamais produire la clé "production/production/2026-07-10/...").
 """
 
 import logging
@@ -96,13 +104,36 @@ class SupabaseStorageUploader(StorageUploader):
             from supabase import create_client
             self._client = create_client(url, key)
 
+    def _normalize_remote_folder(self, remote_folder_name: str) -> str:
+        """
+        Garantit que le préfixe distant ne duplique jamais le nom du bucket.
+
+        Le bucket EST déjà l'espace de nommage racine ("production") : un
+        appelant qui construit par erreur un préfixe commençant par
+        "{bucket}/..." produirait une clé d'objet "production/production/..."
+        une fois combinée à `self._bucket` par l'API Storage. On détecte et
+        retire ce préfixe redondant ici, une bonne fois pour toutes, plutôt
+        que de compter sur chaque appelant pour ne jamais s'y prendre mal.
+        """
+        folder = remote_folder_name.strip("/")
+        prefix = f"{self._bucket}/"
+        if folder == self._bucket or folder.startswith(prefix):
+            stripped = folder[len(self._bucket):].lstrip("/")
+            logger.warning(
+                "Préfixe distant '%s' dupliquait le nom du bucket '%s' — normalisé en '%s'.",
+                remote_folder_name, self._bucket, stripped,
+            )
+            return stripped
+        return folder
+
     def upload_package(self, package_dir: Path, remote_folder_name: str) -> UploadResult:
         package_dir = Path(package_dir)
         files = sorted(f for f in package_dir.rglob("*") if f.is_file())
         total = len(files)
+        remote_folder_name = self._normalize_remote_folder(remote_folder_name)
         logger.info(
-            "Uploading production package to Supabase Storage...\n\nFound:\n%d files",
-            total,
+            "Uploading production package to Supabase Storage...\n\nBucket:\n%s\n\nFound:\n%d files",
+            self._bucket, total,
         )
 
         bucket_api = self._client.storage.from_(self._bucket)
@@ -111,18 +142,45 @@ class SupabaseStorageUploader(StorageUploader):
 
         for file_path in files:
             relative = file_path.relative_to(package_dir).as_posix()
-            remote_path = f"{remote_folder_name}/{relative}"
+            remote_path = f"{remote_folder_name}/{relative}" if remote_folder_name else relative
+            if remote_path == self._bucket or remote_path.startswith(f"{self._bucket}/"):
+                raise ValueError(
+                    f"Clé d'objet dupliquant le nom du bucket détectée : "
+                    f"bucket='{self._bucket}' path='{remote_path}' — la normalisation a échoué."
+                )
             try:
                 mime_type, _ = mimetypes.guess_type(str(file_path))
-                bucket_api.upload(
+                response = bucket_api.upload(
                     path=remote_path,
                     file=file_path,
                     file_options={"content-type": mime_type or "application/octet-stream", "upsert": "true"},
                 )
-                uploaded += 1
+                logger.info(
+                    "Upload API response — bucket=%s path=%s response=%r",
+                    self._bucket, remote_path, response,
+                )
             except Exception as exc:
-                logger.warning("Échec de l'upload du fichier '%s' (%s).", file_path, exc)
-                failures.append((str(file_path), str(exc)))
+                logger.warning(
+                    "Échec de l'upload du fichier '%s' (bucket=%s path=%s) : %s",
+                    file_path, self._bucket, remote_path, exc,
+                )
+                failures.append((str(file_path), f"upload_error: {exc}"))
+                continue
+
+            verified, verify_detail = self._verify_object_exists(bucket_api, remote_path)
+            logger.info(
+                "Verification — bucket=%s path=%s exists=%s detail=%s",
+                self._bucket, remote_path, verified, verify_detail,
+            )
+            if verified:
+                uploaded += 1
+            else:
+                logger.warning(
+                    "Upload signalé sans exception mais objet introuvable après coup — "
+                    "bucket=%s path=%s (%s). Ne compte PAS comme réussi.",
+                    self._bucket, remote_path, verify_detail,
+                )
+                failures.append((str(file_path), f"verification_failed: {verify_detail}"))
 
         remote_url = self._build_remote_url(remote_folder_name)
         success = total > 0 and uploaded == total
@@ -132,17 +190,36 @@ class SupabaseStorageUploader(StorageUploader):
                 f"{path} ({reason})" for path, reason in failures
             )
             logger.warning(
-                "Upload Supabase Storage incomplet pour '%s' : %d/%d fichier(s) envoyé(s). Échecs : %s",
+                "Upload Supabase Storage incomplet pour '%s' : %d/%d fichier(s) envoyé(s) ET vérifié(s). Échecs : %s",
                 remote_folder_name, uploaded, total, failures,
             )
         logger.info(
-            "Uploaded:\n%d / %d\n\nStorage URL:\n%s\n\nStatus: %s",
+            "Uploaded (vérifiés):\n%d / %d\n\nStorage URL:\n%s\n\nStatus: %s",
             uploaded, total, remote_url, "SUCCESS" if success else "PARTIAL",
         )
         return UploadResult(
             success=success, uploaded_count=uploaded, total_count=total,
             remote_url=remote_url, error=error,
         )
+
+    @staticmethod
+    def _verify_object_exists(bucket_api: Any, remote_path: str) -> "tuple[bool, str]":
+        """
+        Confirme qu'un objet existe réellement côté serveur après upload() —
+        ne jamais faire confiance à l'absence d'exception seule (Sprint 30.5).
+
+        Utilise `bucket.exists()` (requête HEAD réelle) : certaines versions/
+        configurations peuvent lever une exception pour un objet manquant
+        (ex: 404) plutôt que de retourner False — les deux cas sont traités
+        comme "non vérifié".
+        """
+        try:
+            found = bucket_api.exists(remote_path)
+        except Exception as exc:
+            return False, f"exists() a levé une exception : {exc}"
+        if not found:
+            return False, "exists() a retourné False"
+        return True, "confirmé par exists()"
 
     def _build_remote_url(self, remote_folder_name: str) -> Optional[str]:
         """Construit l'URL pointant vers le dossier distant (best effort)."""

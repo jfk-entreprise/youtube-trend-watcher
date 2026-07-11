@@ -1027,7 +1027,10 @@ def main() -> None:
         def _upload_packages() -> List[UploadResult]:
             results = []
             for package_dir, prod in zip(package_dirs, niche_productions):
-                remote_folder_name = f"production/{date.today().isoformat()}/{package_dir.name}"
+                # Le bucket Supabase Storage s'appelle déjà "production" — ne pas
+                # répéter ce nom dans le préfixe distant (Sprint 30.5 : cela
+                # produisait une clé dupliquée "production/production/...").
+                remote_folder_name = f"{date.today().isoformat()}/{package_dir.name}"
                 result = storage_uploader.upload_package(package_dir, remote_folder_name)
                 logger.info(
                     "  Supabase Storage [%s] : success=%s uploaded=%d/%d error=%s",

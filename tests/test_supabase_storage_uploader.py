@@ -15,7 +15,7 @@ class TestNoOpStorageUploader:
     def test_returns_not_configured_without_raising(self, tmp_path):
         uploader = NoOpStorageUploader()
 
-        result = uploader.upload_package(tmp_path, "production/2026-07-10/niche_01")
+        result = uploader.upload_package(tmp_path, "2026-07-10/niche_01")
 
         assert isinstance(result, UploadResult)
         assert result.success is False
@@ -26,14 +26,28 @@ class TestNoOpStorageUploader:
 
 
 class _FakeBucketAPI:
-    """Simule client.storage.from_(bucket) — upload()/get_public_url()."""
+    """Simule client.storage.from_(bucket) — upload()/exists()/get_public_url().
 
-    def __init__(self):
+    `missing_paths` / `exists_raises_for` permettent de simuler, par chemin,
+    un upload() qui ne lève pas mais dont l'objet est en réalité absent (ou
+    dont la vérification échoue) — c'est exactement le scénario Sprint 30.5.
+    """
+
+    def __init__(self, missing_paths=(), exists_raises_for=()):
         self.uploaded_paths = []
+        self.exists_calls = []
+        self._missing_paths = set(missing_paths)
+        self._exists_raises_for = set(exists_raises_for)
 
     def upload(self, path, file, file_options=None):
         self.uploaded_paths.append(path)
         return {"path": path}
+
+    def exists(self, path):
+        self.exists_calls.append(path)
+        if path in self._exists_raises_for:
+            raise RuntimeError(f"HEAD {path} -> 404 (simulated)")
+        return path not in self._missing_paths
 
     def get_public_url(self, path, options=None):
         return f"https://fake.supabase.co/storage/v1/object/public/{DEFAULT_BUCKET}/{path}"
@@ -48,8 +62,8 @@ class _FakeStorageNamespace:
 
 
 class _FakeSupabaseClient:
-    def __init__(self):
-        self.bucket_api = _FakeBucketAPI()
+    def __init__(self, **bucket_api_kwargs):
+        self.bucket_api = _FakeBucketAPI(**bucket_api_kwargs)
         self.storage = _FakeStorageNamespace(self.bucket_api)
 
 
@@ -74,19 +88,19 @@ class TestSupabaseStorageUploader:
         fake_client = _FakeSupabaseClient()
         uploader = SupabaseStorageUploader(client=fake_client)
 
-        result = uploader.upload_package(package_dir, "production/2026-07-10/niche_01")
+        result = uploader.upload_package(package_dir, "2026-07-10/niche_01")
 
         assert result.success is True
         assert result.uploaded_count == 3
         assert result.total_count == 3
         assert result.error is None
         assert result.remote_url == (
-            "https://fake.supabase.co/storage/v1/object/public/production/production/2026-07-10/niche_01"
+            "https://fake.supabase.co/storage/v1/object/public/production/2026-07-10/niche_01"
         )
         assert set(fake_client.bucket_api.uploaded_paths) == {
-            "production/2026-07-10/niche_01/final_script.json",
-            "production/2026-07-10/niche_01/report.md",
-            "production/2026-07-10/niche_01/image_prompts/scene_01.json",
+            "2026-07-10/niche_01/final_script.json",
+            "2026-07-10/niche_01/report.md",
+            "2026-07-10/niche_01/image_prompts/scene_01.json",
         }
 
     def test_preserves_folder_hierarchy_in_remote_paths(self, tmp_path):
@@ -96,9 +110,9 @@ class TestSupabaseStorageUploader:
         fake_client = _FakeSupabaseClient()
         uploader = SupabaseStorageUploader(client=fake_client)
 
-        uploader.upload_package(package_dir, "production/2026-07-10/niche_01")
+        uploader.upload_package(package_dir, "2026-07-10/niche_01")
 
-        assert "production/2026-07-10/niche_01/animation_prompts/scene_01.json" in fake_client.bucket_api.uploaded_paths
+        assert "2026-07-10/niche_01/animation_prompts/scene_01.json" in fake_client.bucket_api.uploaded_paths
 
     def test_single_file_failure_does_not_abort_whole_package(self, tmp_path):
         package_dir = _make_package(tmp_path)
@@ -115,7 +129,7 @@ class TestSupabaseStorageUploader:
         fake_client.bucket_api.upload = flaky_upload
         uploader = SupabaseStorageUploader(client=fake_client)
 
-        result = uploader.upload_package(package_dir, "production/2026-07-10/niche_01")
+        result = uploader.upload_package(package_dir, "2026-07-10/niche_01")
 
         assert result.success is False  # incomplet : pas 3/3
         assert result.uploaded_count == 2
@@ -130,7 +144,7 @@ class TestSupabaseStorageUploader:
         broken_client.storage.from_.return_value.get_public_url.return_value = "https://fake/url"
         uploader = SupabaseStorageUploader(client=broken_client)
 
-        result = uploader.upload_package(package_dir, "production/2026-07-10/niche_01")
+        result = uploader.upload_package(package_dir, "2026-07-10/niche_01")
 
         assert result.success is False
         assert result.uploaded_count == 0
@@ -144,7 +158,7 @@ class TestSupabaseStorageUploader:
         fake_client = _FakeSupabaseClient()
         uploader = SupabaseStorageUploader(client=fake_client)
 
-        result = uploader.upload_package(package_dir, "production/2026-07-10/niche_01")
+        result = uploader.upload_package(package_dir, "2026-07-10/niche_01")
 
         assert result.success is False
         assert result.total_count == 0
@@ -154,14 +168,117 @@ class TestSupabaseStorageUploader:
         package_dir = _make_package(tmp_path)
         client = MagicMock()
         client.storage.from_.return_value.upload.return_value = {"path": "ok"}
+        client.storage.from_.return_value.exists.return_value = True
         client.storage.from_.return_value.get_public_url.side_effect = RuntimeError("boom")
         uploader = SupabaseStorageUploader(url="https://proj.supabase.co", key="k", client=client)
 
-        result = uploader.upload_package(package_dir, "production/2026-07-10/niche_01")
+        result = uploader.upload_package(package_dir, "2026-07-10/niche_01")
 
         assert result.remote_url == (
-            "https://proj.supabase.co/storage/v1/object/public/production/production/2026-07-10/niche_01"
+            "https://proj.supabase.co/storage/v1/object/public/production/2026-07-10/niche_01"
         )
+
+
+# ── Tests : vérification post-upload (Sprint 30.5) ───────────────────────────
+# Bug de production confirmé : GitHub Actions rapportait "18/18 uploaded" et
+# "20/20 uploaded" alors que le bucket était vide côté dashboard Supabase —
+# upload() ne levait aucune exception, mais rien ne garantissait que l'objet
+# existait réellement côté serveur après coup. Ces tests verrouillent le
+# nouveau comportement : chaque upload est vérifié via exists(), et seul un
+# objet CONFIRMÉ présent compte comme réussi.
+
+class TestPostUploadVerification:
+    def test_upload_reported_without_exception_but_object_missing_is_not_success(self, tmp_path):
+        """Cas exact du bug : upload() ne lève rien, mais l'objet n'existe pas
+        réellement — ne doit JAMAIS être compté comme un succès."""
+        package_dir = _make_package(tmp_path)
+        fake_client = _FakeSupabaseClient(
+            missing_paths={"2026-07-10/niche_01/final_script.json"},
+        )
+        uploader = SupabaseStorageUploader(client=fake_client)
+
+        result = uploader.upload_package(package_dir, "2026-07-10/niche_01")
+
+        assert result.success is False
+        assert result.uploaded_count == 2  # les 2 fichiers réellement vérifiés
+        assert result.total_count == 3
+        assert "final_script.json" in result.error
+        assert "verification_failed" in result.error
+        # upload() a bien été appelé pour les 3 fichiers — ce n'est pas
+        # upload() qui a échoué, c'est la vérification après coup.
+        assert len(fake_client.bucket_api.uploaded_paths) == 3
+
+    def test_verification_exception_is_treated_as_not_uploaded(self, tmp_path):
+        """Si exists() lève (ex: 404 non capturé en amont par le SDK), le
+        fichier ne doit pas non plus compter comme réussi."""
+        package_dir = _make_package(tmp_path)
+        fake_client = _FakeSupabaseClient(
+            exists_raises_for={"2026-07-10/niche_01/report.md"},
+        )
+        uploader = SupabaseStorageUploader(client=fake_client)
+
+        result = uploader.upload_package(package_dir, "2026-07-10/niche_01")
+
+        assert result.success is False
+        assert result.uploaded_count == 2
+        assert "report.md" in result.error
+        assert "verification_failed" in result.error
+
+    def test_all_verified_reports_full_success(self, tmp_path):
+        """Chemin heureux : upload() réussit ET exists() confirme chaque objet."""
+        package_dir = _make_package(tmp_path)
+        fake_client = _FakeSupabaseClient()
+        uploader = SupabaseStorageUploader(client=fake_client)
+
+        result = uploader.upload_package(package_dir, "2026-07-10/niche_01")
+
+        assert result.success is True
+        assert result.uploaded_count == 3
+        assert result.error is None
+        # exists() a bien été appelé pour chacun des 3 fichiers uploadés.
+        assert sorted(fake_client.bucket_api.exists_calls) == sorted(fake_client.bucket_api.uploaded_paths)
+
+
+# ── Tests : préfixe distant ne duplique jamais le bucket (Sprint 30.5) ──────
+
+class TestRemoteFolderNormalization:
+    def test_duplicated_bucket_prefix_is_stripped(self, tmp_path):
+        """Un appelant qui construit par erreur 'production/2026-07-10/niche_01'
+        (bucket déjà nommé 'production') ne doit jamais produire la clé
+        d'objet 'production/production/2026-07-10/niche_01/...'."""
+        package_dir = _make_package(tmp_path)
+        fake_client = _FakeSupabaseClient()
+        uploader = SupabaseStorageUploader(client=fake_client, bucket="production")
+
+        result = uploader.upload_package(package_dir, "production/2026-07-10/niche_01")
+
+        assert result.success is True
+        for path in fake_client.bucket_api.uploaded_paths:
+            assert not path.startswith("production/production")
+        assert "2026-07-10/niche_01/final_script.json" in fake_client.bucket_api.uploaded_paths
+        assert result.remote_url == (
+            "https://fake.supabase.co/storage/v1/object/public/production/2026-07-10/niche_01"
+        )
+
+    def test_bucket_name_alone_as_prefix_normalizes_to_empty(self, tmp_path):
+        package_dir = _make_package(tmp_path)
+        fake_client = _FakeSupabaseClient()
+        uploader = SupabaseStorageUploader(client=fake_client, bucket="production")
+
+        uploader.upload_package(package_dir, "production")
+
+        assert "final_script.json" in fake_client.bucket_api.uploaded_paths
+        for path in fake_client.bucket_api.uploaded_paths:
+            assert not path.startswith("production/")
+
+    def test_non_duplicated_prefix_is_left_untouched(self, tmp_path):
+        package_dir = _make_package(tmp_path)
+        fake_client = _FakeSupabaseClient()
+        uploader = SupabaseStorageUploader(client=fake_client, bucket="production")
+
+        uploader.upload_package(package_dir, "2026-07-10/niche_01")
+
+        assert "2026-07-10/niche_01/final_script.json" in fake_client.bucket_api.uploaded_paths
 
 
 class TestFactory:
