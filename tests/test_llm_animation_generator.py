@@ -162,6 +162,10 @@ def valid_llm_json():
         "lighting_changes": "cool blue rim light intensifies subtly",
         "effects": "faint light flares from the hologram",
         "sound_design": "low tension drone, soft electronic pulses",
+        "animation_style": "smooth 24fps cinematic motion, subtle parallax",
+        "voice": "Female, mid-30s, tense documentary tone",
+        "sound_effects": "faint camera shutter click",
+        "background_music": "low tense synth drone, building tension",
         "transition": "hard cut to black",
         "duration": 5,
         "prompt": (
@@ -399,10 +403,13 @@ class TestBuildAnimationPrompt:
         )
         assert set(animation_prompt.metadata.keys()) == {
             "goal", "emotion", "pace", "provider", "model", "time_ms", "cost_usd",
+            "animation_style", "voice", "sound_effects", "background_music",
         }
         assert animation_prompt.metadata["goal"] == valid_llm_json["goal"]
         assert animation_prompt.metadata["emotion"] == valid_llm_json["emotion"]
         assert animation_prompt.metadata["pace"] == valid_llm_json["pace"]
+        assert animation_prompt.metadata["animation_style"] == valid_llm_json["animation_style"]
+        assert animation_prompt.metadata["voice"] == valid_llm_json["voice"]
         assert animation_prompt.metadata["provider"] == "deepseek"
         assert animation_prompt.metadata["model"] == "deepseek-chat"
         assert animation_prompt.metadata["time_ms"] == 123
@@ -416,7 +423,9 @@ class TestBuildAnimationPrompt:
         assert animation_prompt.duration <= 10
 
     def test_full_output_shape_matches_contract(self, valid_llm_json, sample_dialogues):
-        """Le contrat exact demandé — 10 champs + metadata (goal/emotion/pace/provider/model/time_ms/cost_usd)."""
+        """Le contrat exact demandé — 10 champs + metadata (goal/emotion/pace/
+        animation_style/voice/sound_effects/background_music/provider/model/
+        time_ms/cost_usd, Sprint 34.6)."""
         response = _make_llm_response(json.dumps(valid_llm_json))
         animation_prompt = LLMAnimationGenerator._build_animation_prompt(
             valid_llm_json, response, 1, sample_dialogues,
@@ -428,6 +437,7 @@ class TestBuildAnimationPrompt:
         }
         assert set(data["metadata"].keys()) == {
             "goal", "emotion", "pace", "provider", "model", "time_ms", "cost_usd",
+            "animation_style", "voice", "sound_effects", "background_music",
         }
         # Sérialisable en JSON tel quel (compatible pipeline)
         json.dumps(data)

@@ -162,6 +162,14 @@ def valid_llm_json():
         ),
         "prompt": "Generate an image where Sarah Chen stares at the glowing screen, realizing the scale of the change.",
         "negative_prompt": "blurry, low quality, distorted, extra limbs, watermark",
+        "appearance": "trentaine, cheveux courts noirs, lunettes",
+        "clothing": "blazer rouge",
+        "accessories": "lunettes",
+        "pose": "debout, face a l'ecran",
+        "facial_expression": "stupefaction",
+        "weather": "N/A",
+        "time_of_day": "nuit",
+        "background": "ecrans holographiques en arriere-plan",
     }
 
 
@@ -326,14 +334,18 @@ class TestValidateJsonStructure:
         LLMImageGenerator._validate_json_structure(valid_llm_json)
 
     def test_all_eight_fields_required(self):
-        """Sprint 24.1 : contrat ImagePrompt — 7 champs texte + 'characters' (liste)."""
+        """Sprint 24.1, étendu Sprint 34.6 : contrat ImagePrompt — champs texte
+        + 'characters' (liste) + 8 champs granulaires additionnels."""
         assert set(_REQUIRED_FIELDS) == {
             "goal", "emotion", "characters",
             "subject", "scene_description", "style", "prompt", "negative_prompt",
+            "appearance", "clothing", "accessories", "pose", "facial_expression",
+            "weather", "time_of_day", "background",
         }
-        assert len(_REQUIRED_FIELDS) == 8
         assert set(_REQUIRED_STRING_FIELDS) == {
             "goal", "emotion", "subject", "scene_description", "style", "prompt", "negative_prompt",
+            "appearance", "clothing", "accessories", "pose", "facial_expression",
+            "weather", "time_of_day", "background",
         }
         assert _REQUIRED_LIST_FIELDS == ("characters",)
 
@@ -511,14 +523,19 @@ class TestBuildImagePrompt:
         assert valid_llm_json["negative_prompt"] in image_prompt.negative_prompt
 
     def test_metadata_shape_is_exact(self, valid_llm_json):
-        """Le contrat metadata est EXACTEMENT {goal, emotion, characters, provider, model, time_ms, cost_usd}."""
+        """Sprint 34.6 : le contrat metadata inclut désormais aussi les 8
+        champs granulaires additionnels (appearance, clothing, ...)."""
         image_prompt = LLMImageGenerator._build_image_prompt(valid_llm_json, _FakeResponse(), elapsed_ms=1200)
         assert set(image_prompt.metadata.keys()) == {
             "goal", "emotion", "characters", "provider", "model", "time_ms", "cost_usd",
+            "appearance", "clothing", "accessories", "pose", "facial_expression",
+            "weather", "time_of_day", "background",
         }
         assert image_prompt.metadata["goal"] == valid_llm_json["goal"]
         assert image_prompt.metadata["emotion"] == valid_llm_json["emotion"]
         assert image_prompt.metadata["characters"] == valid_llm_json["characters"]
+        assert image_prompt.metadata["appearance"] == valid_llm_json["appearance"]
+        assert image_prompt.metadata["background"] == valid_llm_json["background"]
         assert image_prompt.metadata["provider"] == "deepseek"
         assert image_prompt.metadata["model"] == "deepseek-chat"
         assert image_prompt.metadata["time_ms"] == 1200

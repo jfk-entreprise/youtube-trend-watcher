@@ -110,6 +110,11 @@ _DEEPSEEK_IMAGE_MODEL = os.environ.get("DEEPSEEK_IMAGE_MODEL", "deepseek-chat")
 _REQUIRED_STRING_FIELDS = (
     "goal", "emotion",
     "subject", "scene_description", "style", "prompt", "negative_prompt",
+    # Sprint 34.6 — champs granulaires additionnels, utilisés pour construire
+    # le "prompt" riche exporté dans image_prompts/scene_XX.json (voir
+    # production_package_builder.py) sans dupliquer la logique de génération.
+    "appearance", "clothing", "accessories", "pose", "facial_expression",
+    "weather", "time_of_day", "background",
 )
 _REQUIRED_LIST_FIELDS = ("characters",)
 _REQUIRED_FIELDS = _REQUIRED_STRING_FIELDS + _REQUIRED_LIST_FIELDS
@@ -266,7 +271,7 @@ _JSON_REPAIR_INSTRUCTION = (
     "Le JSON precedent est invalide.\n"
     "Corrige UNIQUEMENT le JSON.\n"
     "Ne produis aucun texte supplementaire.\n"
-    "Respecte exactement le schema demande (les 8 champs, dans le meme ordre, JSON valide et complet)."
+    "Respecte exactement le schema demande (tous les champs requis, dans le meme ordre, JSON valide et complet)."
 )
 
 # Sprint 30.2 — un "validation_failed" n'est jamais un problème de syntaxe
@@ -284,7 +289,7 @@ _VALIDATION_REPAIR_INSTRUCTION_TEMPLATE = (
     "accessories and body type into a single string). Never return JSON objects "
     "inside this field.\n"
     "Do not modify any other field.\n"
-    "Return valid JSON only, respecting exactly the same 8 fields, in the same order."
+    "Return valid JSON only, respecting exactly the same fields, in the same order."
 )
 
 
@@ -753,6 +758,14 @@ class LLMImageGenerator(ImageGenerator):
                 "goal": data["goal"].strip(),
                 "emotion": data["emotion"].strip(),
                 "characters": list(data["characters"]),
+                "appearance": data["appearance"].strip(),
+                "clothing": data["clothing"].strip(),
+                "accessories": data["accessories"].strip(),
+                "pose": data["pose"].strip(),
+                "facial_expression": data["facial_expression"].strip(),
+                "weather": data["weather"].strip(),
+                "time_of_day": data["time_of_day"].strip(),
+                "background": data["background"].strip(),
                 "provider": response.provider_name,
                 "model": response.model,
                 "time_ms": elapsed_ms,
@@ -793,6 +806,8 @@ class LLMImageGenerator(ImageGenerator):
                 "goal": "",
                 "emotion": "",
                 "characters": [],
+                "appearance": "", "clothing": "", "accessories": "", "pose": "",
+                "facial_expression": "", "weather": "", "time_of_day": "", "background": "",
                 "provider": generated_image.provider,
                 "model": "",
                 "time_ms": 0,

@@ -1,6 +1,7 @@
 """
 Production Package Builder — Sprint 28 (Studio de production autonome),
-mis à jour Sprint 31.1 (Storyboard JSON + nettoyage des métadonnées techniques).
+mis à jour Sprint 31.1 (Storyboard JSON + nettoyage des métadonnées techniques)
+puis Sprint 34.6 (prompts image/vidéo au format riche "mega-prompt").
 
 Construit, pour une niche/chaîne donnée, le package de production "propre"
 attendu en sortie quotidienne du pipeline :
@@ -20,15 +21,20 @@ Sprint 31.1 :
   - final_script.json adopte le format Storyboard Studio unifié
     (title + scenes[{order, scene, dialogues, transition, duration_seconds}])
     — aucun champ interne (metadata, language, style...) n'y est écrit.
-  - image_prompt.json / animation_prompt.json ne contiennent plus jamais
-    provider/model/time_ms/cost_usd dans leur metadata — ces informations
-    techniques ne vivent plus que dans report.md (tableau par scène).
+
+Sprint 34.6 :
+  - image_prompts/scene_XX.json et animation_prompts/scene_XX.json adoptent un
+    format "mega-prompt" à 3 clés {prompt, negative_prompt, instruction_format}
+    — le champ "prompt" concatène des libellés riches ("Subject: ... Clothing:
+    ... Camera Angle: ...") construits à partir du contenu déjà généré
+    (ImagePrompt/AnimationPrompt, ShotPlan, SceneDescription, BrandProfile) —
+    aucune nouvelle génération LLM ici, uniquement une reformulation.
 
 Ne dépend d'aucun autre moteur créatif : il consomme uniquement les objets
-déjà produits (Script, ImagePrompt, AnimationPrompt) via NicheProductionResult.
+déjà produits (Script, ImagePrompt, AnimationPrompt, ShotPlan) via
+NicheProductionResult.
 """
 
-import dataclasses
 import json
 import logging
 from dataclasses import dataclass
@@ -41,11 +47,7 @@ from src.script_engine import Script
 
 logger = logging.getLogger(__name__)
 
-# Clés techniques qui ne doivent plus jamais apparaître dans un fichier de
-# production (image_prompt.json / animation_prompt.json) — Sprint 31.1.
-# Elles restent disponibles sur les objets Python en mémoire (pour le
-# rapport) ; seule la SÉRIALISATION disque les retire.
-_TECHNICAL_METADATA_KEYS = ("provider", "model", "time_ms", "cost_usd")
+_INSTRUCTION_FORMAT = "Respond STRICTLY in valid JSON. Do not include any explanation or markdown."
 
 
 # ── Contrat d'entrée ──────────────────────────────────────────────────────────
@@ -110,76 +112,143 @@ def _serialize_script(script: Script) -> Dict[str, Any]:
     }
 
 
-def _scene_description_paragraph(description) -> str:
+def _s(value: Any, default: str = "unspecified") -> str:
+    """Normalise une valeur texte potentiellement absente/vide."""
+    text = str(value).strip() if value is not None else ""
+    return text or default
+
+
+def _build_image_prompt_file(
+    image_prompt: Any, shot_plan: Optional[Any], description: Any, brand: BrandProfile,
+) -> Dict[str, Any]:
     """
-    Condense une scène à l'essentiel pour rester léger dans Storyboard
-    Studio (Sprint 34.4) : uniquement le décor (setting) et les personnages
-    à l'écran (characters) — composition/lighting/camera/mood/symbolism/
-    director_notes/viewer_emotion restent dans final_script.json (contrat
-    complet, Sprint 32.1) mais ne sont plus dupliqués ici, le script global
-    étant jugé trop long pour un import direct.
+    Construit le fichier image_prompts/scene_XX.json (Sprint 34.6) : un
+    "mega-prompt" texte unique regroupant des libellés riches, à partir du
+    contenu déjà généré par LLMImageGenerator (ImagePrompt), le VisualDirector
+    (ShotPlan, si disponible) et l'identité de marque (BrandProfile) — aucune
+    nouvelle génération ici, uniquement une reformulation.
     """
-    return f"{description.setting} {description.characters}"
+    meta = image_prompt.metadata or {}
+    camera_angle = shot_plan.camera_angle if shot_plan else description.camera
+    lens = shot_plan.lens if shot_plan else "unspecified"
+    composition = shot_plan.composition if shot_plan else description.composition
+    color_palette = shot_plan.color_palette if shot_plan else ", ".join(brand.color_palette)
+    details = " ".join(
+        part for part in (description.symbolism, description.director_notes) if part
+    )
+
+    fields = [
+        ("Subject", image_prompt.subject),
+        ("Appearance", meta.get("appearance")),
+        ("Clothing", meta.get("clothing")),
+        ("Accessories", meta.get("accessories")),
+        ("Pose", meta.get("pose")),
+        ("Action", image_prompt.prompt),
+        ("Facial Expression", meta.get("facial_expression")),
+        ("Emotion", meta.get("emotion")),
+        ("Environment", description.setting),
+        ("Background", meta.get("background")),
+        ("Weather", meta.get("weather")),
+        ("Time of Day", meta.get("time_of_day")),
+        ("Lighting", description.lighting),
+        ("Camera Angle", camera_angle),
+        ("Lens", lens),
+        ("Composition", composition),
+        ("Style", image_prompt.style),
+        ("Color Palette", color_palette),
+        ("Details", details),
+        ("Text (optional)", "None"),
+        ("Language", "None (no on-screen text)"),
+    ]
+    prompt = " ".join(f"{label}: {_s(value)}." for label, value in fields)
+
+    return {
+        "prompt": prompt,
+        "negative_prompt": image_prompt.negative_prompt,
+        "instruction_format": _INSTRUCTION_FORMAT,
+    }
 
 
-def _dialogue_label(personnage: str) -> str:
+def _dialogue_fields(dialogues: List[Any]) -> Dict[str, str]:
+    """Dérive Dialogue/Speaker/Narration (verbatim) depuis les répliques de la scène."""
+    if not dialogues:
+        return {"dialogue": "None", "speaker": "None", "narration": "None"}
+    speakers = [
+        "NARRATOR" if not d.personnage.strip() or d.personnage.strip().upper() in ("NARRATEUR", "NARRATOR")
+        else d.personnage.strip()
+        for d in dialogues
+    ]
+    lines = [d.replique for d in dialogues]
+    narration = " ".join(
+        d.replique for d in dialogues if (d.personnage or "").strip().upper() in ("", "NARRATEUR", "NARRATOR")
+    )
+    return {
+        "dialogue": " / ".join(lines),
+        "speaker": " / ".join(speakers),
+        "narration": narration or "None",
+    }
+
+
+def _build_animation_prompt_file(
+    animation_prompt: Any, image_prompt: Any, shot_plan: Optional[Any], description: Any, language: str,
+) -> Dict[str, Any]:
     """
-    Sprint 34.1 — labels toujours en anglais (NARRATOR/CHARACTER), quel que
-    soit le marché : seules les répliques elles-mêmes suivent la langue du
-    script (français pour le marché FR, anglais pour le marché US).
+    Construit le fichier animation_prompts/scene_XX.json (Sprint 34.6) — même
+    principe que _build_image_prompt_file, en réutilisant en plus l'ImagePrompt
+    de la même scène (apparence/vêtements déjà établis) et l'AnimationPrompt
+    (mouvement/son/transition déjà générés) : aucune nouvelle génération ici.
     """
-    name = (personnage or "").strip()
-    if not name or name.upper() in ("NARRATEUR", "NARRATOR"):
-        return "NARRATOR"
-    return f"CHARACTER ({name})"
+    meta = animation_prompt.metadata or {}
+    img_meta = image_prompt.metadata or {}
+    camera_angle = shot_plan.camera_angle if shot_plan else description.camera
+    lens = shot_plan.lens if shot_plan else "unspecified"
+    composition = shot_plan.composition if shot_plan else description.composition
+    shot_type = shot_plan.shot_type if shot_plan else "unspecified"
+    dialogue_fields = _dialogue_fields(animation_prompt.dialogues)
 
+    fields = [
+        ("Subject", image_prompt.subject),
+        ("Appearance", img_meta.get("appearance")),
+        ("Clothing", img_meta.get("clothing")),
+        ("Accessories", img_meta.get("accessories")),
+        ("Initial Pose", img_meta.get("pose")),
+        ("Character Action", animation_prompt.subject_motion),
+        ("Secondary Actions", animation_prompt.environment_motion),
+        ("Facial Expression", img_meta.get("facial_expression")),
+        ("Emotion", meta.get("emotion")),
+        ("Environment", description.setting),
+        ("Background", img_meta.get("background")),
+        ("Weather", img_meta.get("weather")),
+        ("Time of Day", img_meta.get("time_of_day")),
+        ("Lighting", animation_prompt.lighting_changes),
+        ("Camera Shot", shot_type),
+        ("Camera Angle", camera_angle),
+        ("Camera Movement", animation_prompt.camera_motion),
+        ("Lens", lens),
+        ("Composition", composition),
+        ("Visual Style", image_prompt.style),
+        ("Animation Style", meta.get("animation_style")),
+        ("Scene Duration", f"{animation_prompt.duration}s"),
+        ("Frame Rate", "24 fps"),
+        ("Dialogue", dialogue_fields["dialogue"]),
+        ("Speaker", dialogue_fields["speaker"]),
+        ("Narration", dialogue_fields["narration"]),
+        ("Language", language),
+        ("Voice", meta.get("voice")),
+        ("Lip Sync", "Synced to spoken dialogue audio"),
+        ("Sound Effects", meta.get("sound_effects")),
+        ("Ambient Sounds", animation_prompt.sound_design),
+        ("Background Music", meta.get("background_music")),
+        ("Atmosphere", description.mood),
+        ("Ending Scene", animation_prompt.transition),
+    ]
+    prompt = " ".join(f"{label}: {_s(value)}." for label, value in fields)
 
-def _serialize_script_txt(script: Script) -> str:
-    """
-    Projette un Script sur un format texte brut compact pensé pour l'import
-    dans Google Flow Storyboard Studio (Sprint 34.1, allégé aux Sprints
-    34.4/34.5) : chaque scène tient sur 3 lignes consécutives (SCENE /
-    NARRATOR ou CHARACTER / TRANSITION, sans saut de ligne interne, sans
-    numérotation), séparées des autres scènes par une seule ligne vide (pas
-    de séparateur "---") :
-
-        TITLE : ...
-
-        SCENE: <décor + personnages>
-        NARRATOR: <replique>
-        TRANSITION: <transition>
-
-        SCENE: <décor + personnages>
-        CHARACTER (Nom): <replique>
-        TRANSITION: <transition>
-
-    Seules les répliques (dialogues.replique) suivent la langue du script
-    (script.language) — tout le reste (titre, description de scène,
-    transition) est déjà généré en anglais par le LLM (voir
-    llm_script_generator.py), quel que soit le marché ciblé.
-    """
-    scene_blocks: List[str] = []
-    for scene in script.scenes:
-        lines = [f"SCENE: {_scene_description_paragraph(scene.scene.description)}"]
-        for dialogue in scene.dialogues:
-            lines.append(f"{_dialogue_label(dialogue.personnage)}: {dialogue.replique}")
-        lines.append(f"TRANSITION: {scene.transition}")
-        scene_blocks.append("\n".join(lines))
-    return f"TITLE : {script.title}\n\n" + "\n\n".join(scene_blocks)
-
-
-def _strip_technical_metadata(data: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Retire provider/model/time_ms/cost_usd de `data["metadata"]` avant
-    écriture disque (Sprint 31.1) — ces informations techniques ne vivent
-    plus que dans report.md.
-    """
-    data = dict(data)
-    metadata = dict(data.get("metadata") or {})
-    for key in _TECHNICAL_METADATA_KEYS:
-        metadata.pop(key, None)
-    data["metadata"] = metadata
-    return data
+    return {
+        "prompt": prompt,
+        "negative_prompt": image_prompt.negative_prompt,
+        "instruction_format": _INSTRUCTION_FORMAT,
+    }
 
 
 # ── ProductionPackageBuilder ─────────────────────────────────────────────────
@@ -200,20 +269,31 @@ class ProductionPackageBuilder:
         animation_dir.mkdir(parents=True, exist_ok=True)
 
         _write_json(package_dir / "final_script.json", _serialize_script(result.final_script))
-        (package_dir / "script_final.txt").write_text(
-            _serialize_script_txt(result.final_script), encoding="utf-8"
-        )
+
+        scenes_by_number = {s.scene.number: s for s in result.final_script.scenes}
+        images_by_order = {e["scene_order"]: e for e in result.images}
+        language = result.final_script.language
 
         for entry in sorted(result.images, key=lambda e: e["scene_order"]):
+            script_scene = scenes_by_number.get(entry["scene_order"])
+            description = script_scene.scene.description if script_scene else None
             _write_json(
                 image_dir / f"scene_{entry['scene_order']:02d}.json",
-                _strip_technical_metadata(dataclasses.asdict(entry["image_prompt"])),
+                _build_image_prompt_file(
+                    entry["image_prompt"], entry.get("shot_plan"), description, result.brand,
+                ),
             )
 
         for entry in sorted(result.animations, key=lambda e: e["scene_order"]):
+            script_scene = scenes_by_number.get(entry["scene_order"])
+            description = script_scene.scene.description if script_scene else None
+            image_entry = images_by_order.get(entry["scene_order"], {})
             _write_json(
                 animation_dir / f"scene_{entry['scene_order']:02d}.json",
-                _strip_technical_metadata(dataclasses.asdict(entry["animation_prompt"])),
+                _build_animation_prompt_file(
+                    entry["animation_prompt"], image_entry.get("image_prompt"),
+                    image_entry.get("shot_plan"), description, language,
+                ),
             )
 
         (package_dir / "report.md").write_text(self._build_report(result), encoding="utf-8")

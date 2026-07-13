@@ -350,6 +350,25 @@ Avoid abrupt endings unless intentionally dramatic.
 Transitions should maintain narrative flow.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ADDITIONAL GRANULAR FIELDS — MANDATORY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Beyond the core fields, you must ALSO decide 4 additional fields:
+
+- animation_style    : the overall motion/animation aesthetic ONLY — distinct
+                        from camera_motion (which is camera movement only).
+                        E.g. "smooth 24fps cinematic motion, subtle parallax,
+                        naturalistic physics".
+- voice               : a short voice-casting descriptor for whoever speaks in
+                        this shot (age range, tone, register) — e.g. "Male,
+                        mid-30s, calm and authoritative documentary tone".
+- sound_effects       : punctual diegetic sound effects ONLY (a door closing, a
+                        camera shutter, footsteps) — distinct from sound_design
+                        (continuous ambient sound).
+- background_music    : the musical mood/genre that should underscore this shot
+                        ONLY — e.g. "low tense synth drone, building tension".
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 PROMPT SYNTHESIS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -396,6 +415,10 @@ Return EXACTLY
   "lighting_changes": "",
   "effects": "",
   "sound_design": "",
+  "animation_style": "",
+  "voice": "",
+  "sound_effects": "",
+  "background_music": "",
   "transition": "",
   "duration": 5,
   "prompt": ""

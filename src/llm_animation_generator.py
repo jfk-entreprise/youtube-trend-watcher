@@ -124,6 +124,10 @@ _REQUIRED_STRING_FIELDS = (
     "goal", "emotion", "pace",
     "camera_motion", "subject_motion", "environment_motion",
     "lighting_changes", "effects", "sound_design", "transition",
+    # Sprint 34.6 — champs granulaires additionnels, utilisés pour construire
+    # le "prompt" riche exporté dans animation_prompts/scene_XX.json (voir
+    # production_package_builder.py).
+    "animation_style", "voice", "sound_effects", "background_music",
     "prompt",
 )
 _REQUIRED_INT_FIELDS = ("duration",)
@@ -226,7 +230,7 @@ _JSON_REPAIR_INSTRUCTION = (
     "Le JSON precedent est invalide.\n"
     "Corrige UNIQUEMENT le JSON.\n"
     "Ne produis aucun texte supplementaire.\n"
-    "Respecte exactement le schema demande (les 11 champs, dans le meme ordre, JSON valide et complet)."
+    "Respecte exactement le schema demande (tous les champs requis, dans le meme ordre, JSON valide et complet)."
 )
 
 
@@ -651,6 +655,10 @@ class LLMAnimationGenerator:
                 "goal": data["goal"].strip(),
                 "emotion": data["emotion"].strip(),
                 "pace": data["pace"].strip(),
+                "animation_style": data["animation_style"].strip(),
+                "voice": data["voice"].strip(),
+                "sound_effects": data["sound_effects"].strip(),
+                "background_music": data["background_music"].strip(),
                 "provider": response.provider_name,
                 "model": response.model,
                 "time_ms": elapsed_ms,
@@ -701,6 +709,10 @@ class LLMAnimationGenerator:
                 "goal": "",
                 "emotion": "",
                 "pace": "steady",
+                "animation_style": "subtle, natural cinematic motion",
+                "voice": "",
+                "sound_effects": "none",
+                "background_music": "ambient, understated",
                 "provider": "fallback_heuristic",
                 "model": "",
                 "time_ms": 0,

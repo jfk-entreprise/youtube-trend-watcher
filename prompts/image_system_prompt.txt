@@ -327,6 +327,26 @@ If a scene has no notable character, return an empty array:
 "characters": []
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ADDITIONAL GRANULAR FIELDS — MANDATORY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Beyond the 5 core fields, you must ALSO decide 8 granular fields describing
+the MAIN SUBJECT and immediate surroundings specifically (not the whole
+scene — that is already covered by scene_description):
+
+- appearance        : physical appearance of the main subject ONLY (face, age, hair, body type).
+- clothing           : what the main subject is wearing ONLY.
+- accessories        : objects worn/carried by the main subject ONLY (jewelry, tools, props).
+- pose               : body position/posture of the main subject ONLY.
+- facial_expression  : the main subject's facial expression ONLY.
+- weather            : weather conditions ONLY (clear, overcast, rain, fog...) — "N/A" if indoors/irrelevant.
+- time_of_day        : time of day ONLY (dawn, morning, dusk, night...).
+- background         : what is visible immediately behind the main subject ONLY (distinct from the wider scene_description).
+
+These 8 fields are never empty — always fill them, even briefly ("N/A" is
+only acceptable for weather when clearly indoors/irrelevant).
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 GENERAL RULES
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -368,6 +388,14 @@ Return ONLY:
   "emotion": "",
   "characters": [],
   "subject": "",
+  "appearance": "",
+  "clothing": "",
+  "accessories": "",
+  "pose": "",
+  "facial_expression": "",
+  "weather": "",
+  "time_of_day": "",
+  "background": "",
   "scene_description": "",
   "style": "",
   "prompt": "",

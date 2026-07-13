@@ -18,7 +18,7 @@ def _brand() -> BrandProfile:
         emotion_level=0.5, humor_level=0.5, authority_level=0.5, curiosity_level=0.5,
         storytelling_level=0.5, voice_speed="Modéré", preferred_video_duration=600,
         preferred_formats=["Analyse"], preferred_hooks=["Hook ?"], preferred_cta=["Abonne-toi."],
-        forbidden_words=[], visual_style="", color_palette=[], typography_style="",
+        forbidden_words=[], visual_style="", color_palette=["Warm Orange", "Cyan"], typography_style="",
         logo_description="", thumbnail_style="", metadata={},
     )
 
@@ -54,7 +54,13 @@ def _script() -> Script:
 
 
 def _image_prompt(fallback=False) -> ImagePrompt:
-    metadata = {"goal": "g", "emotion": "e", "characters": []}
+    metadata = {
+        "goal": "g", "emotion": "e", "characters": [],
+        "appearance": "young woman, short dark hair", "clothing": "white lab coat",
+        "accessories": "safety goggles", "pose": "leaning over a workbench",
+        "facial_expression": "focused", "weather": "N/A", "time_of_day": "night",
+        "background": "rows of glowing server racks",
+    }
     if fallback:
         metadata.update({"provider": "heuristic_image_v1", "model": "", "time_ms": 0,
                           "cost_usd": 0.0, "fallback_reason": "validation_failed"})
@@ -72,14 +78,16 @@ def _animation_prompt() -> AnimationPrompt:
         dialogues=[Dialogue(personnage="NARRATEUR", replique="Bonjour")],
         transition="cut", duration=10, prompt="animate the robot",
         metadata={"goal": "g", "emotion": "e", "provider": "deepseek",
-                  "model": "deepseek-chat", "time_ms": 987, "cost_usd": 0.0015},
+                  "model": "deepseek-chat", "time_ms": 987, "cost_usd": 0.0015,
+                  "animation_style": "smooth 24fps motion", "voice": "female, calm",
+                  "sound_effects": "faint beep", "background_music": "low tense synth"},
     )
 
 
 def _result(fallback_image=False) -> NicheProductionResult:
     return NicheProductionResult(
         niche=_niche(), brand=_brand(), final_script=_script(),
-        images=[{"scene_order": 1, "image_prompt": _image_prompt(fallback=fallback_image)}],
+        images=[{"scene_order": 1, "image_prompt": _image_prompt(fallback=fallback_image), "shot_plan": None}],
         animations=[{"scene_order": 1, "animation_prompt": _animation_prompt()}],
         rewrite_result=None,
     )
@@ -93,10 +101,10 @@ class TestPackageStructure:
 
         assert package_dir == tmp_path / "niche_01"
         assert (package_dir / "final_script.json").exists()
-        assert (package_dir / "script_final.txt").exists()
         assert (package_dir / "image_prompts" / "scene_01.json").exists()
         assert (package_dir / "animation_prompts" / "scene_01.json").exists()
         assert (package_dir / "report.md").exists()
+        assert not (package_dir / "script_final.txt").exists()
 
     def test_final_script_content_matches_source(self, tmp_path):
         """Sprint 32.1 : final_script.json adopte le contrat storyboard
@@ -149,155 +157,127 @@ class TestPackageStructure:
         assert result.final_script.title in report
 
 
-class TestScriptFinalTxt:
-    """Sprint 34.1, allégé aux Sprints 34.4/34.5 — export texte brut pour
-    Google Flow Storyboard Studio : chaque scène tient sur 3 lignes
-    consécutives (SCENE / NARRATOR ou CHARACTER / TRANSITION), sans saut de
-    ligne interne ni numérotation, séparées des autres scènes par une seule
-    ligne vide (pas de "---"). Labels toujours en anglais, seules les
-    répliques suivent la langue du script. Le paragraphe SCENE ne garde que
-    l'essentiel (setting + characters) — le script complet s'est révélé trop
-    long pour un import direct dans Storyboard Studio."""
+class TestImagePromptMegaPrompt:
+    """Sprint 34.6 — image_prompts/scene_XX.json adopte un format compact à
+    3 clés {prompt, negative_prompt, instruction_format} : "prompt" concatène
+    des libellés riches (Subject/Appearance/.../Language), construits à
+    partir du contenu déjà généré (ImagePrompt, ShotPlan, SceneDescription,
+    BrandProfile) — aucune nouvelle génération LLM."""
 
-    def test_contains_expected_labels_on_three_consecutive_lines(self, tmp_path):
-        builder = ProductionPackageBuilder()
-        result = _result()
-
-        package_dir = builder.build(tmp_path, niche_index=1, result=result)
-
-        txt = (package_dir / "script_final.txt").read_text(encoding="utf-8")
-        assert txt.startswith(f"TITLE : {result.final_script.title}")
-        source_desc = result.final_script.scenes[0].scene.description
-        expected_block = (
-            f"SCENE: {source_desc.setting} {source_desc.characters}\n"
-            f"NARRATOR: Bonjour\n"
-            f"TRANSITION: Fondu."
-        )
-        assert expected_block in txt
-        # Pas de numérotation ("SCENE 1"), pas de séparateur "---"
-        assert "SCENE 1" not in txt
-        assert "---" not in txt
-
-    def test_other_description_fields_are_dropped_from_txt(self, tmp_path):
-        """Sprint 34.4 — seuls setting + characters restent dans
-        script_final.txt ; composition/lighting/camera/mood/symbolism/
-        director_notes/viewer_emotion ne sont plus dupliqués (script jugé
-        trop long) mais restent dans final_script.json (contrat complet)."""
-        builder = ProductionPackageBuilder()
-        result = _result()
-
-        package_dir = builder.build(tmp_path, niche_index=1, result=result)
-
-        txt = (package_dir / "script_final.txt").read_text(encoding="utf-8")
-        source_desc = result.final_script.scenes[0].scene.description
-        assert source_desc.composition not in txt
-        assert source_desc.lighting not in txt
-        assert source_desc.camera not in txt
-        assert source_desc.mood not in txt
-        assert source_desc.symbolism not in txt
-        assert source_desc.director_notes not in txt
-        assert source_desc.viewer_emotion not in txt
-
-    def test_character_dialogue_uses_character_label(self, tmp_path):
-        builder = ProductionPackageBuilder()
-        scene = ScriptScene(
-            scene=Scene(number=1, type="hook", description=_description()),
-            dialogues=[Dialogue(personnage="Robot", replique="Bip bip.")],
-            transition="Fondu.", duration_seconds=10,
-        )
-        script = Script(title="Titre", scenes=[scene], estimated_duration=100,
-                         language="fr", target_audience="Curieux", style="Innovant",
-                         metadata={"generator": "llm_v1"})
-        result = NicheProductionResult(
-            niche=_niche(), brand=_brand(), final_script=script,
-            images=[], animations=[], rewrite_result=None,
-        )
-
-        package_dir = builder.build(tmp_path, niche_index=1, result=result)
-
-        txt = (package_dir / "script_final.txt").read_text(encoding="utf-8")
-        assert "CHARACTER (Robot): Bip bip." in txt
-
-    def test_scenes_separated_by_single_blank_line(self, tmp_path):
-        desc = _description()
-        scene_1 = ScriptScene(
-            scene=Scene(number=1, type="hook", description=desc),
-            dialogues=[Dialogue(personnage="NARRATEUR", replique="Un.")],
-            transition="Cut.", duration_seconds=5,
-        )
-        scene_2 = ScriptScene(
-            scene=Scene(number=2, type="context", description=desc),
-            dialogues=[Dialogue(personnage="NARRATEUR", replique="Deux.")],
-            transition="Fondu.", duration_seconds=5,
-        )
-        script = Script(title="Titre", scenes=[scene_1, scene_2], estimated_duration=10,
-                         language="fr", target_audience="Curieux", style="Innovant",
-                         metadata={"generator": "llm_v1"})
-        result = NicheProductionResult(
-            niche=_niche(), brand=_brand(), final_script=script,
-            images=[], animations=[], rewrite_result=None,
-        )
-        builder = ProductionPackageBuilder()
-
-        package_dir = builder.build(tmp_path, niche_index=1, result=result)
-
-        txt = (package_dir / "script_final.txt").read_text(encoding="utf-8")
-        assert "TRANSITION: Cut.\n\nSCENE:" in txt
-        assert "---" not in txt
-
-    def test_no_json_braces_in_txt_output(self, tmp_path):
-        """Le fichier doit être du texte brut lisible, pas du JSON imbriqué."""
-        builder = ProductionPackageBuilder()
-        package_dir = builder.build(tmp_path, niche_index=1, result=_result())
-
-        txt = (package_dir / "script_final.txt").read_text(encoding="utf-8")
-        assert "{" not in txt
-        assert "}" not in txt
-
-
-class TestTechnicalMetadataStripped:
-    """Sprint 31.1 — provider/model/time_ms/cost_usd ne doivent plus jamais
-    apparaître dans image_prompts/*.json ni animation_prompts/*.json — ces
-    informations vivent désormais uniquement dans report.md."""
-
-    def test_image_prompt_file_has_no_technical_metadata(self, tmp_path):
+    def test_file_has_exactly_three_keys(self, tmp_path):
         builder = ProductionPackageBuilder()
         package_dir = builder.build(tmp_path, niche_index=1, result=_result())
 
         data = json.loads((package_dir / "image_prompts" / "scene_01.json").read_text(encoding="utf-8"))
-        for key in ("provider", "model", "time_ms", "cost_usd"):
-            assert key not in data["metadata"], f"'{key}' ne doit plus apparaître dans image_prompt.json"
-        # Les champs non techniques restent présents
-        assert data["metadata"]["goal"] == "g"
-        assert data["metadata"]["emotion"] == "e"
+        assert set(data.keys()) == {"prompt", "negative_prompt", "instruction_format"}
 
-    def test_animation_prompt_file_has_no_technical_metadata(self, tmp_path):
+    def test_prompt_contains_expected_labels_and_content(self, tmp_path):
+        builder = ProductionPackageBuilder()
+        result = _result()
+        package_dir = builder.build(tmp_path, niche_index=1, result=result)
+
+        data = json.loads((package_dir / "image_prompts" / "scene_01.json").read_text(encoding="utf-8"))
+        prompt = data["prompt"]
+        for label in (
+            "Subject:", "Appearance:", "Clothing:", "Accessories:", "Pose:", "Action:",
+            "Facial Expression:", "Emotion:", "Environment:", "Background:", "Weather:",
+            "Time of Day:", "Lighting:", "Camera Angle:", "Lens:", "Composition:", "Style:",
+            "Color Palette:", "Details:", "Text (optional):", "Language:",
+        ):
+            assert label in prompt, f"Libellé manquant : {label}"
+
+        image_prompt = result.images[0]["image_prompt"]
+        assert image_prompt.subject in prompt
+        assert image_prompt.metadata["appearance"] in prompt
+        assert image_prompt.metadata["clothing"] in prompt
+        assert image_prompt.style in prompt
+        # Color Palette retombe sur la marque (aucun ShotPlan fourni)
+        assert "Warm Orange" in prompt
+
+    def test_negative_prompt_and_instruction_format(self, tmp_path):
+        builder = ProductionPackageBuilder()
+        result = _result()
+        package_dir = builder.build(tmp_path, niche_index=1, result=result)
+
+        data = json.loads((package_dir / "image_prompts" / "scene_01.json").read_text(encoding="utf-8"))
+        assert data["negative_prompt"] == result.images[0]["image_prompt"].negative_prompt
+        assert data["instruction_format"] == (
+            "Respond STRICTLY in valid JSON. Do not include any explanation or markdown."
+        )
+
+    def test_no_technical_metadata_leaks_into_prompt(self, tmp_path):
+        builder = ProductionPackageBuilder()
+        package_dir = builder.build(tmp_path, niche_index=1, result=_result())
+
+        raw = (package_dir / "image_prompts" / "scene_01.json").read_text(encoding="utf-8")
+        assert "deepseek" not in raw
+        assert "cost_usd" not in raw
+        assert "1234" not in raw
+
+
+class TestAnimationPromptMegaPrompt:
+    """Sprint 34.6 — animation_prompts/scene_XX.json : même principe, en
+    réutilisant en plus l'ImagePrompt de la même scène (apparence déjà
+    établie) et les dialogues verbatim de la scène."""
+
+    def test_file_has_exactly_three_keys(self, tmp_path):
         builder = ProductionPackageBuilder()
         package_dir = builder.build(tmp_path, niche_index=1, result=_result())
 
         data = json.loads((package_dir / "animation_prompts" / "scene_01.json").read_text(encoding="utf-8"))
-        for key in ("provider", "model", "time_ms", "cost_usd"):
-            assert key not in data["metadata"], f"'{key}' ne doit plus apparaître dans animation_prompt.json"
-        assert data["metadata"]["goal"] == "g"
+        assert set(data.keys()) == {"prompt", "negative_prompt", "instruction_format"}
 
-    def test_animation_prompt_file_contains_dialogues_verbatim(self, tmp_path):
-        """Sprint 31.1 — l'animation_prompt.json doit être autonome : mêmes
-        dialogues que la scène correspondante, copiés sans reformulation."""
+    def test_prompt_contains_expected_labels_and_content(self, tmp_path):
         builder = ProductionPackageBuilder()
         result = _result()
         package_dir = builder.build(tmp_path, niche_index=1, result=result)
 
         data = json.loads((package_dir / "animation_prompts" / "scene_01.json").read_text(encoding="utf-8"))
-        expected = [
-            {"personnage": d.personnage, "replique": d.replique}
-            for d in result.final_script.scenes[0].dialogues
-        ]
-        assert data["dialogues"] == expected
+        prompt = data["prompt"]
+        for label in (
+            "Subject:", "Appearance:", "Clothing:", "Accessories:", "Initial Pose:",
+            "Character Action:", "Secondary Actions:", "Facial Expression:", "Emotion:",
+            "Environment:", "Background:", "Weather:", "Time of Day:", "Lighting:",
+            "Camera Shot:", "Camera Angle:", "Camera Movement:", "Lens:", "Composition:",
+            "Visual Style:", "Animation Style:", "Scene Duration:", "Frame Rate:",
+            "Dialogue:", "Speaker:", "Narration:", "Language:", "Voice:", "Lip Sync:",
+            "Sound Effects:", "Ambient Sounds:", "Background Music:", "Atmosphere:",
+            "Ending Scene:",
+        ):
+            assert label in prompt, f"Libellé manquant : {label}"
+
+        animation_prompt = result.animations[0]["animation_prompt"]
+        image_prompt = result.images[0]["image_prompt"]
+        assert animation_prompt.camera_motion in prompt
+        assert animation_prompt.transition in prompt
+        assert image_prompt.metadata["appearance"] in prompt
+        assert "Bonjour" in prompt  # dialogue copié verbatim
+        assert "NARRATOR" in prompt  # speaker (NARRATEUR normalisé)
+        assert result.final_script.language in prompt
+        assert "24 fps" in prompt
+
+    def test_negative_prompt_reuses_image_negative_prompt(self, tmp_path):
+        builder = ProductionPackageBuilder()
+        result = _result()
+        package_dir = builder.build(tmp_path, niche_index=1, result=result)
+
+        data = json.loads((package_dir / "animation_prompts" / "scene_01.json").read_text(encoding="utf-8"))
+        assert data["negative_prompt"] == result.images[0]["image_prompt"].negative_prompt
+
+    def test_no_technical_metadata_leaks_into_prompt(self, tmp_path):
+        builder = ProductionPackageBuilder()
+        package_dir = builder.build(tmp_path, niche_index=1, result=_result())
+
+        raw = (package_dir / "animation_prompts" / "scene_01.json").read_text(encoding="utf-8")
+        assert "deepseek" not in raw
+        assert "cost_usd" not in raw
+        assert "987" not in raw
 
 
 class TestReportTechnicalMetrics:
-    """Sprint 31.1 — report.md devient la source unique des métriques
-    techniques (provider, modèle, temps, coût, statut, fallback)."""
+    """Sprint 31.1 — report.md reste la source des métriques techniques
+    (provider, modèle, temps, coût, statut, fallback), indépendamment du
+    format des fichiers image_prompts/*.json et animation_prompts/*.json."""
 
     def test_report_contains_llm_metrics_for_scene(self, tmp_path):
         builder = ProductionPackageBuilder()
