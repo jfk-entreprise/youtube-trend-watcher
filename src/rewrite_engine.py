@@ -13,17 +13,21 @@ Pipeline :
         → sinon : conserver l'ancienne
 
 Ce que le Rewrite Engine PEUT changer (texte uniquement) :
-  - hook, introduction, conclusion, call_to_action
-  - narration de chaque scène (le texte parlé)
+  - les répliques (`replique`) de chaque dialogue de chaque scène — la
+    première scène joue le rôle du hook, la dernière celui du CTA (Sprint
+    31.1 : plus de champs hook/introduction/conclusion/call_to_action
+    séparés, ce sont de simples scènes)
 
 Ce que le Rewrite Engine NE CHANGE JAMAIS :
-  - le sujet (title, visual_description, image_prompt, animation_notes,
-    sound_effects de chaque scène restent identiques)
+  - le sujet (title, `scene` — description visuelle —, `transition` de
+    chaque scène restent identiques)
   - la marque (language, style, target_audience du Script)
   - la durée (estimated_duration du Script ET duration_seconds de chaque
     scène — jamais envoyés au LLM, toujours recopiés depuis l'original)
   - le nombre de scènes et leur ordre (order de chaque scène est fixé et
     vérifié après coup ; toute divergence invalide la réécriture)
+  - le nombre de dialogues par scène et le personnage de chacun (seule la
+    réplique est réécrite, jamais qui parle ni combien de fois)
 
 Contrat :
   - Entrée : Script + LLMScriptScore (rapport de LLMScriptEvaluator).
@@ -48,6 +52,18 @@ from src.llm_script_evaluator import LLMScriptEvaluator, LLMScriptScore
 from src.script_engine import Script, ScriptScene
 
 logger = logging.getLogger(__name__)
+
+# Nom complet de chaque langue supportée (même table que llm_script_generator._LANGUAGE_NAMES) —
+# Sprint 34 : la langue des repliques réécrites suit script.language, jamais hardcodée.
+_LANGUAGE_NAMES = {
+    "fr": "French", "en": "English", "es": "Spanish", "pt": "Portuguese",
+    "de": "German", "it": "Italian", "ar": "Arabic", "zh": "Chinese",
+    "ja": "Japanese", "ko": "Korean",
+}
+
+
+def _language_name(code: str) -> str:
+    return _LANGUAGE_NAMES.get(code, code)
 
 
 # ── Prompt système ───────────────────────────────────────────────────────────
@@ -225,32 +241,33 @@ class RewriteEngine:
 
     @staticmethod
     def _build_user_prompt(script: Script, evaluation: LLMScriptScore) -> str:
+        language_name = _language_name(script.language)
         lines: List[str] = [
-            "Voici le script a ameliorer, et sa critique.",
+            "Here is the script to improve, and its critique.",
+            "The first scene plays the role of the hook, the last one the CTA.",
             "",
-            "=== SCRIPT ACTUEL ===",
-            f"Titre : {script.title}",
-            f"Hook : {script.hook}",
-            f"Introduction : {script.introduction}",
-            "Scenes :",
+            "=== CURRENT SCRIPT ===",
+            f"Title: {script.title}",
+            "Scenes:",
         ]
         for scene in script.scenes:
-            lines.append(f"  [order={scene.order}] {scene.title} : {scene.narration}")
+            dialogues_str = " / ".join(f"{d.personnage}: {d.replique}" for d in scene.dialogues)
+            lines.append(f"  [order={scene.order}] ({scene.scene.type}) {scene.scene.description.setting}")
+            lines.append(f"    Dialogues: {dialogues_str}")
         lines += [
-            f"Conclusion : {script.conclusion}",
-            f"CTA : {script.call_to_action}",
             "",
             "=== CRITIQUE (LLMScriptEvaluator) ===",
-            f"Score global actuel : {evaluation.global_score}/80",
-            f"Points faibles : {', '.join(evaluation.weaknesses) or '(aucun signale)'}",
-            f"Suggestions : {', '.join(evaluation.suggestions) or '(aucune)'}",
+            f"Current global score: {evaluation.global_score}/80",
+            f"Weaknesses: {', '.join(evaluation.weaknesses) or '(none reported)'}",
+            f"Suggestions: {', '.join(evaluation.suggestions) or '(none)'}",
             "",
-            f"Reecris uniquement hook, introduction, conclusion, call_to_action, "
-            f"et la narration de chacune des {len(script.scenes)} scenes ci-dessus "
-            f"(en conservant EXACTEMENT les memes valeurs de \"order\" : "
-            f"{[s.order for s in script.scenes]}).",
-            "Ne change ni le sujet, ni le nombre de scenes, ni leur ordre.",
-            "Reponds maintenant avec le JSON de reecriture.",
+            f"Rewrite ONLY the 'replique' of every dialogue in each of the "
+            f"{len(script.scenes)} scenes above (keeping EXACTLY the same "
+            f"\"order\" values: {[s.order for s in script.scenes]}, the same "
+            f"number of dialogues per scene, and the same 'personnage' for "
+            f"each dialogue — only the replique changes). Write repliques in {language_name}.",
+            "Do not change the subject, the scene count, their order, or who speaks.",
+            "Respond now with the rewrite JSON.",
         ]
         return "\n".join(lines)
 
@@ -282,15 +299,17 @@ class RewriteEngine:
         """
         Reconstruit un Script à partir du JSON de réécriture, en préservant
         strictement le sujet, la marque, la durée et la structure de scènes
-        du script original.
+        du script original — seules les répliques (`replique`) changent
+        (Sprint 31.1 : plus de hook/introduction/conclusion/call_to_action
+        séparés, la première/dernière scène en jouent le rôle).
 
         Raises:
             ValueError: si un champ requis manque ou si le nombre/ordre des
-                scènes ne correspond pas exactement à l'original.
+                scènes, ou le nombre/personnage des dialogues, ne
+                correspondent pas exactement à l'original.
         """
-        for required in ("hook", "introduction", "scenes", "conclusion", "call_to_action"):
-            if required not in data:
-                raise ValueError(f"Champ obligatoire manquant dans la réécriture : '{required}'")
+        if "scenes" not in data:
+            raise ValueError("Champ obligatoire manquant dans la réécriture : 'scenes'")
 
         rewritten_scenes = data["scenes"]
         if not isinstance(rewritten_scenes, list):
@@ -301,32 +320,42 @@ class RewriteEngine:
                 f"{len(original.scenes)} attendu — réécriture rejetée"
             )
 
-        narration_by_order: Dict[int, str] = {}
+        repliques_by_order: Dict[int, List[str]] = {}
         for entry in rewritten_scenes:
-            if not isinstance(entry, dict) or "order" not in entry or "narration" not in entry:
+            if not isinstance(entry, dict) or "order" not in entry or "dialogues" not in entry:
                 raise ValueError(f"Entrée de scène invalide dans la réécriture : {entry!r}")
-            narration_by_order[int(entry["order"])] = str(entry["narration"])
+            dialogues = entry["dialogues"]
+            if not isinstance(dialogues, list):
+                raise ValueError(f"'dialogues' doit être une liste pour la scène order={entry['order']}")
+            repliques_by_order[int(entry["order"])] = [str(d.get("replique", "")) for d in dialogues]
 
         original_orders = {s.order for s in original.scenes}
-        if set(narration_by_order.keys()) != original_orders:
+        if set(repliques_by_order.keys()) != original_orders:
             raise ValueError(
-                f"Ordre des scènes modifié : {sorted(narration_by_order.keys())} reçu, "
+                f"Ordre des scènes modifié : {sorted(repliques_by_order.keys())} reçu, "
                 f"{sorted(original_orders)} attendu — réécriture rejetée"
             )
 
-        new_scenes: List[ScriptScene] = [
-            replace(scene, narration=narration_by_order[scene.order])
-            for scene in original.scenes
-        ]
+        new_scenes: List[ScriptScene] = []
+        for scene in original.scenes:
+            new_repliques = repliques_by_order[scene.order]
+            if len(new_repliques) != len(scene.dialogues):
+                raise ValueError(
+                    f"Nombre de dialogues modifié pour la scène order={scene.order} : "
+                    f"{len(new_repliques)} reçu, {len(scene.dialogues)} attendu — réécriture rejetée"
+                )
+            new_dialogues = [
+                replace(dialogue, replique=new_replique)
+                for dialogue, new_replique in zip(scene.dialogues, new_repliques)
+            ]
+            new_scenes.append(replace(scene, dialogues=new_dialogues))
 
         return replace(
             original,
-            hook=str(data["hook"]),
-            introduction=str(data["introduction"]),
             scenes=new_scenes,
-            conclusion=str(data["conclusion"]),
-            call_to_action=str(data["call_to_action"]),
             # Champs volontairement PRÉSERVÉS (jamais lus depuis `data`) :
-            # title, estimated_duration, language, target_audience, style —
-            # sujet, durée et identité de marque restent inchangés.
+            # title, estimated_duration, language, target_audience, style,
+            # scene (description visuelle), transition, duration_seconds,
+            # personnage de chaque dialogue — sujet, durée et identité de
+            # marque restent inchangés.
         )

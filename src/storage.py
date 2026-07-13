@@ -107,6 +107,7 @@ class CsvStorage(StorageBackend):
                         comment_count=_to_int(row.get("comment_count")),
                         keyword=row["keyword"],
                         source=row.get("source", "keyword"),
+                        market=row.get("market") or "FR",
                         collected_at=row["collected_at"],
                     ))
                 except Exception as exc:
@@ -163,6 +164,7 @@ class SupabaseStorage(StorageBackend):
                     comment_count=_to_int(row.get("comment_count")),
                     keyword=row["keyword"],
                     source=row.get("source", "keyword"),
+                    market=row.get("market") or "FR",
                     collected_at=row["collected_at"],
                 ))
             except Exception as exc:

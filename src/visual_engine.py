@@ -352,7 +352,7 @@ class VisualPlan:
 
     Pour les prochains moteurs :
       Image Engine     → VisualPlan.scenes[].visual_prompt + color_palette + composition
-      Animation Engine → VisualPlan.scenes[].animation_notes + camera_motion + transition
+      Animation Engine → VisualPlan.scenes[].animation_notes (= transition de la scène) + camera_motion
       Video Engine     → VisualPlan.scenes (montage + timing)
     """
 
@@ -417,7 +417,7 @@ class HeuristicVisualGenerator(VisualGenerator):
       6. Overlay text  → mapping section → _OVERLAY_MAP (paramétré)
       7. Palette       → mapping style → _COLOR_PALETTES
       8. Visual prompt → enrichi depuis ScriptScene.image_prompt
-      9. Animation     → enrichi depuis ScriptScene.animation_notes
+      9. Animation     → enrichi depuis ScriptScene.transition (Sprint 31.1)
 
     Aucune IA — uniquement des règles déterministes.
     """
@@ -488,30 +488,38 @@ class HeuristicVisualGenerator(VisualGenerator):
         """
         Construit une VisualScene à partir d'une ScriptScene.
 
-        Applique les règles heuristiques :
-          - Type de plan basé sur le titre de la scène
-          - Mouvement basé sur le titre
-          - Composition basée sur le titre
-          - Lumière basée sur le type de plan
-          - Transition basée sur le titre
-          - Overlay basé sur le titre (paramétré avec les données du script)
-          - Palette basée sur le style global
-          - Prompt visuel basé sur image_prompt de la scène
-        """
-        title_key = self._resolve_title_key(scene.title)
+        Sprint 31.1 : les scènes n'ont plus de titre nommé (Hook/Point #1/...)
+        — le mapping heuristique se base désormais sur la POSITION de la
+        scène (première = hook, dernière = CTA, rotation pour les scènes
+        intermédiaires) plutôt que sur un texte de titre. Ce plan heuristique
+        reste une base : VisualDirector (LLM) le redirige ensuite scène par
+        scène pour la production réelle (shot_type/composition/lighting/
+        color_palette) — voir scripts/run_daily_pipeline.py.
 
-        shot_type = _SECTION_SHOT_MAP.get(title_key, "medium")
-        camera_motion = _SECTION_MOTION_MAP.get(title_key, "static")
+        Applique les règles heuristiques :
+          - Type de plan basé sur la position de la scène
+          - Mouvement basé sur la position
+          - Composition basée sur la position
+          - Lumière basée sur le type de plan
+          - Transition basée sur la position
+          - Overlay basé sur la position (paramétré avec les données du script)
+          - Palette basée sur le style global
+          - Prompt visuel basé sur la description riche de la scène
+        """
+        position_key = self._resolve_position_key(scene.order, len(script.scenes))
+
+        shot_type = _SECTION_SHOT_MAP.get(position_key, "medium")
+        camera_motion = _SECTION_MOTION_MAP.get(position_key, "static")
         composition = _SECTION_COMPOSITION_MAP.get(
-            title_key,
+            position_key,
             "Composition standard. Règle des tiers. Fond neutre.",
         )
         lighting = _LIGHTING_MAP.get(shot_type, _LIGHTING_MAP["medium"])
-        transition = _TRANSITION_MAP.get(title_key, "cut")
+        transition = _TRANSITION_MAP.get(position_key, "cut")
         palette = _COLOR_PALETTES.get(style.lower(), _COLOR_PALETTES["default"])
 
         # Overlay text paramétré
-        overlay_template = _OVERLAY_MAP.get(title_key, "")
+        overlay_template = _OVERLAY_MAP.get(position_key, "")
         overlay_text = self._render_overlay(overlay_template, scene, script)
 
         # Prompt visuel enrichi
@@ -519,8 +527,7 @@ class HeuristicVisualGenerator(VisualGenerator):
 
         scene_metadata = {
             "script_scene_order": scene.order,
-            "script_scene_title": scene.title,
-            "title_key_resolved": title_key,
+            "position_key_resolved": position_key,
             "style_resolved": style,
             "palette_source": style.lower() if style.lower() in _COLOR_PALETTES else "default",
         }
@@ -535,7 +542,7 @@ class HeuristicVisualGenerator(VisualGenerator):
             color_palette=list(palette),
             transition=transition,
             overlay_text=overlay_text,
-            animation_notes=scene.animation_notes,
+            animation_notes=scene.transition,
             duration_seconds=scene.duration_seconds,
             metadata=scene_metadata,
         )
@@ -544,29 +551,27 @@ class HeuristicVisualGenerator(VisualGenerator):
 
     # ── Méthodes auxiliaires ──────────────────────────────────────────────────
 
-    @staticmethod
-    def _resolve_title_key(title: str) -> str:
+    # Rotation de clés génériques pour les scènes intermédiaires — assure une
+    # variété de plans/mouvements/compositions sans dépendre d'un titre nommé.
+    _MIDDLE_ROTATION = [
+        "Contexte", "Développement", "Point #1", "Point #2", "Point #3", "Rebondissement",
+    ]
+
+    @classmethod
+    def _resolve_position_key(cls, order: int, total: int) -> str:
         """
-        Résout le titre d'une scène en clé de mapping.
+        Résout la position d'une scène (1-based) en clé de mapping.
 
-        Normalise le titre pour matcher les clés exactes des dictionnaires :
-          - "Hook accrocheur" → "Hook"
-          - "Point #1 : ..."  → "Point #1"
-          - "Introduction..." → "Introduction"
+        La première scène joue le rôle du hook, la dernière celui du CTA —
+        les scènes intermédiaires tournent sur un petit jeu de clés
+        génériques pour varier plan/mouvement/composition (Sprint 31.1).
         """
-        title_stripped = title.strip()
-        # Cherche une correspondance exacte d'abord
-        if title_stripped in _SECTION_SHOT_MAP:
-            return title_stripped
-
-        # Correspondance partielle : prend la clé la plus longue qui match
-        matched = ""
-        for key in _SECTION_SHOT_MAP:
-            if key in title_stripped or title_stripped.startswith(key):
-                if len(key) > len(matched):
-                    matched = key
-
-        return matched if matched else title_stripped
+        if order <= 1:
+            return "Hook"
+        if order >= total:
+            return "CTA"
+        idx = (order - 2) % len(cls._MIDDLE_ROTATION)
+        return cls._MIDDLE_ROTATION[idx]
 
     @staticmethod
     def _render_overlay(template: str, scene: ScriptScene, script: Script) -> str:
@@ -577,7 +582,7 @@ class HeuristicVisualGenerator(VisualGenerator):
           {hook_text}    → script.hook (tronqué)
           {title}        → script.title
           {topic}        → dérivé du script.title ou metadata.niche
-          {scene_title}  → scene.title
+          {scene_title}  → début de la description riche de la scène
         """
         topic = (
             script.metadata.get("niche", "")
@@ -590,7 +595,7 @@ class HeuristicVisualGenerator(VisualGenerator):
             hook_text=hook_short,
             title=script.title[:50],
             topic=topic[:40],
-            scene_title=scene.title,
+            scene_title=scene.scene.description.setting[:40],
         )
         return text
 
@@ -606,16 +611,17 @@ class HeuristicVisualGenerator(VisualGenerator):
         Construit un prompt visuel enrichi pour générateur d'image.
 
         Combine :
-          1. Le prompt original de la scène (ScriptScene.image_prompt)
+          1. La description riche de la scène (ScriptScene.scene.description.setting/composition)
           2. Le type de plan
           3. Le mouvement de caméra
           4. Le style
           5. La palette de couleurs
           6. La durée
 
-        Format : "[prompt original] -- [type plan] -- [mouvement] -- style: [style] -- palette: [couleurs]"
+        Format : "[description scène] -- [type plan] -- [mouvement] -- style: [style] -- palette: [couleurs]"
         """
-        base_prompt = scene.image_prompt.strip().rstrip(".")
+        desc = scene.scene.description
+        base_prompt = f"{desc.setting.strip()} {desc.composition.strip()}".strip().rstrip(".")
         colors_str = ", ".join(palette[:3])
 
         enhanced = (

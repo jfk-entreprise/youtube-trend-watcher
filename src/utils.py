@@ -194,6 +194,7 @@ def csv_snapshots_to_timelines(csv_path: Path) -> dict[str, list]:
                     comment_count=safe_int(row.get("comment_count")),
                     keyword=row["keyword"],
                     source=row.get("source", "keyword"),
+                    market=row.get("market") or "FR",
                     collected_at=row["collected_at"],
                 )
                 buckets.setdefault(snap.video_id, []).append(snap)

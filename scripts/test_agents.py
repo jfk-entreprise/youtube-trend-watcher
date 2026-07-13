@@ -32,7 +32,23 @@ logger = logging.getLogger(__name__)
 
 # ── Configuration ──────────────────────────────────────────────────────────────
 
-KEYWORDS = ["IA", "Business", "Argent", "Histoire", "Technologie"]
+# Sprint 34 — collecte segmentée par marché : mêmes 5 niches durables,
+# déclinées dans la langue/région de chaque marché, pour que la sélection de
+# niche (NicheAnalyzer) et la production puissent ensuite être calculées
+# séparément pour le marché US et le marché FR (voir src/niche_intelligence.py,
+# scripts/run_daily_pipeline.py).
+MARKETS = {
+    "FR": {
+        "region_code": "FR",
+        "language": "fr",
+        "keywords": ["IA", "Business", "Argent", "Histoire", "Technologie"],
+    },
+    "US": {
+        "region_code": "US",
+        "language": "en",
+        "keywords": ["AI", "Business", "Money", "History", "Technology"],
+    },
+}
 TRENDING_REGIONS = ["CI", "FR", "US"]
 
 DATA_DIR = ROOT / "data"
@@ -70,29 +86,34 @@ def main() -> None:
         logger.error("YOUTUBE_API_KEY absent du fichier .env — arrêt.")
         sys.exit(1)
 
-    region_code = os.getenv("YOUTUBE_REGION_CODE", "FR")
-    language = os.getenv("YOUTUBE_LANGUAGE", "fr")
-
     # ── Collecte ──────────────────────────────────────────────────────────────
+    # Un KeywordAgent par marché (Sprint 34) — chaque snapshot est tagué avec
+    # son marché d'origine, indépendamment du mot-clé/sujet trouvé.
 
-    keyword_agent = KeywordAgent(
-        api_key,
-        keywords=KEYWORDS,
-        max_results_per_keyword=20,
-        days_back=7,
-        region_code=region_code,
-        language=language,
-    )
     trending_agent = TrendingAgent(
         api_key,
         region_codes=TRENDING_REGIONS,
         max_results=50,
     )
 
-    logger.info("=== Sprint 3 — Test multi-agents ===")
+    logger.info("=== Sprint 3 — Test multi-agents (Sprint 34 : collecte par marché) ===")
     logger.info("")
 
-    kw_raw = keyword_agent.collect()
+    kw_raw: list[VideoSnapshot] = []
+    for market, config in MARKETS.items():
+        keyword_agent = KeywordAgent(
+            api_key,
+            keywords=config["keywords"],
+            max_results_per_keyword=20,
+            days_back=7,
+            region_code=config["region_code"],
+            language=config["language"],
+            market=market,
+        )
+        market_snapshots = keyword_agent.collect()
+        logger.info("Marché '%s' : %d vidéos récupérées", market, len(market_snapshots))
+        kw_raw.extend(market_snapshots)
+
     tr_raw = trending_agent.collect()
 
     # ── Déduplication ─────────────────────────────────────────────────────────

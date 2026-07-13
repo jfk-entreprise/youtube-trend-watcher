@@ -58,7 +58,7 @@ from typing import Any, Dict, List, Optional
 
 from src.llm import LLMMessage, build_llm, supports_reasoning
 from src.llm_image_generator import ImagePrompt
-from src.script_engine import Script, ScriptScene
+from src.script_engine import Dialogue, Script, ScriptScene
 from src.visual_engine import VisualScene
 
 logger = logging.getLogger(__name__)
@@ -82,11 +82,18 @@ class AnimationPrompt:
       lighting_changes  : évolution de la lumière UNIQUEMENT.
       effects           : effets visuels additionnels UNIQUEMENT.
       sound_design      : ambiance sonore UNIQUEMENT.
+      dialogues         : répliques de la scène (Sprint 31.1) — copiées
+                          VERBATIM depuis ScriptScene.dialogues, jamais
+                          reformulées, pour que l'AnimationPrompt soit
+                          entièrement autonome (aucune dépendance à
+                          final_script.json pour connaître ce qui se dit).
       transition        : fin du plan et enchaînement vers la scène suivante.
       duration          : durée du plan en secondes.
       prompt            : fusion intelligente de tous les champs précédents —
                           le brief final, directement exploitable.
-      metadata          : goal, emotion, pace, provider, model, time_ms, cost_usd.
+      metadata          : goal, emotion (technique : provider/model/time_ms/
+                          cost_usd ne sont jamais écrits dans le fichier de
+                          production — voir ProductionPackageBuilder).
     """
     camera_motion: str
     subject_motion: str
@@ -94,6 +101,7 @@ class AnimationPrompt:
     lighting_changes: str
     effects: str
     sound_design: str
+    dialogues: List[Dialogue]
     transition: str
     duration: int
     prompt: str
@@ -426,7 +434,7 @@ class LLMAnimationGenerator:
                 visual_scene.scene_order,
             )
 
-        animation_prompt = self._build_animation_prompt(data, response, elapsed_ms)
+        animation_prompt = self._build_animation_prompt(data, response, elapsed_ms, script_scene.dialogues)
 
         self._stats["llm_success"] += 1
         logger.info(
@@ -501,19 +509,19 @@ class LLMAnimationGenerator:
         if script is None:
             return ""
 
-        lines: List[str] = ["", "=== CONTINUITE NARRATIVE (script complet, dans l'ordre) ==="]
+        lines: List[str] = ["", "=== NARRATIVE CONTINUITY (full script, in order) ==="]
         for scene in sorted(script.scenes, key=lambda s: s.order):
             marker = " <<< SCENE ACTUELLE" if scene.order == current_order else ""
-            lines.append(f"  [{scene.order}] {scene.narration}{marker}")
+            lines.append(f"  [{scene.order}] {scene.narration_text}{marker}")
 
         if self._characters_bible:
             lines.append("")
-            lines.append("=== PERSONNAGES DEJA ETABLIS (a respecter A L'IDENTIQUE si reapparition) ===")
+            lines.append("=== CHARACTERS ALREADY ESTABLISHED (respect EXACTLY if they reappear) ===")
             for name, desc in self._characters_bible.items():
                 lines.append(f"  - {name} : {desc}")
         else:
             lines.append("")
-            lines.append("(Aucun personnage etabli pour l'instant.)")
+            lines.append("(No character established yet.)")
 
         return "\n".join(lines)
 
@@ -548,29 +556,34 @@ class LLMAnimationGenerator:
         visual_scene: VisualScene,
         image_prompt: ImagePrompt,
     ) -> str:
+        desc = script_scene.scene.description
         lines: List[str] = [
-            "Redige le contrat AnimationPrompt pour la scene suivante — anime l'image deja generee, ne la redecris pas.",
-            "Raisonne d'abord sur l'objectif, l'emotion et le rythme avant de decider les mouvements de camera/sujet/environnement/lumiere, puis synthetise 'prompt' en dernier.",
+            "Write the AnimationPrompt contract for the following scene — animate the image already generated, do not re-describe it.",
+            "First reason about the goal, the emotion, and the pace before deciding camera/subject/environment/lighting motion, then synthesize 'prompt' last.",
             "",
-            "=== SCENE DU SCRIPT (scene courante) ===",
-            f"  Titre       : {script_scene.title}",
-            f"  Narration   : {script_scene.narration}",
-            f"  Duree       : {script_scene.duration_seconds}s",
+            "=== SCRIPT SCENE (current) — structured storyboard fields used to build camera motion ===",
+            f"  Camera           : {desc.camera}",
+            f"  Composition      : {desc.composition}",
+            f"  Lighting         : {desc.lighting}",
+            f"  Mood             : {desc.mood}",
+            f"  Viewer emotion   : {desc.viewer_emotion}",
+            f"  Director's notes : {desc.director_notes}",
+            f"  Duration         : {script_scene.duration_seconds}s",
             "",
-            "=== PLAN VISUEL (base) ===",
-            f"  Type de plan     : {visual_scene.shot_type}",
-            f"  Mouvement camera : {visual_scene.camera_motion}",
-            f"  Transition       : {visual_scene.transition}",
-            f"  Notes d'animation: {visual_scene.animation_notes}",
+            "=== VISUAL PLAN (base) ===",
+            f"  Shot type      : {visual_scene.shot_type}",
+            f"  Camera motion  : {visual_scene.camera_motion}",
+            f"  Transition     : {visual_scene.transition}",
+            f"  Animation notes: {visual_scene.animation_notes}",
             "",
-            "=== IMAGE DEJA GENEREE POUR CETTE SCENE (a animer, sans la redecrire) ===",
-            f"  Sujet            : {image_prompt.subject}",
-            f"  Decor / ambiance : {image_prompt.scene_description}",
-            f"  Style            : {image_prompt.style}",
-            f"  Personnages      : {', '.join(str(c) for c in image_prompt.metadata.get('characters', []) or []) or 'aucun'}",
+            "=== IMAGE ALREADY GENERATED FOR THIS SCENE (animate it, do not re-describe it) ===",
+            f"  Subject         : {image_prompt.subject}",
+            f"  Setting/ambiance: {image_prompt.scene_description}",
+            f"  Style           : {image_prompt.style}",
+            f"  Characters      : {', '.join(str(c) for c in image_prompt.metadata.get('characters', []) or []) or 'none'}",
         ]
         lines.append(self._build_continuity_block(script, script_scene.order))
-        lines += ["", "Genere maintenant le JSON du contrat AnimationPrompt."]
+        lines += ["", "Generate the AnimationPrompt contract JSON now."]
         return "\n".join(lines)
 
     # ── Extraction et validation JSON ────────────────────────────────────────
@@ -614,8 +627,15 @@ class LLMAnimationGenerator:
         return max(_MIN_DURATION_SECONDS, min(_MAX_DURATION_SECONDS, value))
 
     @classmethod
-    def _build_animation_prompt(cls, data: Dict[str, Any], response: Any, elapsed_ms: int) -> AnimationPrompt:
-        """Construit l'AnimationPrompt (contrat Sprint 25) à partir du JSON validé."""
+    def _build_animation_prompt(
+        cls, data: Dict[str, Any], response: Any, elapsed_ms: int, dialogues: List[Dialogue],
+    ) -> AnimationPrompt:
+        """
+        Construit l'AnimationPrompt (contrat Sprint 25/31.1) à partir du JSON
+        validé. `dialogues` est copié VERBATIM depuis ScriptScene.dialogues —
+        jamais généré ni reformulé par le LLM (Sprint 31.1 : l'AnimationPrompt
+        doit être autonome, sans réécriture des répliques).
+        """
         return AnimationPrompt(
             camera_motion=data["camera_motion"].strip(),
             subject_motion=data["subject_motion"].strip(),
@@ -623,6 +643,7 @@ class LLMAnimationGenerator:
             lighting_changes=data["lighting_changes"].strip(),
             effects=data["effects"].strip(),
             sound_design=data["sound_design"].strip(),
+            dialogues=list(dialogues),
             transition=data["transition"].strip(),
             duration=cls._clamp_duration(data["duration"]),
             prompt=data["prompt"].strip(),
@@ -672,6 +693,7 @@ class LLMAnimationGenerator:
             lighting_changes="stable lighting, no abrupt changes",
             effects="none",
             sound_design="ambient sound consistent with the scene mood",
+            dialogues=list(script_scene.dialogues),
             transition=visual_scene.transition.strip() or "smooth cut",
             duration=duration,
             prompt=prompt,

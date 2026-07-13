@@ -35,7 +35,7 @@ from src.llm_animation_generator import (
     _REQUIRED_INT_FIELDS,
 )
 from src.visual_engine import VisualScene
-from src.script_engine import Script, ScriptScene
+from src.script_engine import Dialogue, Scene, SceneDescription, Script, ScriptScene
 
 
 # ── Fixtures ──────────────────────────────────────────────────────────────────
@@ -43,11 +43,28 @@ from src.script_engine import Script, ScriptScene
 @pytest.fixture
 def script_scene() -> ScriptScene:
     return ScriptScene(
-        order=1, title="Hook",
-        narration="Et si votre prochain outil IA remplacait votre monteur video ?",
-        visual_description="Plan choc sur une interface d'edition video futuriste",
-        image_prompt="futuristic video editing interface",
-        animation_notes="Fade-in rapide", sound_effects="Whoosh",
+        scene=Scene(
+            number=1,
+            type="hook",
+            description=SceneDescription(
+                setting="Plan choc sur une interface d'edition video futuriste",
+                composition="Rule of thirds, ecran centre-gauche",
+                characters="Aucun personnage visible, uniquement l'interface",
+                lighting="Dramatic rim lighting",
+                camera="slow push-in toward the glowing screen",
+                mood="tension, futuriste",
+                symbolism="L'IA qui prend le controle du montage",
+                director_notes="Insister sur le contraste sombre/lumineux",
+                viewer_emotion="curiosite, tension",
+            ),
+        ),
+        dialogues=[
+            Dialogue(
+                personnage="NARRATEUR",
+                replique="Et si votre prochain outil IA remplacait votre monteur video ?",
+            )
+        ],
+        transition="Fade-in rapide",
         duration_seconds=8,
     )
 
@@ -55,11 +72,28 @@ def script_scene() -> ScriptScene:
 @pytest.fixture
 def second_scene() -> ScriptScene:
     return ScriptScene(
-        order=2, title="Suite",
-        narration="La journaliste Sarah Chen decouvre l'ampleur du changement.",
-        visual_description="Sarah Chen face a l'ecran, stupefaite",
-        image_prompt="journalist reacting to a screen",
-        animation_notes="Zoom lent", sound_effects="Tension sonore",
+        scene=Scene(
+            number=2,
+            type="development",
+            description=SceneDescription(
+                setting="Bureau de redaction, ecran allume face a Sarah Chen",
+                composition="Gros plan sur le visage de Sarah Chen",
+                characters="Sarah Chen, journaliste, stupefaite",
+                lighting="Lumiere froide de l'ecran",
+                camera="static close-up on Sarah Chen's face",
+                mood="stupefaction",
+                symbolism="La prise de conscience du changement",
+                director_notes="Laisser le silence s'installer",
+                viewer_emotion="empathie, stupefaction",
+            ),
+        ),
+        dialogues=[
+            Dialogue(
+                personnage="NARRATEUR",
+                replique="La journaliste Sarah Chen decouvre l'ampleur du changement.",
+            )
+        ],
+        transition="Zoom lent",
         duration_seconds=9,
     )
 
@@ -81,17 +115,18 @@ def visual_scene() -> VisualScene:
 def sample_script(script_scene, second_scene) -> Script:
     return Script(
         title="L'IA qui remplace les monteurs video",
-        hook=script_scene.narration,
-        introduction="Voici ce qui vient de changer.",
         scenes=[script_scene, second_scene],
-        conclusion="Le montage ne sera plus jamais pareil.",
-        call_to_action="Quel logiciel de montage utilises-tu ? Dis-le en commentaire.",
         estimated_duration=17,
         language="fr",
         target_audience="Createurs de contenu",
         style="Innovant",
         metadata={"generator": "llm_v1"},
     )
+
+
+@pytest.fixture
+def sample_dialogues() -> list:
+    return [Dialogue(personnage="NARRATEUR", replique="Une replique de test.")]
 
 
 @pytest.fixture
@@ -196,7 +231,13 @@ class TestBuildUserPrompt:
     def test_contains_script_scene_and_visual_scene_and_image_prompt(self, script_scene, visual_scene, image_prompt):
         gen = LLMAnimationGenerator()
         prompt = gen._build_user_prompt(None, script_scene, visual_scene, image_prompt)
-        assert script_scene.narration in prompt
+        desc = script_scene.scene.description
+        assert desc.camera in prompt
+        assert desc.composition in prompt
+        assert desc.lighting in prompt
+        assert desc.mood in prompt
+        assert desc.viewer_emotion in prompt
+        assert desc.director_notes in prompt
         assert visual_scene.camera_motion in prompt
         assert image_prompt.subject in prompt
         assert image_prompt.scene_description in prompt
@@ -204,13 +245,13 @@ class TestBuildUserPrompt:
     def test_contains_continuity_block_when_script_provided(self, sample_script, script_scene, visual_scene, image_prompt):
         gen = LLMAnimationGenerator()
         prompt = gen._build_user_prompt(sample_script, script_scene, visual_scene, image_prompt)
-        assert "CONTINUITE NARRATIVE" in prompt
+        assert "NARRATIVE CONTINUITY" in prompt
         assert "Sarah Chen" in prompt  # narration de la 2e scène
 
     def test_no_continuity_block_when_script_is_none(self, script_scene, visual_scene, image_prompt):
         gen = LLMAnimationGenerator()
         prompt = gen._build_user_prompt(None, script_scene, visual_scene, image_prompt)
-        assert "CONTINUITE NARRATIVE" not in prompt
+        assert "NARRATIVE CONTINUITY" not in prompt
 
     def test_includes_established_characters(self, script_scene, visual_scene, image_prompt):
         gen = LLMAnimationGenerator()
@@ -333,9 +374,11 @@ class TestParseAndValidate:
 # ── Tests : construction AnimationPrompt ──────────────────────────────────────
 
 class TestBuildAnimationPrompt:
-    def test_builds_expected_contract(self, valid_llm_json):
+    def test_builds_expected_contract(self, valid_llm_json, sample_dialogues):
         response = _make_llm_response(json.dumps(valid_llm_json))
-        animation_prompt = LLMAnimationGenerator._build_animation_prompt(valid_llm_json, response, elapsed_ms=123)
+        animation_prompt = LLMAnimationGenerator._build_animation_prompt(
+            valid_llm_json, response, 123, sample_dialogues,
+        )
 
         assert isinstance(animation_prompt, AnimationPrompt)
         assert animation_prompt.camera_motion == valid_llm_json["camera_motion"]
@@ -344,13 +387,16 @@ class TestBuildAnimationPrompt:
         assert animation_prompt.lighting_changes == valid_llm_json["lighting_changes"]
         assert animation_prompt.effects == valid_llm_json["effects"]
         assert animation_prompt.sound_design == valid_llm_json["sound_design"]
+        assert animation_prompt.dialogues == sample_dialogues
         assert animation_prompt.transition == valid_llm_json["transition"]
         assert animation_prompt.duration == valid_llm_json["duration"]
         assert animation_prompt.prompt == valid_llm_json["prompt"]
 
-    def test_metadata_exact_shape(self, valid_llm_json):
+    def test_metadata_exact_shape(self, valid_llm_json, sample_dialogues):
         response = _make_llm_response(json.dumps(valid_llm_json))
-        animation_prompt = LLMAnimationGenerator._build_animation_prompt(valid_llm_json, response, elapsed_ms=123)
+        animation_prompt = LLMAnimationGenerator._build_animation_prompt(
+            valid_llm_json, response, 123, sample_dialogues,
+        )
         assert set(animation_prompt.metadata.keys()) == {
             "goal", "emotion", "pace", "provider", "model", "time_ms", "cost_usd",
         }
@@ -361,20 +407,24 @@ class TestBuildAnimationPrompt:
         assert animation_prompt.metadata["model"] == "deepseek-chat"
         assert animation_prompt.metadata["time_ms"] == 123
 
-    def test_duration_is_clamped(self, valid_llm_json):
+    def test_duration_is_clamped(self, valid_llm_json, sample_dialogues):
         valid_llm_json["duration"] = 999
         response = _make_llm_response(json.dumps(valid_llm_json))
-        animation_prompt = LLMAnimationGenerator._build_animation_prompt(valid_llm_json, response, elapsed_ms=1)
+        animation_prompt = LLMAnimationGenerator._build_animation_prompt(
+            valid_llm_json, response, 1, sample_dialogues,
+        )
         assert animation_prompt.duration <= 10
 
-    def test_full_output_shape_matches_contract(self, valid_llm_json):
-        """Le contrat exact demandé — 9 champs + metadata (goal/emotion/pace/provider/model/time_ms/cost_usd)."""
+    def test_full_output_shape_matches_contract(self, valid_llm_json, sample_dialogues):
+        """Le contrat exact demandé — 10 champs + metadata (goal/emotion/pace/provider/model/time_ms/cost_usd)."""
         response = _make_llm_response(json.dumps(valid_llm_json))
-        animation_prompt = LLMAnimationGenerator._build_animation_prompt(valid_llm_json, response, elapsed_ms=1)
+        animation_prompt = LLMAnimationGenerator._build_animation_prompt(
+            valid_llm_json, response, 1, sample_dialogues,
+        )
         data = asdict(animation_prompt)
         assert set(data.keys()) == {
             "camera_motion", "subject_motion", "environment_motion", "lighting_changes",
-            "effects", "sound_design", "transition", "duration", "prompt", "metadata",
+            "effects", "sound_design", "dialogues", "transition", "duration", "prompt", "metadata",
         }
         assert set(data["metadata"].keys()) == {
             "goal", "emotion", "pace", "provider", "model", "time_ms", "cost_usd",

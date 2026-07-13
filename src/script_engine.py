@@ -15,11 +15,22 @@ Découplage :
   - Il ne dépend que de Opportunity (via brief), CreativeBrief, BrandProfile.
   - Interchangeable : HeuristicScriptGenerator → ClaudeScriptGenerator → etc.
 
-Contrat pour les prochains moteurs :
-  - Visual Engine    → lit Script.image_prompt, Script.visual_description
-  - Animation Engine → lit Script.animation_notes
-  - Video Engine     → lit Script.scenes + Script.metadata
-  - Voice Engine     → lit Script.narration + BrandProfile.voice_*
+Sprint 32.1 — Cinematic Storyboard Contract (final_script.json v2) :
+  `ScriptScene.scene` n'est plus un texte libre — c'est un `Scene` structuré
+  {number, type, description}, où `description` (`SceneDescription`) porte
+  9 champs distincts (setting, composition, characters, lighting, camera,
+  mood, symbolism, director_notes, viewer_emotion), chacun destiné à un
+  usage précis en aval (Visual Director, Image/Animation Generator lisent
+  directement ces champs, sans reconstruction depuis un texte libre).
+
+  `duration_seconds` n'est plus décidé par le LLM : il est calculé après
+  génération par `estimate_scene_duration()`, à partir du nombre de mots
+  des répliques et d'une vitesse de narration centralisée
+  (`NARRATION_WORDS_PER_MINUTE`) — modifiable sans toucher au code appelant.
+
+  Les propriétés dérivées `Script.hook/.introduction/.conclusion/
+  .call_to_action` et `ScriptScene.narration_text` (Sprint 31.1) sont
+  conservées à l'identique.
 """
 
 import logging
@@ -34,36 +45,142 @@ from src.opportunity_engine import Opportunity
 logger = logging.getLogger(__name__)
 
 
+# ── Configuration centralisée (Sprint 32.1) ─────────────────────────────────
+# Vitesse de narration utilisée pour estimer duration_seconds à partir du
+# nombre de mots d'une scène — modifiable ici sans toucher au code appelant
+# (LLMScriptGenerator, HeuristicScriptGenerator utilisent tous les deux
+# estimate_scene_duration() ci-dessous).
+
+NARRATION_WORDS_PER_MINUTE: float = 150.0
+_MIN_SCENE_DURATION_SECONDS = 2
+
+
+def estimate_scene_duration(
+    dialogues: List["Dialogue"],
+    words_per_minute: float = NARRATION_WORDS_PER_MINUTE,
+) -> int:
+    """
+    Estime la durée d'une scène (en secondes entiers) à partir du nombre de
+    mots parlés dans ses dialogues et d'une vitesse de narration.
+
+    Sprint 32.1 : le LLM ne décide plus jamais de duration_seconds — cette
+    fonction est la SEULE source de vérité, appelée après génération par
+    tous les générateurs de Script (LLM et heuristique), pour que la durée
+    reste toujours cohérente avec le texte réellement prononcé.
+    """
+    text = " ".join(d.replique for d in dialogues if d.replique)
+    word_count = len(text.split())
+    seconds = (word_count / words_per_minute) * 60.0
+    return max(_MIN_SCENE_DURATION_SECONDS, round(seconds))
+
+
+# ── Dialogue ──────────────────────────────────────────────────────────────────
+
+@dataclass(frozen=True)
+class Dialogue:
+    """
+    Une réplique unique dans une scène.
+
+    Une narration classique (voix off) est représentée par un unique
+    Dialogue avec `personnage="NARRATEUR"` — le narrateur est traité comme
+    un personnage normal, pas comme un cas spécial.
+    """
+    personnage: str
+    replique: str
+
+
+# ── SceneDescription / Scene (Sprint 32.1 — storyboard cinématographique) ───
+
+@dataclass(frozen=True)
+class SceneDescription:
+    """
+    Description cinématographique complète d'une scène — les notes de
+    pré-production d'un studio, pas une légende.
+
+    Champs (chacun lu DIRECTEMENT par les moteurs en aval, sans
+    reconstruction depuis un texte libre — Sprint 32.1) :
+      setting        : lieu, architecture, époque, climat, textures, décor.
+      composition    : disposition du plan — premier plan/arrière-plan,
+                       lignes de force, perspective, équilibre visuel.
+      characters     : apparence, posture, expression, vêtements, regard,
+                       émotion, interaction — même s'il n'y a qu'un narrateur.
+      lighting       : source, intensité, couleur, contraste, ombres, ambiance.
+      camera         : angle, objectif, focale, mouvement, vitesse, hauteur,
+                       cadrage — précis (ex: "Very slow 8-second dolly-in
+                       with a slight low angle."), jamais un mot-clé seul.
+      mood           : ambiance émotionnelle de la scène.
+      symbolism      : signification cachée — pourquoi ce décor/lumière/
+                       couleur/cadrage.
+      director_notes : notes personnelles du réalisateur — pourquoi cette
+                       scène existe, ce qu'elle doit provoquer, ce qu'il
+                       faut éviter, comment guider le regard, maintenir le
+                       rythme, quels détails mettre en avant.
+      viewer_emotion : ce que le spectateur doit ressentir précisément,
+                       phrase complète (jamais un simple mot comme "suspense").
+    """
+    setting: str
+    composition: str
+    characters: str
+    lighting: str
+    camera: str
+    mood: str
+    symbolism: str
+    director_notes: str
+    viewer_emotion: str
+
+
+@dataclass(frozen=True)
+class Scene:
+    """
+    Identité + description d'une scène dans le storyboard.
+
+    Champs :
+      number      : index de la scène (1-based), stable après réécriture.
+      type        : rôle narratif de la scène (ex: "hook", "development",
+                   "twist", "cta") — pilote les décisions heuristiques par
+                   défaut (VisualEngine) sans dépendre d'un texte de titre.
+      description : SceneDescription complète (9 champs).
+    """
+    number: int
+    type: str
+    description: SceneDescription
+
+
 # ── ScriptScene ───────────────────────────────────────────────────────────────
 
 @dataclass(frozen=True)
 class ScriptScene:
     """
-    Une scène individuelle dans un Script.
-
-    Chaque scène est l'unité atomique de production :
-      - Les futurs moteurs (Visual, Animation, Video) liront ces champs
-        pour générer des instructions visuelles et techniques.
-      - Le Voice Engine lira narration + ton / rythme.
+    Une scène individuelle dans un Script — format storyboard cinématographique
+    (Sprint 32.1).
 
     Notes :
-      - order           : index de la scène (1-based)
-      - narration       : texte parlé ou voix off pour cette scène
-      - visual_description : description de ce qu'on voit à l'écran
-      - image_prompt    : prompt générateur d'image (DALL-E, Midjourney, etc.)
-      - animation_notes : instructions pour l'animateur / motion designer
-      - sound_effects   : effets sonores ou ambiance suggérés
-      - duration_seconds: durée estimée de la scène (pose / rythme)
+      - scene            : Scene (number, type, description structurée).
+      - dialogues        : répliques de la scène, dans l'ordre. Une narration
+                           classique = un seul Dialogue(personnage="NARRATEUR", ...).
+      - transition       : transition cinématographique vers la scène suivante.
+      - duration_seconds : durée calculée par estimate_scene_duration()
+                           (jamais décidée par le LLM — Sprint 32.1).
     """
 
-    order: int
-    title: str
-    narration: str
-    visual_description: str
-    image_prompt: str
-    animation_notes: str
-    sound_effects: str
+    scene: Scene
+    dialogues: List[Dialogue]
+    transition: str
     duration_seconds: int
+
+    @property
+    def order(self) -> int:
+        """Alias de compatibilité — équivaut à `scene.number` (Sprint 31.1 → 32.1)."""
+        return self.scene.number
+
+    @property
+    def narration_text(self) -> str:
+        """
+        Concatène les répliques de la scène, dans l'ordre — le texte parlé
+        unique dont ont besoin les moteurs qui ne raisonnent pas personnage
+        par personnage (évaluateur, continuité narrative, sous-titres).
+        """
+        return " ".join(d.replique for d in self.dialogues if d.replique)
 
 
 # ── Script ───────────────────────────────────────────────────────────────────
@@ -75,41 +192,54 @@ class Script:
     et tous les moteurs en aval (Visual Engine, Animation Engine,
     Video Engine, Voice Engine, Distribution Engine).
 
-    Structure canonique :
-        Hook → Contexte → Développement → Exemple → Conclusion → CTA
-
     Champs principaux :
       - title              : titre YouTube (hérité du CreativeBrief)
-      - hook               : accroche d'ouverture (héritée et développée)
-      - introduction       : transition hook → corps du script
-      - scenes             : liste ordonnée de ScriptScene
-      - conclusion         : dernier message avant le CTA
-      - call_to_action     : CTA de fin de vidéo (hérité et développé)
+      - scenes             : liste ordonnée de ScriptScene — la première
+                             joue le rôle du hook, la dernière celui du CTA
+                             (plus de champs top-level dédiés, Sprint 31.1)
       - estimated_duration : somme des durées de scènes (secondes)
       - language           : langue du script (héritée du BrandProfile)
       - target_audience    : public cible (hérité)
       - style              : ton / style rédactionnel (hérité du BrandProfile)
-      - metadata           : données extensibles pour le débogage
-
-    Pour les prochains moteurs :
-      Visual Engine     → script.scenes[].visual_description + image_prompt
-      Animation Engine  → script.scenes[].animation_notes
-      Video Engine      → script.scenes (montage), script.estimated_duration
-      Voice Engine      → script.scenes[].narration + script.style + brand.voice_*
-      Distribution      → script.title, script.language, script.metadata
+      - metadata           : données extensibles pour le débogage/reporting —
+                             jamais écrites dans final_script.json (voir
+                             ProductionPackageBuilder), uniquement dans le
+                             rapport de production.
     """
 
     title: str
-    hook: str
-    introduction: str
     scenes: List[ScriptScene]
-    conclusion: str
-    call_to_action: str
     estimated_duration: int
     language: str
     target_audience: str
     style: str
     metadata: Dict[str, Any]
+
+    # ── Propriétés dérivées (compatibilité moteurs internes, Sprint 31.1) ────
+    # Jamais sérialisées par dataclasses.asdict() — uniquement des vues
+    # calculées sur `scenes`, pour que ScriptEvaluator/RewriteEngine/
+    # LearningEngine continuent de raisonner en termes de hook/CTA sans
+    # dupliquer cette logique partout.
+
+    @property
+    def hook(self) -> str:
+        """Texte de la première scène — joue le rôle du hook d'ouverture."""
+        return self.scenes[0].narration_text if self.scenes else ""
+
+    @property
+    def introduction(self) -> str:
+        """Texte de la deuxième scène, si elle existe."""
+        return self.scenes[1].narration_text if len(self.scenes) > 1 else ""
+
+    @property
+    def conclusion(self) -> str:
+        """Texte de l'avant-dernière scène, si elle existe."""
+        return self.scenes[-2].narration_text if len(self.scenes) > 1 else ""
+
+    @property
+    def call_to_action(self) -> str:
+        """Texte de la dernière scène — joue le rôle du CTA de fin."""
+        return self.scenes[-1].narration_text if self.scenes else ""
 
 
 # ── ScriptGenerator ──────────────────────────────────────────────────────────
@@ -195,6 +325,21 @@ _STRUCTURES: Dict[str, List[str]] = {
     ],
 }
 
+# Section (français, historique) → type storyboard (anglais, Sprint 32.1) —
+# pilote VisualEngine sans dépendre d'un texte de titre.
+_SECTION_TYPE: Dict[str, str] = {
+    "Hook": "hook", "Introduction": "introduction", "Contexte": "context",
+    "Développement": "development", "Problème/Défi": "conflict",
+    "Tentative": "attempt", "Tentative #1": "attempt", "Tentative #2": "attempt",
+    "Tentative #3": "attempt", "Rebondissement": "twist",
+    "Point #1": "point", "Point #2": "point", "Point #3": "point", "Point bonus": "point",
+    "Erreur #1": "mistake", "Erreur #2": "mistake", "Erreur #3": "mistake",
+    "La bonne approche": "resolution", "Critère #1": "criterion",
+    "Critère #2": "criterion", "Critère #3": "criterion", "Verdict": "verdict",
+    "Résolution": "resolution", "Résultat": "result", "Leçon": "lesson",
+    "Conclusion": "conclusion", "CTA": "cta",
+}
+
 # Narrations par défaut pour chaque type de scène (templates paramétrés)
 _DEFAULT_NARRATIONS: Dict[str, str] = {
     "Hook": "{hook}",
@@ -226,7 +371,8 @@ _DEFAULT_NARRATIONS: Dict[str, str] = {
     "CTA": "{cta}",
 }
 
-# Instructions visuelles par type de scène
+# Instructions visuelles par type de scène — alimentent SceneDescription.setting
+# (Sprint 32.1 ; simple filet de secours déterministe, pas un texte hollywoodien).
 _SCENE_VISUALS: Dict[str, str] = {
     "Hook": "Plan d'accroche dynamique — visuel choc ou question à l'écran. Texte impactant superposé.",
     "Introduction": "Tête parlante face caméra OU écran titre avec musique douce en fond.",
@@ -257,128 +403,35 @@ _SCENE_VISUALS: Dict[str, str] = {
     "CTA": "Fond de chaîne ou miniature finale. Boutons abonnement animés. Liens à l'écran.",
 }
 
-# Prompts image génériques par type de scène
-_SCENE_IMAGE_PROMPTS: Dict[str, str] = {
-    "Hook": "Dynamic abstract composition with bold typography, high contrast lighting, cinematic depth of field",
-    "Introduction": "Clean professional workspace with warm ambient lighting, shallow depth of field",
-    "Contexte": "Contextual environment illustration, atmospheric lighting, muted color palette",
-    "Développement": "Detailed infographic style composition, organized information hierarchy, data visualization aesthetic",
-    "Problème/Défi": "Dramatic lighting revealing a problem or obstacle, high contrast, moody atmosphere",
-    "Tentative": "Action shot showing process in motion, dynamic lighting, motion blur effect",
-    "Tentative #1": "First step visual, clean composition, directional lighting from left",
-    "Tentative #2": "Mid-process action shot, increased complexity visible, warm lighting",
-    "Tentative #3": "Climax of process, dramatic lighting, intense focus on subject",
-    "Rebondissement": "Plot twist visual, unexpected angle, surprise element in frame",
-    "Point #1": "Numbered infographic #1, clean design, accent color highlighting",
-    "Point #2": "Information card #2, continued visual theme, secondary color accent",
-    "Point #3": "Key insight reveal #3, strongest visual hierarchy, primary color impact",
-    "Point bonus": "Bonus content card, playful lighter design, star or sparkle accent",
-    "Erreur #1": "Warning sign style visual, red accent, clear 'before/after' implication",
-    "Erreur #2": "Cautionary visual, amber warning tones, 'avoid this' composition",
-    "Erreur #3": "Subtle trap visualization, zoom-in reveal style, hidden detail emphasized",
-    "La bonne approche": "Step-by-step guide visual, clean instructional design, green/blue accents",
-    "Critère #1": "Comparison chart starting point, clean typography, measurement scale visible",
-    "Critère #2": "Comparison chart mid-point, balanced visual weight, animated indicator",
-    "Critère #3": "Final comparison element, decisive factor highlighted, conclusion building",
-    "Verdict": "Clear winner display, checkmark visual, confident resolution aesthetic",
-    "Résolution": "Peaceful resolution scene, warm golden hour lighting, calm atmosphere",
-    "Résultat": "Final result display, data visualization, success indicators, clean design",
-    "Leçon": "Wisdom moment visual, soft lighting, reflective mood, open space",
-    "Conclusion": "Summary card with key takeaways, clean organized layout, brand colors",
-    "CTA": "Subscription call-to-action frame, brand colors, button visual, inviting composition",
-}
-
-# Notes d'animation par type de scène
-_SCENE_ANIMATIONS: Dict[str, str] = {
-    "Hook": "Fade-in from black. Bold text animation (scale up + stabilize). 0.5s buildup.",
-    "Introduction": "Crossfade transition. Gentle parallax on background. Soft text reveal.",
-    "Contexte": "Slow zoom on establishing shot. Text overlay fades in line by line.",
-    "Développement": "Cut to medium pace. B-roll has gentle pan. Text callouts pop in.",
-    "Problème/Défi": "Color grade shifts cooler. Slow push-in on subject. Tension build.",
-    "Tentative": "Speed ramping — 2× real time then slow for result. Dynamic cuts.",
-    "Tentative #1": "Simple wipe transition. Step counter animates from 1.",
-    "Tentative #2": "Quick zoom transition. Step counter updates. Confidence builds.",
-    "Tentative #3": "Dramatic zoom. Step counter pulses. Suspense buildup.",
-    "Rebondissement": "Hard cut. Beat of silence. Then reveal — zoom out fast.",
-    "Point #1": "Number flies in from left. Content fades below. Staggered bullet reveal.",
-    "Point #2": "Number transition — slide right, new number enters from left.",
-    "Point #3": "Full screen number reveal. Particles or sparkle on '3'. Energetic.",
-    "Point bonus": "Slide in from right. Lighter animation style. Bouncy text.",
-    "Erreur #1": "Red flash frame. Shake effect. Error symbol scales up fast.",
-    "Erreur #2": "Warning pulse. Slow camera zoom out. List grows organically.",
-    "Erreur #3": "Focus pull — blur to sharp on hidden detail. Subtle zoom.",
-    "La bonne approche": "Green glow transition. Visual checklist animates. Confident build.",
-    "Critère #1": "Table draws in from top. Column headers animate sequentially.",
-    "Critère #2": "Row slides in from right. Score bars fill left to right.",
-    "Critère #3": "Rows highlight. Final column fades in. Dramatic pause before reveal.",
-    "Verdict": "Winning side pulses gently. Losing side fades to 50% opacity. Stamps 'WINNER'.",
-    "Résolution": "Crossfade to calmer scene. Music resolves. Gentle camera pull back.",
-    "Résultat": "Reveal animation — curtain or radial wipe. Hold for 2s. Then subtle bounce.",
-    "Leçon": "Text types out slowly. Background fades to warm tone. Reflective pace.",
-    "Conclusion": "Summary cards stack. Check marks appear. Music swells slightly.",
-    "CTA": "Screen compresses to show subscribe button. Bell icon shakes. Links pulse gently.",
-}
-
-# Effets sonores par type de scène
-_SCENE_SOUNDS: Dict[str, str] = {
-    "Hook": "Whoosh + impact sound. Music starts strong then drops to background.",
-    "Introduction": "Background music at speaking volume. Subtle room tone.",
-    "Contexte": "Ambient pad. Gentle underscore. Soft transition swoosh.",
-    "Développement": "Rhythmic background beat. Subtle click on bullet points.",
-    "Problème/Défi": "Tension building drone. Single piano note. Clock tick optional.",
-    "Tentative": "Upbeat action music. Speed-up whoosh. Result reveal — cymbal crash.",
-    "Tentative #1": "Button click sound. Music builds slightly in energy.",
-    "Tentative #2": "Progress tone. Brief riser. Music energy increases.",
-    "Tentative #3": "Drum roll build. Climactic chord on reveal. Silence then punch.",
-    "Rebondissement": "Needle scratch. Complete silence for 1s. Then bass drop.",
-    "Point #1": "Soft chime on number reveal. Pop sound for text line.",
-    "Point #2": "Different pitched chime. Content swoosh for new info.",
-    "Point #3": "Triumphant chord. Sparkle sound effect. Crowd cheer optional.",
-    "Point bonus": "Bell sound — lighter, higher pitch. 'Ta-da' flourish.",
-    "Erreur #1": "Buzzer sound. Error alert tone. Scratching record.",
-    "Erreur #2": "Warning beep. Low rumble. Tension tone.",
-    "Erreur #3": "Subtle 'miss' sound. Piano wrong note. Disappointed sigh.",
-    "La bonne approche": "Correct answer chime. Success tone. 'Aha' moment sound.",
-    "Critère #1": "Gentle click as table appears. Soft ping for first data point.",
-    "Critère #2": "Whoosh for new row. Rising tone as score fills.",
-    "Critère #3": "Deeper whoosh. Suspense tone. Drum hit for final reveal.",
-    "Verdict": "Winner fanfare. Applause optional. Confident chord resolution.",
-    "Résolution": "Music resolves to tonic. Warm ambient pad. Gentle exhale sound.",
-    "Résultat": "Reveal impact sound. Sustained chord holds. Then satisfied exhale.",
-    "Leçon": "Soft piano. Gentle string pad. Reflective silence between sentences.",
-    "Conclusion": "Music swells slightly. Warm reverb on final words. Soft button click.",
-    "CTA": "Subscribe sound effect. Bell ding. Music lift then fade to end.",
-}
-
-# Durée estimée par scène (secondes)
-_SCENE_DURATIONS: Dict[str, int] = {
-    "Hook": 8,
-    "Introduction": 12,
-    "Contexte": 10,
-    "Développement": 15,
-    "Problème/Défi": 10,
-    "Tentative": 12,
-    "Tentative #1": 12,
-    "Tentative #2": 14,
-    "Tentative #3": 16,
-    "Rebondissement": 6,
-    "Point #1": 16,
-    "Point #2": 14,
-    "Point #3": 18,
-    "Point bonus": 10,
-    "Erreur #1": 14,
-    "Erreur #2": 14,
-    "Erreur #3": 16,
-    "La bonne approche": 20,
-    "Critère #1": 14,
-    "Critère #2": 14,
-    "Critère #3": 16,
-    "Verdict": 10,
-    "Résolution": 12,
-    "Résultat": 10,
-    "Leçon": 15,
-    "Conclusion": 12,
-    "CTA": 10,
+# Transitions par type de scène (texte descriptif, Sprint 31.1).
+_SCENE_TRANSITIONS: Dict[str, str] = {
+    "Hook": "Fondu entrant depuis le noir.",
+    "Introduction": "Fondu enchaîné.",
+    "Contexte": "Dissolution douce.",
+    "Développement": "Coupe franche.",
+    "Problème/Défi": "Fondu au noir.",
+    "Tentative": "Coupe franche.",
+    "Tentative #1": "Volet vers la droite.",
+    "Tentative #2": "Volet vers la droite.",
+    "Tentative #3": "Zoom avant.",
+    "Rebondissement": "Coupe sèche façon glitch.",
+    "Point #1": "Glissement vers le haut.",
+    "Point #2": "Glissement vers le haut.",
+    "Point #3": "Zoom avant.",
+    "Point bonus": "Dissolution douce.",
+    "Erreur #1": "Volet vers la gauche.",
+    "Erreur #2": "Volet vers la gauche.",
+    "Erreur #3": "Zoom avant.",
+    "La bonne approche": "Dissolution douce.",
+    "Critère #1": "Glissement vers le haut.",
+    "Critère #2": "Glissement vers le haut.",
+    "Critère #3": "Poussée vers la gauche.",
+    "Verdict": "Fondu enchaîné.",
+    "Résolution": "Fondu au noir.",
+    "Résultat": "Zoom avant.",
+    "Leçon": "Dissolution douce.",
+    "Conclusion": "Fondu enchaîné.",
+    "CTA": "Fondu sortant au noir.",
 }
 
 
@@ -389,18 +442,19 @@ class HeuristicScriptGenerator(ScriptGenerator):
     Générateur heuristique de scripts — aucun appel LLM.
 
     Construit un Script complet à partir d'un CreativeBrief et d'un BrandProfile
-    en assemblant des templates paramétrés, des structures narratives prédéfinies,
-    et des instructions audio/visuelles préparées pour les futurs moteurs.
-
-    Le texte produit est simple (V1 d'architecture) ; la qualité rédactionnelle
-    sera améliorée par les générateurs LLM dans les sprints suivants.
+    en assemblant des templates paramétrés et des structures narratives
+    prédéfinies — sert de filet de secours quand le LLM échoue (Sprint 32.1 :
+    produit directement le storyboard structuré Scene/SceneDescription).
 
     Travail effectué :
       1. Résolution structure : angle → liste de scènes.
       2. Paramétrage : topic, hook, promesse, audience, CTA injectés.
-      3. Enrichissement pour futurs moteurs : image_prompt, animation_notes,
-         sound_effects, visual_description sur chaque scène.
-      4. Ajustement de la durée depuis le BrandProfile (facteur multiplicateur).
+      3. Chaque scène reçoit : un Scene structuré (number/type/description),
+         une narration portée par un unique personnage NARRATEUR (`dialogues`),
+         une transition (`transition`).
+      4. Durée calculée par estimate_scene_duration(), pondérée par le
+         facteur de durée du BrandProfile (Sprint 32.1 — même logique que
+         le LLM, pas une valeur décidée arbitrairement par générateur).
     """
 
     @property
@@ -431,23 +485,34 @@ class HeuristicScriptGenerator(ScriptGenerator):
             narration = self._render_narration(
                 section_name, topic, hook_text, promise, audience, cta_text,
             )
-            visual = _SCENE_VISUALS.get(section_name, "Plan standard.")
-            image_prompt = _SCENE_IMAGE_PROMPTS.get(section_name, "Clean minimal composition, soft lighting.")
-            animation = _SCENE_ANIMATIONS.get(section_name, "Standard cut. No animation.")
-            sound = _SCENE_SOUNDS.get(section_name, "Background music continues.")
+            dialogues = [Dialogue(personnage="NARRATEUR", replique=narration)]
+            setting = _SCENE_VISUALS.get(section_name, "Plan standard.")
+            transition = _SCENE_TRANSITIONS.get(section_name, "Coupe franche.")
+            scene_type = _SECTION_TYPE.get(section_name, "scene")
+
+            description = SceneDescription(
+                setting=setting,
+                composition="Cadrage centré, sujet principal au premier plan, arrière-plan neutre.",
+                characters="Voix off uniquement — aucun personnage visible à l'écran.",
+                lighting="Éclairage neutre et stable, sans effet dramatique marqué.",
+                camera="Plan fixe, cadrage stable, aucun mouvement de caméra complexe.",
+                mood="Ton neutre et informatif.",
+                symbolism="Aucune symbolique particulière — plan purement informatif.",
+                director_notes=(
+                    "Scène de secours générée automatiquement (aucun appel LLM disponible) — "
+                    "à enrichir par un réalisateur ou un passage LLM ultérieur si possible."
+                ),
+                viewer_emotion="Le spectateur doit rester attentif et curieux de la suite.",
+            )
             duration = max(
-                4,
-                int(_SCENE_DURATIONS.get(section_name, 10) * brand_factor),
+                _MIN_SCENE_DURATION_SECONDS,
+                round(estimate_scene_duration(dialogues) * brand_factor),
             )
 
             scene = ScriptScene(
-                order=idx,
-                title=section_name,
-                narration=narration,
-                visual_description=visual,
-                image_prompt=image_prompt,
-                animation_notes=animation,
-                sound_effects=sound,
+                scene=Scene(number=idx, type=scene_type, description=description),
+                dialogues=dialogues,
+                transition=transition,
                 duration_seconds=duration,
             )
             scenes.append(scene)
@@ -455,20 +520,9 @@ class HeuristicScriptGenerator(ScriptGenerator):
         # ── Métadonnées du script ──────────────────────────────────────────────
         estimated_duration = sum(s.duration_seconds for s in scenes)
 
-        # Extraction de l'intro et conclusion
-        intro_idx = self._find_scene_index(scenes, {"Introduction", "Contexte"})
-        conclusion_idx = self._find_scene_index(scenes, {"Conclusion", "Leçon", "Résolution", "Verdict"})
-
-        introduction = scenes[intro_idx].narration if intro_idx < len(scenes) else ""
-        conclusion = scenes[conclusion_idx].narration if conclusion_idx < len(scenes) else ""
-
         script = Script(
             title=creative_brief.title,
-            hook=hook_text,
-            introduction=introduction,
             scenes=scenes,
-            conclusion=conclusion,
-            call_to_action=cta_text,
             estimated_duration=estimated_duration,
             language=brand_profile.primary_language,
             target_audience=creative_brief.audience,
@@ -524,14 +578,6 @@ class HeuristicScriptGenerator(ScriptGenerator):
             cta=cta,
         )
         return text
-
-    @staticmethod
-    def _find_scene_index(scenes: List[ScriptScene], candidates: set) -> int:
-        """Trouve l'index de la première scène dont le titre correspond."""
-        for i, s in enumerate(scenes):
-            if s.title in candidates:
-                return i
-        return 0
 
     @staticmethod
     def _compute_brand_duration_factor(brand_profile: BrandProfile) -> float:

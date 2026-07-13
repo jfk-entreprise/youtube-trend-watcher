@@ -8,6 +8,7 @@ Coût quota : 100 unités × nb de mots-clés  +  1 unité par batch de 50 IDs.
 """
 
 import logging
+from typing import Optional
 
 from src.agents.base import BaseAgent
 from src.collector import YouTubeCollector
@@ -33,8 +34,11 @@ class KeywordAgent(BaseAgent):
         days_back: int = 7,
         region_code: str = "FR",
         language: str = "fr",
+        market: Optional[str] = None,
     ) -> None:
-        self._collector = YouTubeCollector(api_key, region_code=region_code, language=language)
+        self._collector = YouTubeCollector(
+            api_key, region_code=region_code, language=language, market=market,
+        )
         self._keywords = keywords
         self._max_results = max_results_per_keyword
         self._days_back = days_back

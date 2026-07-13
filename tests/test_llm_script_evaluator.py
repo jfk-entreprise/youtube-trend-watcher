@@ -20,7 +20,24 @@ import pytest
 
 from src.llm_script_evaluator import LLMScriptEvaluator, LLMScriptScore, _CRITERIA
 from src.script_evaluator import BaseEvaluator, ScriptEvaluator
-from src.script_engine import Script, ScriptScene
+from src.script_engine import Dialogue, Scene, SceneDescription, Script, ScriptScene
+
+
+def _make_scene_description(**overrides) -> SceneDescription:
+    """Construit une SceneDescription minimale valide, avec overrides optionnels."""
+    base = dict(
+        setting="Interieur studio",
+        composition="Plan large",
+        characters="Narrateur",
+        lighting="Neutre",
+        camera="Fixe",
+        mood="Neutre",
+        symbolism="Aucun",
+        director_notes="RAS",
+        viewer_emotion="Curiosite",
+    )
+    base.update(overrides)
+    return SceneDescription(**base)
 
 
 # ── Fixtures ──────────────────────────────────────────────────────────────────
@@ -29,21 +46,63 @@ from src.script_engine import Script, ScriptScene
 def sample_script() -> Script:
     return Script(
         title="Ce jeu de camouflage casse les regles de l'esport",
-        hook="Et si le pire spot de camouflage devenait une arme secrete ?",
-        introduction="C'est ce qui vient de se passer dans la scene esport.",
         scenes=[
-            ScriptScene(order=1, title="Hook", narration="Et si le pire spot devenait une arme secrete ?",
-                        visual_description="Plan choc", image_prompt="Bold composition",
-                        animation_notes="Fade-in", sound_effects="Whoosh", duration_seconds=8),
-            ScriptScene(order=2, title="Contexte", narration="Voici ce que personne n'avait remarque.",
-                        visual_description="Tete parlante", image_prompt="Clean setup",
-                        animation_notes="Crossfade", sound_effects="Music", duration_seconds=12),
-            ScriptScene(order=3, title="Developpement", narration="Le camouflage change tout sur le terrain.",
-                        visual_description="Demo gameplay", image_prompt="Gameplay overlay",
-                        animation_notes="Zoom", sound_effects="Impact", duration_seconds=14),
+            ScriptScene(
+                scene=Scene(
+                    number=1, type="hook",
+                    description=_make_scene_description(
+                        director_notes="Plan choc — Bold composition, Fade-in, Whoosh",
+                    ),
+                ),
+                dialogues=[Dialogue(personnage="NARRATEUR",
+                                     replique="Et si le pire spot devenait une arme secrete ?")],
+                transition="Fade-in", duration_seconds=8,
+            ),
+            ScriptScene(
+                scene=Scene(
+                    number=2, type="intro",
+                    description=_make_scene_description(
+                        director_notes="Tete parlante — Clean setup, Crossfade, Music",
+                    ),
+                ),
+                dialogues=[Dialogue(personnage="NARRATEUR",
+                                     replique="C'est ce qui vient de se passer dans la scene esport.")],
+                transition="Crossfade", duration_seconds=10,
+            ),
+            ScriptScene(
+                scene=Scene(
+                    number=3, type="developpement",
+                    description=_make_scene_description(
+                        director_notes="Developpement — Demo gameplay, Zoom, Impact",
+                    ),
+                ),
+                dialogues=[Dialogue(personnage="NARRATEUR",
+                                     replique="Developpement : le camouflage change tout sur le terrain.")],
+                transition="Zoom", duration_seconds=14,
+            ),
+            ScriptScene(
+                scene=Scene(
+                    number=4, type="cloture",
+                    description=_make_scene_description(
+                        director_notes="Plan de cloture — synthese",
+                    ),
+                ),
+                dialogues=[Dialogue(personnage="NARRATEUR",
+                                     replique="Ce detail change la meta du jeu.")],
+                transition="Cut", duration_seconds=6,
+            ),
+            ScriptScene(
+                scene=Scene(
+                    number=5, type="cta",
+                    description=_make_scene_description(
+                        director_notes="Appel a l'action final",
+                    ),
+                ),
+                dialogues=[Dialogue(personnage="NARRATEUR",
+                                     replique="Quel spot debile as-tu deja vu ? Dis-le en commentaire.")],
+                transition="Fade-out", duration_seconds=8,
+            ),
         ],
-        conclusion="Ce detail change la meta du jeu.",
-        call_to_action="Quel spot debile as-tu deja vu ? Dis-le en commentaire.",
         estimated_duration=105,
         language="fr",
         target_audience="Joueurs esport",
@@ -145,7 +204,7 @@ class TestBuildUserPrompt:
     def test_prompt_contains_all_scenes(self, sample_script):
         prompt = LLMScriptEvaluator._build_user_prompt(sample_script)
         for scene in sample_script.scenes:
-            assert scene.narration in prompt
+            assert scene.narration_text in prompt
 
 
 # ── Tests : extract_json ──────────────────────────────────────────────────────

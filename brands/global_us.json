@@ -1,0 +1,48 @@
+{
+  "id": "global_us",
+  "name": "Global US",
+  "description": "General-audience US channel — curious, fast-paced explainer content across AI, business, money, history, and technology.",
+  "niche": "General / Multi-topic",
+  "target_audience": "Curious English-speaking viewers 18-40 in the US who want sharp, fast, well-researched explainers on trending topics",
+  "primary_language": "en",
+  "tone": "Bold",
+  "personality": "Sharp, confident, a little irreverent. Explains complex things fast without dumbing them down. Leads with the surprising part first. Never filler, never generic hype.",
+  "writing_style": "Short punchy sentences, concrete numbers and examples, direct address to the viewer. Structure: Hook → Surprising fact → Why it matters → Payoff.",
+  "emotion_level": 0.55,
+  "humor_level": 0.30,
+  "authority_level": 0.70,
+  "curiosity_level": 0.90,
+  "storytelling_level": 0.55,
+  "voice_speed": "Rapide",
+  "preferred_video_duration": 600,
+  "preferred_formats": ["Short", "Analyse", "Comparaison", "Challenge"],
+  "preferred_hooks": [
+    "Nobody tells you this about {topic}.",
+    "I spent {N} days testing {thing}. Here's what actually happened.",
+    "This is the part of {topic} everyone gets wrong.",
+    "In {N} years, {domain} won't look anything like it does today."
+  ],
+  "preferred_cta": [
+    "Follow for one sharp breakdown like this every week.",
+    "Drop a comment with the one thing that surprised you most.",
+    "Send this to someone who needs to see it.",
+    "Follow for more on {topic}."
+  ],
+  "forbidden_words": ["literally insane", "you won't believe", "shocking", "unbelievable", "epic fail"],
+  "visual_style": "Clean high-contrast look, bold sans-serif overlays, dark background with a single accent color, fast cuts, minimal clutter",
+  "color_palette": ["#0A0A0A", "#FF3B30", "#FFFFFF", "#1C1C1E"],
+  "typography_style": "Bold sans-serif (Inter or Helvetica Now), oversized key numbers, high contrast on dark background",
+  "logo_description": "Minimalist wordmark, single red accent stroke on black, sharp geometric lines",
+  "thumbnail_style": "Expressive face or bold graphic + one punchy word/number + high contrast — max 3 elements, readable at thumbnail size",
+  "metadata": {
+    "posting_frequency": "3x per week",
+    "best_posting_times": ["Tuesday 8am ET", "Thursday 8am ET", "Saturday 10am ET"],
+    "content_pillars": ["AI & tech", "Business & money", "History", "Trends explained"],
+    "platform_priority": ["YouTube", "TikTok", "Instagram"],
+    "avg_comment_type": "hot takes, follow-up questions, requests for deeper dives",
+    "monetization": ["sponsorships", "affiliate tools", "digital products"],
+    "version": "1.0"
+  },
+  "niche_keywords": ["ai", "artificial intelligence", "business", "money", "finance", "history", "technology", "tech"],
+  "market": "US"
+}

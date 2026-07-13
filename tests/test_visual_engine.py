@@ -1,20 +1,21 @@
 """
-Tests unitaires pour le Visual Engine (Sprint 18).
+Tests unitaires pour le Visual Engine (Sprint 18, migré Sprint 31.1).
 
 Teste :
   1. VisualScene — création, immutabilité, types attendus
   2. VisualPlan — création, structure, aspect_ratio
   3. VisualGenerator — interface ABC
-  4. HeuristicVisualGenerator — règles heuristiques, mappings
+  4. HeuristicVisualGenerator — règles heuristiques, mappings PAR POSITION
+     (Sprint 31.1 : les scènes n'ont plus de titre nommé — première scène =
+     hook, dernière = CTA, scènes intermédiaires en rotation)
   5. VisualEngine — orchestration, generate, generate_all
   6. Découplage — n'importe aucun moteur interne
-  7. Cas limites — script vide, scène inconnue, etc.
+  7. Cas limites — script vide, etc.
 """
 
 import pytest
 from dataclasses import FrozenInstanceError
 from pathlib import Path
-from typing import Any, Dict, List
 
 from src.visual_engine import (
     VisualScene,
@@ -31,63 +32,65 @@ from src.visual_engine import (
     _COLOR_PALETTES,
     _LIGHTING_MAP,
 )
-from src.script_engine import Script, ScriptScene
+from src.script_engine import Dialogue, Scene, SceneDescription, Script, ScriptScene
 
 
 # ── Fixtures ──────────────────────────────────────────────────────────────────
 
+def _description(setting="Description visuelle.") -> SceneDescription:
+    return SceneDescription(
+        setting=setting,
+        composition="Rule of thirds.",
+        characters="Narrator only.",
+        lighting="Neutral lighting.",
+        camera="Static shot.",
+        mood="Neutral.",
+        symbolism="None.",
+        director_notes="Standard scene.",
+        viewer_emotion="Attentive curiosity.",
+    )
+
+
+def _scene(order, replique, scene_desc="Description visuelle.", duration_seconds=10, scene_type="scene"):
+    return ScriptScene(
+        scene=Scene(number=order, type=scene_type, description=_description(setting=scene_desc)),
+        dialogues=[Dialogue(personnage="NARRATEUR", replique=replique)],
+        transition="Coupe.", duration_seconds=duration_seconds,
+    )
+
+
 @pytest.fixture
 def script_scene_hook() -> ScriptScene:
-    return ScriptScene(
-        order=1,
-        title="Hook",
-        narration="Voici pourquoi 80% des developpeurs sous-estiment l'IA.",
-        visual_description="Plan d'accroche dynamique — visuel choc ou question à l'écran.",
-        image_prompt="Dynamic abstract composition with bold typography, high contrast lighting",
-        animation_notes="Fade-in from black. Bold text animation (scale up + stabilize). 0.5s buildup.",
-        sound_effects="Whoosh + impact sound. Music starts strong then drops to background.",
+    return _scene(
+        1, "Voici pourquoi 80% des developpeurs sous-estiment l'IA.",
+        scene_desc="Plan d'accroche dynamique — visuel choc ou question à l'écran.",
         duration_seconds=8,
     )
 
 
 @pytest.fixture
 def script_scene_intro() -> ScriptScene:
-    return ScriptScene(
-        order=2,
-        title="Introduction",
-        narration="Aujourd'hui, on va parler de Intelligence Artificielle.",
-        visual_description="Tête parlante face caméra OU écran titre avec musique douce en fond.",
-        image_prompt="Clean professional workspace with warm ambient lighting, shallow depth of field",
-        animation_notes="Crossfade transition. Gentle parallax on background. Soft text reveal.",
-        sound_effects="Background music at speaking volume. Subtle room tone.",
+    return _scene(
+        2, "Aujourd'hui, on va parler de Intelligence Artificielle.",
+        scene_desc="Tête parlante face caméra OU écran titre avec musique douce en fond.",
         duration_seconds=12,
     )
 
 
 @pytest.fixture
 def script_scene_point1() -> ScriptScene:
-    return ScriptScene(
-        order=3,
-        title="Point #1",
-        narration="Premier point clé : l'IA transforme le métier de développeur.",
-        visual_description="Infographie ou liste animée. Numéro à l'écran.",
-        image_prompt="Numbered infographic #1, clean design, accent color highlighting",
-        animation_notes="Number flies in from left. Content fades below. Staggered bullet reveal.",
-        sound_effects="Soft chime on number reveal. Pop sound for text line.",
+    return _scene(
+        3, "Premier point clé : l'IA transforme le métier de développeur.",
+        scene_desc="Infographie ou liste animée. Numéro à l'écran.",
         duration_seconds=16,
     )
 
 
 @pytest.fixture
 def script_scene_cta() -> ScriptScene:
-    return ScriptScene(
-        order=8,
-        title="CTA",
-        narration="Abonne-toi pour plus d'analyses tech.",
-        visual_description="Fond de chaîne ou miniature finale. Boutons abonnement animés.",
-        image_prompt="Subscription call-to-action frame, brand colors, button visual, inviting composition",
-        animation_notes="Screen compresses to show subscribe button. Bell icon shakes. Links pulse gently.",
-        sound_effects="Subscribe sound effect. Bell ding. Music lift then fade to end.",
+    return _scene(
+        4, "Abonne-toi pour plus d'analyses tech.",
+        scene_desc="Fond de chaîne ou miniature finale. Boutons abonnement animés.",
         duration_seconds=10,
     )
 
@@ -96,11 +99,7 @@ def script_scene_cta() -> ScriptScene:
 def sample_script(script_scene_hook, script_scene_intro, script_scene_point1, script_scene_cta) -> Script:
     return Script(
         title="5 métiers de développeur transformés par l'IA",
-        hook="Voici pourquoi 80% des développeurs sous-estiment l'IA.",
-        introduction="Aujourd'hui, on va découvrir les 5 métiers les plus impactés.",
         scenes=[script_scene_hook, script_scene_intro, script_scene_point1, script_scene_cta],
-        conclusion="Pour conclure, l'IA transforme mais ne remplace pas.",
-        call_to_action="Abonne-toi pour plus d'analyses.",
         estimated_duration=46,
         language="fr",
         target_audience="Développeurs curieux de l'IA",
@@ -113,11 +112,7 @@ def sample_script(script_scene_hook, script_scene_intro, script_scene_point1, sc
 def sample_script_default_style(script_scene_hook, script_scene_intro) -> Script:
     return Script(
         title="Vidéo sans style",
-        hook="Hook accrocheur.",
-        introduction="Introduction.",
         scenes=[script_scene_hook, script_scene_intro],
-        conclusion="Conclusion.",
-        call_to_action="CTA.",
         estimated_duration=20,
         language="fr",
         target_audience="Grand public",
@@ -128,25 +123,12 @@ def sample_script_default_style(script_scene_hook, script_scene_intro) -> Script
 
 @pytest.fixture
 def full_script() -> Script:
-    """Script complet avec 8 scènes (structure Liste)."""
-    scenes = [
-        ScriptScene(order=1, title="Hook", narration="Hook", visual_description="V", image_prompt="P", animation_notes="A", sound_effects="S", duration_seconds=8),
-        ScriptScene(order=2, title="Introduction", narration="Intro", visual_description="V", image_prompt="P", animation_notes="A", sound_effects="S", duration_seconds=12),
-        ScriptScene(order=3, title="Point #1", narration="P1", visual_description="V", image_prompt="P", animation_notes="A", sound_effects="S", duration_seconds=16),
-        ScriptScene(order=4, title="Point #2", narration="P2", visual_description="V", image_prompt="P", animation_notes="A", sound_effects="S", duration_seconds=14),
-        ScriptScene(order=5, title="Point #3", narration="P3", visual_description="V", image_prompt="P", animation_notes="A", sound_effects="S", duration_seconds=18),
-        ScriptScene(order=6, title="Point bonus", narration="Bonus", visual_description="V", image_prompt="P", animation_notes="A", sound_effects="S", duration_seconds=10),
-        ScriptScene(order=7, title="Conclusion", narration="Fin", visual_description="V", image_prompt="P", animation_notes="A", sound_effects="S", duration_seconds=12),
-        ScriptScene(order=8, title="CTA", narration="Abonnez-vous", visual_description="V", image_prompt="P", animation_notes="A", sound_effects="S", duration_seconds=10),
-    ]
+    """Script complet avec 8 scènes."""
+    scenes = [_scene(i, f"Replique {i}", duration_seconds=10 + i) for i in range(1, 9)]
     return Script(
         title="Test complet",
-        hook="Hook",
-        introduction="Intro",
         scenes=scenes,
-        conclusion="Fin",
-        call_to_action="CTA",
-        estimated_duration=100,
+        estimated_duration=sum(s.duration_seconds for s in scenes),
         language="fr",
         target_audience="Test",
         style="Innovant",
@@ -302,12 +284,6 @@ class TestVisualPlan:
         plan = VisualPlan(title="T", style="default")
         assert plan.aspect_ratio == "9:16"
 
-    # def test_frozen(self):
-    #     """VisualPlan est immuable ?"""
-    #     # Note: frozen=True sur la dataclass avec field(default_factory=dict|list)
-    #     # rend l'objet immuable, mais les listes/dict sont mutables par référence.
-    #     pass
-
     def test_scenes_list_immutable(self):
         """La liste de scenes ne peut pas être réaffectée."""
         plan = VisualPlan(title="T", style="default")
@@ -355,8 +331,7 @@ class TestVisualGenerator:
         gen = GoodGenerator()
         assert gen.name == "good"
         script = Script(
-            title="T", hook="H", introduction="I", scenes=[], conclusion="C",
-            call_to_action="CTA", estimated_duration=0, language="fr",
+            title="T", scenes=[], estimated_duration=0, language="fr",
             target_audience="A", style="S", metadata={},
         )
         plan = gen.generate(script)
@@ -386,31 +361,28 @@ class TestHeuristicVisualGenerator:
         assert len(plan.scenes) == len(sample_script.scenes)
 
     def test_scene_order_preserved(self, sample_script):
-        """Les ordres des scenes sont preserves (ordre dans la liste, pas valeur du champ)."""
+        """Les ordres des scenes sont preserves."""
         gen = HeuristicVisualGenerator()
         plan = gen.generate(sample_script)
-        # sample_script a des scenes avec order=[1, 2, 3, 8]
         expected_orders = [s.order for s in sample_script.scenes]
         visual_orders = [vs.scene_order for vs in plan.scenes]
         assert visual_orders == expected_orders
 
-    def test_shot_type_mapped(self, sample_script):
-        """Le type de plan est mappé depuis le titre."""
+    def test_shot_type_mapped_by_position(self, sample_script):
+        """Le type de plan est mappé depuis la POSITION de la scène (Sprint 31.1)."""
         gen = HeuristicVisualGenerator()
         plan = gen.generate(sample_script)
-        # Hook → medium_close_up
+        # Première scène → Hook → medium_close_up
         assert plan.scenes[0].shot_type == "medium_close_up"
-        # Introduction → medium
-        assert plan.scenes[1].shot_type == "medium"
-        # CTA → close_up
-        assert plan.scenes[3].shot_type == "close_up"
+        # Dernière scène → CTA → close_up
+        assert plan.scenes[-1].shot_type == "close_up"
 
-    def test_camera_motion_mapped(self, sample_script):
-        """Le mouvement caméra est mappé."""
+    def test_camera_motion_mapped_by_position(self, sample_script):
+        """Le mouvement caméra est mappé par position."""
         gen = HeuristicVisualGenerator()
         plan = gen.generate(sample_script)
-        assert plan.scenes[0].camera_motion == "dolly_in"
-        assert plan.scenes[1].camera_motion == "static"
+        assert plan.scenes[0].camera_motion == "dolly_in"  # Hook
+        assert plan.scenes[-1].camera_motion == "zoom_out"  # CTA
 
     def test_lighting_from_shot_type(self, sample_script):
         """L'éclairage dépend du type de plan."""
@@ -418,16 +390,15 @@ class TestHeuristicVisualGenerator:
         plan = gen.generate(sample_script)
         # medium_close_up → Rembrandt
         assert "Rembrandt" in plan.scenes[0].lighting
-        # medium → Lumière naturelle diffusée
-        assert "Lumière naturelle" in plan.scenes[1].lighting
+        # close_up (dernière scène) → trois points
+        assert len(plan.scenes[-1].lighting) > 0
 
-    def test_transition_mapped(self, sample_script):
-        """La transition est mappée depuis le titre."""
+    def test_transition_mapped_by_position(self, sample_script):
+        """La transition est mappée par position."""
         gen = HeuristicVisualGenerator()
         plan = gen.generate(sample_script)
-        assert plan.scenes[0].transition == "fade_from_black"
-        assert plan.scenes[1].transition == "crossfade"
-        assert plan.scenes[2].transition == "slide_up"
+        assert plan.scenes[0].transition == "fade_from_black"  # Hook
+        assert plan.scenes[-1].transition == "fade_to_black"  # CTA
 
     def test_transition_list_valid(self):
         """Les transitions des mappings sont dans la liste valide."""
@@ -440,8 +411,8 @@ class TestHeuristicVisualGenerator:
         plan = gen.generate(sample_script)
         # Hook → contient le hook
         assert "développeurs" in plan.scenes[0].overlay_text or "sous-estiment" in plan.scenes[0].overlay_text
-        # Introduction → contient le titre
-        assert "métiers" in plan.scenes[1].overlay_text or "développeur" in plan.scenes[1].overlay_text
+        # CTA → texte fixe "Abonne-toi !"
+        assert plan.scenes[-1].overlay_text == "Abonne-toi !"
 
     def test_color_palette_from_style(self, sample_script):
         """La palette de couleurs vient du style."""
@@ -468,17 +439,18 @@ class TestHeuristicVisualGenerator:
         assert "duration:" in prompt
 
     def test_base_prompt_preserved(self, sample_script):
-        """Le prompt original (image_prompt) est conservé dans l'enrichi."""
+        """La description riche de la scène (ScriptScene.scene) est conservée dans l'enrichi."""
         gen = HeuristicVisualGenerator()
         plan = gen.generate(sample_script)
         prompt = plan.scenes[0].visual_prompt
-        assert "Dynamic abstract" in prompt
+        assert "accroche dynamique" in prompt
 
-    def test_animation_notes_preserved(self, sample_script):
-        """Les notes d'animation sont copiées depuis ScriptScene."""
+    def test_animation_notes_sourced_from_transition(self, sample_script):
+        """Sprint 31.1 : animation_notes de la VisualScene vient de ScriptScene.transition
+        (il n'y a plus de champ animation_notes dédié sur ScriptScene)."""
         gen = HeuristicVisualGenerator()
         plan = gen.generate(sample_script)
-        assert plan.scenes[0].animation_notes == sample_script.scenes[0].animation_notes
+        assert plan.scenes[0].animation_notes == sample_script.scenes[0].transition
 
     def test_duration_preserved(self, sample_script):
         """La durée est copiée depuis ScriptScene."""
@@ -500,7 +472,7 @@ class TestHeuristicVisualGenerator:
         plan = gen.generate(sample_script)
         for vs in plan.scenes:
             assert "script_scene_order" in vs.metadata
-            assert "script_scene_title" in vs.metadata
+            assert "position_key_resolved" in vs.metadata
             assert vs.metadata["script_scene_order"] == vs.scene_order
 
     def test_global_metadata(self, sample_script):
@@ -511,39 +483,21 @@ class TestHeuristicVisualGenerator:
         assert plan.metadata["scene_count"] == len(sample_script.scenes)
         assert plan.metadata["total_duration_seconds"] > 0
 
-    def test_unknown_scene_title_resolved(self):
-        """Titre de scène inconnu → fallback sur 'medium' / 'static'."""
-        unknown_scene = ScriptScene(
-            order=1, title="Titre inconnu", narration="Test",
-            visual_description="V", image_prompt="P",
-            animation_notes="A", sound_effects="S", duration_seconds=10,
-        )
-        script = Script(
-            title="Test", hook="H", introduction="I", scenes=[unknown_scene],
-            conclusion="C", call_to_action="CTA", estimated_duration=10,
-            language="fr", target_audience="A", style="default", metadata={},
-        )
-        gen = HeuristicVisualGenerator()
-        plan = gen.generate(script)
-        assert plan.scenes[0].shot_type == "medium"
-
     def test_aspect_ratio_default_9_16(self, sample_script):
         """L'aspect ratio par défaut est 9:16."""
         gen = HeuristicVisualGenerator()
         plan = gen.generate(sample_script)
         assert plan.aspect_ratio == "9:16"
 
-    def test_full_script_all_mappings(self, full_script):
-        """Script complet avec 8 scènes → toutes les sections sont mappées."""
+    def test_full_script_all_positions_mapped(self, full_script):
+        """Script complet avec 8 scènes → toutes les positions sont mappées sans erreur."""
         gen = HeuristicVisualGenerator()
         plan = gen.generate(full_script)
         assert len(plan.scenes) == 8
-        # Vérifie que chaque titre a un mapping
-        section_titles = [s.title for s in full_script.scenes]
-        for title in section_titles:
-            assert title.replace(" ", "") in "".join(_SECTION_SHOT_MAP.keys()) or \
-                   any(key in title for key in _SECTION_SHOT_MAP), \
-                   f"Titre '{title}' non trouvé dans le mapping"
+        assert plan.scenes[0].shot_type == "medium_close_up"  # Hook
+        assert plan.scenes[-1].shot_type == "close_up"  # CTA
+        for vs in plan.scenes:
+            assert vs.shot_type in _SHOT_TYPES
 
     def test_scene_color_palette_inherits_global(self, sample_script):
         """Chaque scène a sa propre palette (copie de la globale)."""
@@ -558,28 +512,25 @@ class TestHeuristicVisualGenerator:
             assert len(palette) == 5, f"Palette '{name}' a {len(palette)} couleurs (attendu: 5)"
 
 
-# ── Tests : HeuristicVisualGenerator._resolve_title_key ─────────────────────
+# ── Tests : HeuristicVisualGenerator._resolve_position_key (Sprint 31.1) ────
 
-class TestResolveTitleKey:
-    def test_exact_match(self):
-        """Correspondance exacte."""
-        result = HeuristicVisualGenerator._resolve_title_key("Hook")
-        assert result == "Hook"
+class TestResolvePositionKey:
+    def test_first_scene_is_hook(self):
+        assert HeuristicVisualGenerator._resolve_position_key(1, 5) == "Hook"
 
-    def test_partial_match(self):
-        """Correspondance partielle (préfixe)."""
-        result = HeuristicVisualGenerator._resolve_title_key("Point #1 : les chiffres")
-        assert result == "Point #1"
+    def test_last_scene_is_cta(self):
+        assert HeuristicVisualGenerator._resolve_position_key(5, 5) == "CTA"
 
-    def test_no_match(self):
-        """Aucune correspondance → retourne le titre original."""
-        result = HeuristicVisualGenerator._resolve_title_key("Mon titre custom")
-        assert result == "Mon titre custom"
+    def test_single_scene_is_hook(self):
+        """Une seule scène : la position 1 == total → priorité au Hook."""
+        assert HeuristicVisualGenerator._resolve_position_key(1, 1) == "Hook"
 
-    def test_empty_title(self):
-        """Titre vide."""
-        result = HeuristicVisualGenerator._resolve_title_key("")
-        assert result == ""
+    def test_middle_scenes_rotate(self):
+        """Les scènes intermédiaires tournent sur un jeu de clés génériques."""
+        keys = [HeuristicVisualGenerator._resolve_position_key(o, 8) for o in range(2, 8)]
+        assert keys[0] != "Hook" and keys[0] != "CTA"
+        # Deux appels avec le même order/total donnent toujours la même clé (déterministe)
+        assert HeuristicVisualGenerator._resolve_position_key(3, 8) == HeuristicVisualGenerator._resolve_position_key(3, 8)
 
 
 # ── Tests : HeuristicVisualGenerator._render_overlay ────────────────────────
@@ -601,10 +552,10 @@ class TestRenderOverlay:
         result = HeuristicVisualGenerator._render_overlay("{topic}", sample_script.scenes[0], sample_script)
         assert "Intelligence Artificielle" in result
 
-    def test_scene_title(self, sample_script):
-        """Scene title disponible."""
+    def test_scene_title_uses_scene_description(self, sample_script):
+        """{scene_title} est désormais dérivé du début de la description riche de la scène."""
         result = HeuristicVisualGenerator._render_overlay("{scene_title}", sample_script.scenes[0], sample_script)
-        assert result == "Hook"
+        assert "accroche" in result.lower()
 
 
 # ── Tests : HeuristicVisualGenerator._build_visual_prompt ───────────────────
@@ -624,12 +575,12 @@ class TestBuildVisualPrompt:
         assert "duration:" in prompt
 
     def test_prompt_preserves_base(self, sample_script):
-        """Le prompt original est conservé."""
+        """La description de scène d'origine est conservée."""
         scene = sample_script.scenes[0]
         prompt = HeuristicVisualGenerator._build_visual_prompt(
             scene, "medium", "static", "default", ["#FFF", "#000"],
         )
-        assert "Dynamic abstract" in prompt
+        assert "accroche dynamique" in prompt
 
 
 # ── Tests : VisualEngine ────────────────────────────────────────────────────
@@ -663,8 +614,7 @@ class TestVisualEngine:
     def test_generate_empty_script_raises(self):
         """Script sans scènes → ValueError."""
         script = Script(
-            title="T", hook="H", introduction="I", scenes=[],
-            conclusion="C", call_to_action="CTA", estimated_duration=0,
+            title="T", scenes=[], estimated_duration=0,
             language="fr", target_audience="A", style="S", metadata={},
         )
         engine = VisualEngine()
@@ -687,29 +637,22 @@ class TestVisualEngine:
     def test_generate_all_with_error(self, sample_script):
         """generate_all ignore les scripts qui échouent."""
         empty_script = Script(
-            title="Vide", hook="H", introduction="I", scenes=[],
-            conclusion="C", call_to_action="CTA", estimated_duration=0,
+            title="Vide", scenes=[], estimated_duration=0,
             language="fr", target_audience="A", style="S", metadata={},
         )
         engine = VisualEngine()
         plans = engine.generate_all([sample_script, empty_script, sample_script])
         assert len(plans) == 2  # le script vide est ignoré
 
-    def test_generate_all_preserves_order(self, sample_script):
+    def test_generate_all_preserves_order(self):
         """L'ordre des plans correspond à l'ordre des scripts."""
         script_a = Script(
-            title="A", hook="H", introduction="I",
-            scenes=[ScriptScene(order=1, title="Hook", narration="N", visual_description="V",
-                                image_prompt="P", animation_notes="A", sound_effects="S", duration_seconds=5)],
-            conclusion="C", call_to_action="CTA", estimated_duration=5,
-            language="fr", target_audience="A", style="S", metadata={},
+            title="A", scenes=[_scene(1, "N", duration_seconds=5)],
+            estimated_duration=5, language="fr", target_audience="A", style="S", metadata={},
         )
         script_b = Script(
-            title="B", hook="H", introduction="I",
-            scenes=[ScriptScene(order=1, title="Hook", narration="N", visual_description="V",
-                                image_prompt="P", animation_notes="A", sound_effects="S", duration_seconds=5)],
-            conclusion="C", call_to_action="CTA", estimated_duration=5,
-            language="fr", target_audience="A", style="S", metadata={},
+            title="B", scenes=[_scene(1, "N", duration_seconds=5)],
+            estimated_duration=5, language="fr", target_audience="A", style="S", metadata={},
         )
         engine = VisualEngine()
         plans = engine.generate_all([script_b, script_a])

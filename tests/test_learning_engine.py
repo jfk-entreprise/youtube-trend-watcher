@@ -22,7 +22,8 @@ from src.learning_engine import (PerformanceMetrics, LearningSignal,
 from src.opportunity_engine import Opportunity
 from src.creative_engine import CreativeBrief
 from src.brand_engine import BrandProfile
-from src.script_engine import Script, ScriptScene
+from src.script_engine import (Script, ScriptScene, Dialogue, Scene,
+                                SceneDescription)
 
 
 # ── Fixtures ──────────────────────────────────────────────────────────────────
@@ -108,26 +109,38 @@ def sample_brand() -> BrandProfile:
 
 @pytest.fixture
 def sample_script(sample_brief, sample_brand) -> Script:
+    def _desc(setting: str) -> SceneDescription:
+        return SceneDescription(
+            setting=setting, composition="Plan large", characters="Narrateur",
+            lighting="Neutre", camera="Fixe", mood="Neutre", symbolism="Aucun",
+            director_notes="RAS", viewer_emotion="Curiosité",
+        )
+
     return Script(
         title=sample_brief.title,
-        hook=sample_brief.hook,
-        introduction="Introduction complète.",
         scenes=[
-            ScriptScene(order=1, title="Hook", narration="L'IA change tout.",
-                       visual_description="V", image_prompt="I",
-                       animation_notes="A", sound_effects="S",
-                       duration_seconds=8),
-            ScriptScene(order=2, title="Intro", narration="Intro.",
-                       visual_description="V", image_prompt="I",
-                       animation_notes="A", sound_effects="S",
-                       duration_seconds=12),
-            ScriptScene(order=3, title="CTA", narration="Abonne-toi.",
-                       visual_description="V", image_prompt="I",
-                       animation_notes="A", sound_effects="S",
-                       duration_seconds=10),
+            ScriptScene(
+                scene=Scene(number=1, type="hook",
+                           description=_desc("Hook — plan large sur le sujet.")),
+                dialogues=[Dialogue(personnage="NARRATEUR",
+                                    replique="L'IA change tout.")],
+                transition="Cut", duration_seconds=8,
+            ),
+            ScriptScene(
+                scene=Scene(number=2, type="context",
+                           description=_desc("Intro — contexte posé.")),
+                dialogues=[Dialogue(personnage="NARRATEUR",
+                                    replique="Intro.")],
+                transition="Fondu", duration_seconds=12,
+            ),
+            ScriptScene(
+                scene=Scene(number=3, type="cta",
+                           description=_desc("CTA — appel à l'abonnement.")),
+                dialogues=[Dialogue(personnage="NARRATEUR",
+                                    replique=sample_brief.cta)],
+                transition="Fin", duration_seconds=10,
+            ),
         ],
-        conclusion="Conclusion.",
-        call_to_action=sample_brief.cta,
         estimated_duration=30,
         language=sample_brand.primary_language,
         target_audience=sample_brand.target_audience,

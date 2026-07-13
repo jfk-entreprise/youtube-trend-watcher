@@ -7,8 +7,9 @@ on:
 
 env:
   PYTHONIOENCODING: utf-8
-  YOUTUBE_REGION_CODE: FR
-  YOUTUBE_LANGUAGE: fr
+  # Sprint 34 : scripts/test_agents.py collecte désormais les deux marchés
+  # (FR + US) dans le même run via son dict MARKETS interne — plus besoin de
+  # YOUTUBE_REGION_CODE/YOUTUBE_LANGUAGE au niveau du workflow.
 
 jobs:
   pipeline:

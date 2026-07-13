@@ -30,6 +30,7 @@ class VideoSnapshot:
     like_count: Optional[int] = None
     comment_count: Optional[int] = None
     source: str = "keyword"     # Agent source : 'keyword' | 'trending'
+    market: str = "FR"          # Marché cible de la collecte ('FR' | 'US'...) — Sprint 34
     collected_at: str = field(
         default_factory=lambda: datetime.now(timezone.utc).isoformat()
     )

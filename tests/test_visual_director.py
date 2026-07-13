@@ -34,7 +34,7 @@ from src.visual_director import (
     _REQUIRED_STRING_FIELDS,
     _REQUIRED_LIST_FIELDS,
 )
-from src.script_engine import Script, ScriptScene
+from src.script_engine import Dialogue, Scene, SceneDescription, Script, ScriptScene
 from src.brand_engine import BrandProfile, JsonBrandStore
 
 
@@ -51,11 +51,28 @@ def brand() -> BrandProfile:
 @pytest.fixture
 def script_scene() -> ScriptScene:
     return ScriptScene(
-        order=1, title="Hook",
-        narration="Et si votre prochain outil IA remplacait votre monteur video ?",
-        visual_description="Plan choc sur une interface d'edition video futuriste",
-        image_prompt="futuristic video editing interface",
-        animation_notes="Fade-in rapide", sound_effects="Whoosh",
+        scene=Scene(
+            number=1,
+            type="hook",
+            description=SceneDescription(
+                setting="Plan choc sur une interface d'edition video futuriste",
+                composition="Premier plan sur l'ecran, arriere-plan flou",
+                characters="Aucun personnage visible, juste l'interface",
+                lighting="Lumiere froide bleutee emanant de l'ecran",
+                camera="Travelling avant lent, angle leger contre-plongee",
+                mood="Tension, emerveillement technologique",
+                symbolism="L'IA comme remplacement du geste humain",
+                director_notes="Insister sur la fluidite des transitions a l'ecran",
+                viewer_emotion="Curiosite inquiete",
+            ),
+        ),
+        dialogues=[
+            Dialogue(
+                personnage="NARRATEUR",
+                replique="Et si votre prochain outil IA remplacait votre monteur video ?",
+            )
+        ],
+        transition="cut",
         duration_seconds=8,
     )
 
@@ -63,11 +80,28 @@ def script_scene() -> ScriptScene:
 @pytest.fixture
 def second_scene() -> ScriptScene:
     return ScriptScene(
-        order=2, title="Suite",
-        narration="La journaliste Sarah Chen decouvre l'ampleur du changement.",
-        visual_description="Sarah Chen face a l'ecran, stupefaite",
-        image_prompt="journalist reacting to a screen",
-        animation_notes="Zoom lent", sound_effects="Tension sonore",
+        scene=Scene(
+            number=2,
+            type="development",
+            description=SceneDescription(
+                setting="Sarah Chen face a l'ecran, stupefaite",
+                composition="Plan rapproche sur son visage, ecran en arriere-plan",
+                characters="Sarah Chen, journaliste, expression stupefaite",
+                lighting="Lueur de l'ecran sur son visage",
+                camera="Plan fixe rapproche",
+                mood="Stupeur, prise de conscience",
+                symbolism="Le visage humain confronte au changement",
+                director_notes="Capturer le moment exact ou son expression change",
+                viewer_emotion="Empathie et surprise",
+            ),
+        ),
+        dialogues=[
+            Dialogue(
+                personnage="NARRATEUR",
+                replique="La journaliste Sarah Chen decouvre l'ampleur du changement.",
+            )
+        ],
+        transition="cut",
         duration_seconds=9,
     )
 
@@ -76,11 +110,7 @@ def second_scene() -> ScriptScene:
 def sample_script(script_scene, second_scene) -> Script:
     return Script(
         title="L'IA qui remplace les monteurs video",
-        hook=script_scene.narration,
-        introduction="Voici ce qui vient de changer.",
         scenes=[script_scene, second_scene],
-        conclusion="Le montage ne sera plus jamais pareil.",
-        call_to_action="Quel logiciel de montage utilises-tu ? Dis-le en commentaire.",
         estimated_duration=17,
         language="fr",
         target_audience="Createurs de contenu",
@@ -165,26 +195,26 @@ class TestBuildUserPrompt:
     def test_contains_script_scene_and_brand(self, script_scene, brand):
         vd = VisualDirector()
         prompt = vd._build_user_prompt(None, script_scene, brand)
-        assert script_scene.narration in prompt
-        assert script_scene.title in prompt
+        assert script_scene.narration_text in prompt
+        assert script_scene.scene.description.setting in prompt
         assert brand.name in prompt
 
     def test_contains_continuity_block_when_script_provided(self, sample_script, script_scene, brand):
         vd = VisualDirector()
         prompt = vd._build_user_prompt(sample_script, script_scene, brand)
-        assert "CONTINUITE VISUELLE" in prompt
+        assert "VISUAL CONTINUITY" in prompt
         assert "Sarah Chen" in prompt  # narration de la 2e scène
 
     def test_no_continuity_block_when_script_is_none(self, script_scene, brand):
         vd = VisualDirector()
         prompt = vd._build_user_prompt(None, script_scene, brand)
-        assert "CONTINUITE VISUELLE" not in prompt
+        assert "VISUAL CONTINUITY" not in prompt
 
     def test_works_without_brand_profile(self, script_scene):
         vd = VisualDirector()
         prompt = vd._build_user_prompt(None, script_scene, None)
-        assert script_scene.narration in prompt
-        assert "IDENTITE DE MARQUE" not in prompt
+        assert script_scene.narration_text in prompt
+        assert "BRAND IDENTITY" not in prompt
 
 
 # ── Tests : extraction JSON robuste ────────────────────────────────────────────
@@ -375,10 +405,10 @@ class TestGenerateShotPlanFallback:
         assert isinstance(shot_plan.visual_priority, list)
         assert len(shot_plan.visual_priority) >= 1
 
-    def test_fallback_focal_point_from_scene_title(self, script_scene, brand):
+    def test_fallback_focal_point_from_scene_content(self, script_scene, brand):
         vd = VisualDirector(max_retries=1)
         shot_plan = vd.generate_shot_plan(script_scene, brand)
-        assert shot_plan.focal_point == script_scene.title
+        assert shot_plan.focal_point == script_scene.scene.description.setting.strip()[:60]
 
     def test_fallback_thumbnail_moment_is_not_empty(self, script_scene, brand):
         vd = VisualDirector(max_retries=1)
@@ -498,7 +528,7 @@ class TestContinuity:
         vd.generate_shot_plan(script_scene, brand, script=sample_script)
 
         block = vd._build_continuity_block(sample_script, second_scene.order)
-        assert "PLANS DEJA ETABLIS" in block
+        assert "SHOT PLANS ALREADY ESTABLISHED" in block
         assert valid_llm_json["shot_type"] in block
         assert valid_llm_json["lens"] in block
 
@@ -511,7 +541,7 @@ class TestContinuity:
     def test_no_established_plans_note_when_empty(self, script_scene, sample_script):
         vd = VisualDirector()
         block = vd._build_continuity_block(sample_script, script_scene.order)
-        assert "Aucun plan etabli" in block
+        assert "No shot plan established yet" in block
 
 
 # ── Tests : résolution du modèle DeepSeek ─────────────────────────────────────

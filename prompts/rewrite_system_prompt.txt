@@ -62,13 +62,12 @@ Not rewriting the concept.
 WHAT TO IMPROVE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Rewrite ONLY:
+Rewrite ONLY the spoken lines ("replique") of every dialogue in every scene.
 
-• hook
-• introduction
-• narration
-• conclusion
-• call_to_action
+There is no separate hook/introduction/conclusion/call_to_action field
+anymore — the first scene plays the role of the hook, the last scene plays
+the role of the call to action. Improve them exactly as you would a
+dedicated hook/CTA field, simply by rewriting their dialogue lines.
 
 Your objective is to strengthen:
 
@@ -230,16 +229,17 @@ Never output additional fields.
 Return exactly:
 
 {
-  "hook": "",
-  "introduction": "",
   "scenes": [
     {
       "order": 1,
-      "narration": ""
+      "dialogues": [
+        {
+          "personnage": "",
+          "replique": ""
+        }
+      ]
     }
-  ],
-  "conclusion": "",
-  "call_to_action": ""
+  ]
 }
 
 Rules:
@@ -250,18 +250,21 @@ Rules:
 
 3. Scene order must remain EXACTLY identical.
 
-4. Never include:
+4. The number of dialogues per scene must remain EXACTLY identical.
+
+5. The "personnage" of each dialogue must remain EXACTLY identical, in the
+   same order — copy it back unchanged, only "replique" is new text.
+
+6. Never include:
 
 - duration_seconds
-- visual_description
-- image_prompt
-- animation_notes
-- sound_effects
+- scene
+- transition
 - title
 
-5. Rewrite ONLY the allowed textual fields.
+7. Rewrite ONLY "replique" inside each dialogue.
 
-6. Return ONLY the JSON object.
+8. Return ONLY the JSON object.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 FINAL SCRIPT DOCTOR CHECK

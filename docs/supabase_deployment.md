@@ -49,6 +49,37 @@ persiste les niches actives d'un jour sur l'autre pour `run_daily_pipeline.py`
 pipeline bascule automatiquement sur un fichier JSON local
 (`.cache/active_niches.json`).
 
+### Sprint 33 — Table `topic_history` (anti-doublon de sujet)
+
+Répétez la même procédure avec `sql/create_topic_history.sql` : cette table
+enregistre le sujet (titre du script final) produit chaque jour par niche,
+pour que `run_daily_pipeline.py` évite de reproduire une histoire quasi
+identique le lendemain — ou la traite explicitement comme une SUITE plutôt
+qu'un remake (voir `src/topic_history.py` — `TopicHistoryFilter`). Sans elle
+(ou sans credentials Supabase), le pipeline bascule automatiquement sur un
+fichier JSON local (`.cache/topic_history.json`).
+
+### Sprint 34 — Segmentation par marché (US/FR)
+
+Exécutez, dans l'ordre, ces 3 migrations complémentaires (ALTER TABLE — à
+exécuter une seule fois chacune, après les tables ci-dessus) :
+
+1. `sql/alter_video_snapshots_add_market.sql` — ajoute `market` à
+   `video_snapshots` et corrige au passage la pollution historique où
+   `TrendingAgent` stockait un code région dans `keyword` (voir
+   `src/agents/trending_agent.py`).
+2. `sql/alter_active_niches_add_market.sql` — ajoute `market` à
+   `active_niches` et remplace la contrainte d'unicité `niche_name` par
+   `(niche_name, market)` : une même niche peut être active simultanément
+   sur plusieurs marchés (voir `src/niche_selector.py`).
+3. `sql/alter_topic_history_add_market.sql` — ajoute `market` à
+   `topic_history` pour que l'anti-doublon ne compare que des sujets du
+   même marché (voir `src/topic_history.py`).
+
+Sans ces migrations, le pipeline continue de fonctionner (repli JSON local
+et valeur par défaut `market='FR'` partout) mais ne distingue pas
+réellement les marchés US et FR.
+
 ### Sprint 30 — Bucket Storage `production` (remplace Google Drive)
 
 Google Drive a été abandonné : un compte de service Google n'a aucun quota

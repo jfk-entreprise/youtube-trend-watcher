@@ -1,12 +1,15 @@
 """
-Tests unitaires pour le Rewrite Engine (Sprint 22).
+Tests unitaires pour le Rewrite Engine (Sprint 22, migré Sprint 31.1 —
+réécriture des répliques par scène, plus de hook/introduction/conclusion/
+call_to_action séparés : la première scène joue le rôle du hook, la dernière
+celui du CTA).
 
 Teste :
   1. RewriteEngine — création, nom, stats
   2. build_user_prompt — contient la critique et les contraintes
   3. extract_json — extraction robuste
   4. build_script_from_json — reconstruction stricte (sujet/marque/durée/
-     scènes préservés), rejets sur divergence de structure
+     scènes/personnages préservés), rejets sur divergence de structure
   5. rewrite — garde la version améliorée si le score augmente
   6. rewrite — garde l'originale si le score n'augmente pas
   7. rewrite — jamais d'exception, même en cas d'échec LLM
@@ -19,7 +22,7 @@ import pytest
 
 from src.rewrite_engine import RewriteEngine
 from src.llm_script_evaluator import LLMScriptScore
-from src.script_engine import Script, ScriptScene
+from src.script_engine import Dialogue, Scene, SceneDescription, Script, ScriptScene
 
 
 # ── Fixtures ──────────────────────────────────────────────────────────────────
@@ -42,25 +45,41 @@ class _StubEvaluator:
         return _make_score(self.score_value)
 
 
+def _description(setting: str) -> SceneDescription:
+    return SceneDescription(
+        setting=setting,
+        composition="Composition equilibree.",
+        characters="Narrateur uniquement.",
+        lighting="Lumiere dure et contrastee.",
+        camera="Plan fixe.",
+        mood="Tension.",
+        symbolism="Le secret cache derriere le decor.",
+        director_notes="Garder le rythme, ne pas trainer.",
+        viewer_emotion="Curiosite.",
+    )
+
+
 @pytest.fixture
 def sample_script() -> Script:
     return Script(
         title="5 secrets de production que les studios cachent",
-        hook="Voici un secret que les studios ne veulent pas que tu saches.",
-        introduction="On va decortiquer ce que personne ne dit jamais.",
         scenes=[
-            ScriptScene(order=1, title="Hook", narration="Voici un secret que les studios cachent.",
-                        visual_description="Plan choc", image_prompt="Bold composition",
-                        animation_notes="Fade-in", sound_effects="Whoosh", duration_seconds=8),
-            ScriptScene(order=2, title="Contexte", narration="Ce secret concerne le montage.",
-                        visual_description="Tete parlante", image_prompt="Clean setup",
-                        animation_notes="Crossfade", sound_effects="Music", duration_seconds=12),
-            ScriptScene(order=3, title="Developpement", narration="Voici comment ca fonctionne en pratique.",
-                        visual_description="Demo", image_prompt="Overlay demo",
-                        animation_notes="Zoom", sound_effects="Impact", duration_seconds=14),
+            ScriptScene(
+                scene=Scene(number=1, type="hook", description=_description("Plan choc, gros plan, lumiere dure.")),
+                dialogues=[Dialogue(personnage="NARRATEUR", replique="Voici un secret que les studios cachent.")],
+                transition="Fade-in", duration_seconds=8,
+            ),
+            ScriptScene(
+                scene=Scene(number=2, type="development", description=_description("Tete parlante, fond neutre.")),
+                dialogues=[Dialogue(personnage="NARRATEUR", replique="Ce secret concerne le montage.")],
+                transition="Crossfade", duration_seconds=12,
+            ),
+            ScriptScene(
+                scene=Scene(number=3, type="cta", description=_description("Demo a l'ecran, overlay.")),
+                dialogues=[Dialogue(personnage="NARRATEUR", replique="Voici comment ca fonctionne en pratique.")],
+                transition="Zoom", duration_seconds=14,
+            ),
         ],
-        conclusion="Ce detail change la facon de voir un film.",
-        call_to_action="Quel autre secret veux-tu qu'on decortique ? Dis-le en commentaire.",
         estimated_duration=105,
         language="fr",
         target_audience="Cinephiles curieux",
@@ -70,16 +89,41 @@ def sample_script() -> Script:
 
 
 @pytest.fixture
+def multi_dialogue_script() -> Script:
+    """Script avec plusieurs dialogues (personnages) dans une même scène."""
+    return Script(
+        title="Le roi et le conseiller",
+        scenes=[
+            ScriptScene(
+                scene=Scene(number=1, type="scene", description=_description("Salle du trone.")),
+                dialogues=[
+                    Dialogue(personnage="Roi", replique="Que se passe-t-il ?"),
+                    Dialogue(personnage="Conseiller", replique="Sire, une nouvelle grave."),
+                ],
+                transition="Cut", duration_seconds=10,
+            ),
+        ],
+        estimated_duration=10,
+        language="fr",
+        target_audience="Tous",
+        style="Dramatique",
+        metadata={},
+    )
+
+
+@pytest.fixture
 def valid_rewrite_json(sample_script):
     return {
-        "hook": "Et si ce detail de montage changeait tout le film ?",
-        "introduction": "Personne n'en parle, pourtant c'est partout.",
         "scenes": [
-            {"order": s.order, "narration": f"Nouvelle narration pour la scene {s.order}."}
+            {
+                "order": s.order,
+                "dialogues": [
+                    {"personnage": d.personnage, "replique": f"Nouvelle replique pour la scene {s.order}."}
+                    for d in s.dialogues
+                ],
+            }
             for s in sample_script.scenes
         ],
-        "conclusion": "Desormais tu ne regarderas plus un film pareil.",
-        "call_to_action": "Quel film veux-tu qu'on decortique ensuite ? Dis-le en commentaire.",
     }
 
 
@@ -126,20 +170,38 @@ class TestBuildUserPrompt:
     def test_prompt_forbids_changing_structure(self, sample_script):
         evaluation = _make_score(60)
         prompt = RewriteEngine._build_user_prompt(sample_script, evaluation)
-        assert "sujet" in prompt.lower()
-        assert "nombre de scenes" in prompt.lower() or "nombre de scènes" in prompt.lower()
+        assert "subject" in prompt.lower()
+        assert "scene count" in prompt.lower()
+
+    def test_prompt_contains_scene_dialogues(self, sample_script):
+        evaluation = _make_score(60)
+        prompt = RewriteEngine._build_user_prompt(sample_script, evaluation)
+        assert "Voici un secret que les studios cachent." in prompt
+
+    def test_prompt_language_follows_script_language(self, sample_script):
+        """Sprint 34 — la langue des repliques réécrites suit script.language,
+        elle n'est plus hardcodée en français."""
+        import dataclasses
+        evaluation = _make_score(60)
+
+        fr_prompt = RewriteEngine._build_user_prompt(sample_script, evaluation)
+        assert "Write repliques in French." in fr_prompt
+
+        en_script = dataclasses.replace(sample_script, language="en")
+        en_prompt = RewriteEngine._build_user_prompt(en_script, evaluation)
+        assert "Write repliques in English." in en_prompt
 
 
 # ── Tests : extract_json ────────────────────────────────────────────────────────
 
 class TestExtractJson:
     def test_raw_json(self):
-        text = '{"hook": "x"}'
+        text = '{"scenes": []}'
         assert RewriteEngine._extract_json(text) == text
 
     def test_markdown_block(self):
-        text = '```json\n{"hook": "x"}\n```'
-        assert RewriteEngine._extract_json(text) == '{"hook": "x"}'
+        text = '```json\n{"scenes": []}\n```'
+        assert RewriteEngine._extract_json(text) == '{"scenes": []}'
 
 
 # ── Tests : build_script_from_json ──────────────────────────────────────────────
@@ -160,26 +222,39 @@ class TestBuildScriptFromJson:
         for original, new in zip(sample_script.scenes, result.scenes):
             assert new.order == original.order
             assert new.duration_seconds == original.duration_seconds
-            assert new.title == original.title
-            assert new.visual_description == original.visual_description
-            assert new.image_prompt == original.image_prompt
-            assert new.animation_notes == original.animation_notes
-            assert new.sound_effects == original.sound_effects
-            # Seule la narration change
-            assert new.narration != original.narration
+            assert new.scene == original.scene
+            assert new.transition == original.transition
+            assert len(new.dialogues) == len(original.dialogues)
+            for orig_d, new_d in zip(original.dialogues, new.dialogues):
+                assert new_d.personnage == orig_d.personnage  # jamais modifié
+                assert new_d.replique != orig_d.replique  # seule la replique change
 
-    def test_rewrite_updates_hook_intro_conclusion_cta(self, sample_script, valid_rewrite_json):
+    def test_rewrite_updates_hook_and_cta(self, sample_script, valid_rewrite_json):
+        """hook/call_to_action sont dérivés des scènes première/dernière —
+        elles doivent refléter les nouvelles répliques."""
         result = RewriteEngine._build_script_from_json(valid_rewrite_json, sample_script)
-        assert result.hook == valid_rewrite_json["hook"]
-        assert result.introduction == valid_rewrite_json["introduction"]
-        assert result.conclusion == valid_rewrite_json["conclusion"]
-        assert result.call_to_action == valid_rewrite_json["call_to_action"]
+        assert result.hook == "Nouvelle replique pour la scene 1."
+        assert result.call_to_action == "Nouvelle replique pour la scene 3."
 
-    def test_missing_field_raises(self, sample_script, valid_rewrite_json):
-        data = dict(valid_rewrite_json)
-        del data["hook"]
-        with pytest.raises(ValueError, match="hook"):
-            RewriteEngine._build_script_from_json(data, sample_script)
+    def test_multi_dialogue_scene_preserves_personnage_and_count(self, multi_dialogue_script):
+        rewrite = {
+            "scenes": [{
+                "order": 1,
+                "dialogues": [
+                    {"personnage": "Roi", "replique": "Nouvelle question du roi ?"},
+                    {"personnage": "Conseiller", "replique": "Nouvelle reponse du conseiller."},
+                ],
+            }],
+        }
+        result = RewriteEngine._build_script_from_json(rewrite, multi_dialogue_script)
+        assert len(result.scenes[0].dialogues) == 2
+        assert result.scenes[0].dialogues[0].personnage == "Roi"
+        assert result.scenes[0].dialogues[0].replique == "Nouvelle question du roi ?"
+        assert result.scenes[0].dialogues[1].personnage == "Conseiller"
+
+    def test_missing_field_raises(self, sample_script):
+        with pytest.raises(ValueError, match="scenes"):
+            RewriteEngine._build_script_from_json({}, sample_script)
 
     def test_scene_count_mismatch_raises(self, sample_script, valid_rewrite_json):
         data = dict(valid_rewrite_json)
@@ -200,6 +275,16 @@ class TestBuildScriptFromJson:
         with pytest.raises(ValueError, match="liste"):
             RewriteEngine._build_script_from_json(data, sample_script)
 
+    def test_dialogue_count_mismatch_raises(self, multi_dialogue_script):
+        rewrite = {
+            "scenes": [{
+                "order": 1,
+                "dialogues": [{"personnage": "Roi", "replique": "Une seule replique."}],  # 1 au lieu de 2
+            }],
+        }
+        with pytest.raises(ValueError, match="dialogues"):
+            RewriteEngine._build_script_from_json(rewrite, multi_dialogue_script)
+
 
 # ── Tests : rewrite (décision garder/rejeter) ──────────────────────────────────
 
@@ -212,7 +297,7 @@ class TestRewriteDecision:
         original_eval = _make_score(60)
         result = engine.rewrite(sample_script, original_eval)
 
-        assert result.hook == valid_rewrite_json["hook"]
+        assert result.hook == "Nouvelle replique pour la scene 1."
         assert result.metadata["rewritten"] is True
         assert result.metadata["rewrite_score_before"] == 60
         assert result.metadata["rewrite_score_after"] == 75

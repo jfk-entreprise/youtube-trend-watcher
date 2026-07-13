@@ -42,5 +42,6 @@
     "monetization": ["formations en ligne", "newsletters premium", "partenariats outils IA"],
     "version": "1.0"
   },
-  "niche_keywords": ["ia", "intelligence artificielle", "ai", "tech", "technologie", "robot", "chatgpt", "llm"]
+  "niche_keywords": ["ia", "intelligence artificielle", "ai", "tech", "technologie", "robot", "chatgpt", "llm"],
+  "market": "FR"
 }

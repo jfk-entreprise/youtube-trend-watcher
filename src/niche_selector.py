@@ -49,6 +49,8 @@ class ActiveNicheRecord:
     niche_score: float
     first_selected_date: str   # ISO (YYYY-MM-DD) — date de première sélection
     last_confirmed_date: str   # ISO (YYYY-MM-DD) — dernier run où elle a été confirmée
+    market: str = "FR"         # Marché ciblé ('FR' | 'US'...) — Sprint 34 : une même
+                               # niche peut être active simultanément sur plusieurs marchés.
     metadata: Dict[str, Any] = field(default_factory=dict)
 
 
@@ -113,6 +115,7 @@ class SupabaseNicheSelectionStore(NicheSelectionStore):
                     niche_score=float(row["niche_score"]),
                     first_selected_date=str(row["first_selected_date"]),
                     last_confirmed_date=str(row["last_confirmed_date"]),
+                    market=str(row.get("market") or "FR"),
                     metadata=dict(row.get("metadata") or {}),
                 ))
             except Exception as exc:
@@ -120,9 +123,12 @@ class SupabaseNicheSelectionStore(NicheSelectionStore):
         return records
 
     def save_active(self, records: List[ActiveNicheRecord]) -> None:
-        current_names = {r.niche_name for r in records}
-        existing_rows = self._client.table(self._table).select("niche_name").execute().data
-        existing_names = {row["niche_name"] for row in existing_rows}
+        # Clé naturelle (niche_name, market) — Sprint 34 : une même niche peut
+        # être active simultanément sur plusieurs marchés, donc niche_name seul
+        # ne suffit plus à identifier une ligne.
+        current_keys = {(r.niche_name, r.market) for r in records}
+        existing_rows = self._client.table(self._table).select("niche_name,market").execute().data
+        existing_keys = {(row["niche_name"], row.get("market") or "FR") for row in existing_rows}
 
         if records:
             rows = [
@@ -131,14 +137,15 @@ class SupabaseNicheSelectionStore(NicheSelectionStore):
                     "niche_score": r.niche_score,
                     "first_selected_date": r.first_selected_date,
                     "last_confirmed_date": r.last_confirmed_date,
+                    "market": r.market,
                     "metadata": r.metadata,
                 }
                 for r in records
             ]
-            self._client.table(self._table).upsert(rows, on_conflict="niche_name").execute()
+            self._client.table(self._table).upsert(rows, on_conflict="niche_name,market").execute()
 
-        for name in existing_names - current_names:
-            self._client.table(self._table).delete().eq("niche_name", name).execute()
+        for name, market in existing_keys - current_keys:
+            self._client.table(self._table).delete().eq("niche_name", name).eq("market", market).execute()
 
 
 class FallbackNicheSelectionStore(NicheSelectionStore):
@@ -219,12 +226,19 @@ class NicheSelector:
         self._replacement_threshold = replacement_threshold
 
     def select_daily_niches(
-        self, candidates: List[Niche], today: Optional[date] = None
+        self, candidates: List[Niche], today: Optional[date] = None, market: str = "FR"
     ) -> List[Niche]:
         """
         Retourne au maximum `max_niches` Niche pour le run du jour, en gardant
         les niches déjà actives sauf si une niche non-active les dépasse
         significativement (> replacement_threshold).
+
+        `market` isole cet appel des autres marchés (Sprint 34) : seuls les
+        `ActiveNicheRecord` de ce marché sont considérés pour la conservation/
+        remplacement, et les enregistrements des AUTRES marchés sont toujours
+        repassés tels quels à `save_active()` (qui remplace l'état persisté
+        dans son intégralité) — un appel pour le marché US ne doit jamais
+        effacer l'état déjà sauvegardé pour le marché FR, et réciproquement.
         """
         if not candidates:
             raise RuntimeError("Aucune niche candidate à sélectionner.")
@@ -233,7 +247,9 @@ class NicheSelector:
         candidates_by_name = {n.name: n for n in candidates}
         ranked_candidates = sorted(candidates, key=lambda n: n.niche_score, reverse=True)
 
-        active_records = self._store.load_active()
+        all_records = self._store.load_active()
+        other_market_records = [r for r in all_records if r.market != market]
+        active_records = [r for r in all_records if r.market == market]
         active_names = {r.niche_name for r in active_records}
 
         kept_names: List[str] = []
@@ -286,9 +302,10 @@ class NicheSelector:
                 niche_score=niche.niche_score,
                 first_selected_date=prior.first_selected_date if prior else today_str,
                 last_confirmed_date=today_str,
+                market=market,
                 metadata=dict(prior.metadata) if prior else {},
             ))
-        self._store.save_active(new_records)
+        self._store.save_active(other_market_records + new_records)
 
         for niche in selected:
             status = "conservée" if niche.name in records_by_name else "nouvelle"

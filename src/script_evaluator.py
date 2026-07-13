@@ -293,11 +293,7 @@ class ScriptEvaluator(BaseEvaluator):
         """Concatène tout le texte du script pour analyse."""
         parts = [
             script.title or "",
-            script.hook or "",
-            script.introduction or "",
-            *(s.narration or "" for s in script.scenes),
-            script.conclusion or "",
-            script.call_to_action or "",
+            *(s.narration_text or "" for s in script.scenes),
         ]
         return " ".join(parts)
 
@@ -386,11 +382,14 @@ class ScriptEvaluator(BaseEvaluator):
         else:
             score -= 1.0
 
-        # Titres de scènes clairs (pas génériques)
-        generic_titles = {"scene", "section", "partie", "part", "introduction", "conclusion"}
-        scene_titles = set(s.title.lower().strip() for s in script.scenes)
-        generic_overlap = len(scene_titles & generic_titles)
-        if generic_overlap > len(script.scenes) * 0.3:
+        # Richesse du storyboard cinématographique (Sprint 32.1) — chaque scène
+        # doit avoir un décor/composition/personnages/lumière/caméra/notes de
+        # réalisateur substantiels, pas de placeholder générique à un mot.
+        thin_scenes = sum(
+            1 for s in script.scenes
+            if self._scene_description_word_count(s) < 30
+        )
+        if thin_scenes > len(script.scenes) * 0.3:
             score -= 1.0
         else:
             score += 1.0
@@ -512,9 +511,9 @@ class ScriptEvaluator(BaseEvaluator):
         # Rythme varié = bonne rétention
         score += rhythm_score * 0.2
 
-        # Titres de scènes variés
-        titles = [s.title.lower().strip() for s in script.scenes]
-        if len(set(titles)) >= len(titles) * 0.7:
+        # Descriptions de scènes variées (pas de répétition)
+        descriptions = [self._scene_description_text(s).lower().strip() for s in script.scenes]
+        if len(set(descriptions)) >= len(descriptions) * 0.7:
             score += 1.0
 
         # Durée optimale
@@ -526,17 +525,43 @@ class ScriptEvaluator(BaseEvaluator):
         elif duration < 60:  # < 1 min
             score -= 0.5
 
-        # Progression narrative : présence de climax
+        # Progression narrative : présence de climax (recherché dans l'ensemble
+        # des champs du storyboard — decor, ambiance, notes de realisateur —
+        # pas dans un simple titre de scene, Sprint 32.1)
         has_climax = any(
-            "révél" in s.title.lower()
-            or "rebondissement" in s.title.lower()
-            or "clé" in s.title.lower()
+            "révél" in self._scene_description_text(s).lower()
+            or "rebondissement" in self._scene_description_text(s).lower()
+            or "clé" in self._scene_description_text(s).lower()
+            or "reveal" in self._scene_description_text(s).lower()
+            or "twist" in self._scene_description_text(s).lower()
             for s in script.scenes
         )
         if has_climax:
             score += 1.0
 
         return max(0.0, min(10.0, score))
+
+    # ── Storyboard cinématographique (Sprint 32.1) ────────────────────────────
+
+    _DESCRIPTION_FIELDS = (
+        "setting", "composition", "characters", "lighting", "camera",
+        "mood", "symbolism", "director_notes", "viewer_emotion",
+    )
+
+    @classmethod
+    def _scene_description_text(cls, scene) -> str:
+        """Concatène les 9 champs de SceneDescription — pour les heuristiques
+        de richesse/variété/climax qui portaient auparavant sur un simple
+        texte de scène (Sprint 32.1)."""
+        desc = scene.scene.description
+        return " ".join(getattr(desc, field) for field in cls._DESCRIPTION_FIELDS)
+
+    @classmethod
+    def _scene_description_word_count(cls, scene) -> int:
+        """Nombre de mots cumulés sur les 9 champs de SceneDescription —
+        mesure de richesse du storyboard (decor, composition, personnages,
+        lumière, mise en scène, notes de réalisateur...)."""
+        return len(cls._scene_description_text(scene).split())
 
     def _score_emotion(self, text: str) -> float:
         """

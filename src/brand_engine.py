@@ -34,6 +34,7 @@ logger = logging.getLogger(__name__)
 
 _VALID_LANGUAGES = {"fr", "en", "es", "pt", "de", "it", "ar", "zh", "ja", "ko"}
 _VALID_VOICE_SPEEDS = {"Rapide", "Modéré", "Lent"}
+_VALID_MARKETS = {"FR", "US"}
 
 
 # ── BrandProfile ──────────────────────────────────────────────────────────────
@@ -91,6 +92,11 @@ class BrandProfile:
     # détectée (Niche.name) à cette chaîne — Sprint 28 (Studio de production).
     niche_keywords: List[str] = dataclass_field(default_factory=list)
 
+    # Marché ciblé par cette chaîne ('FR' | 'US'...) — Sprint 34 : sert à
+    # sélectionner la marque correspondant au marché de la niche du jour
+    # (voir scripts/run_daily_pipeline.py::select_brand_for_niche).
+    market: str = "FR"
+
 
 # ── Sérialisation ─────────────────────────────────────────────────────────────
 
@@ -123,6 +129,7 @@ def _profile_from_dict(data: Dict[str, Any]) -> BrandProfile:
         thumbnail_style=str(data.get("thumbnail_style", "")),
         metadata=dict(data.get("metadata", {})),
         niche_keywords=list(data.get("niche_keywords", [])),
+        market=str(data.get("market", "FR")),
     )
 
 
@@ -155,6 +162,7 @@ def _profile_to_dict(profile: BrandProfile) -> Dict[str, Any]:
         "thumbnail_style": profile.thumbnail_style,
         "metadata": dict(profile.metadata),
         "niche_keywords": list(profile.niche_keywords),
+        "market": profile.market,
     }
 
 
@@ -181,6 +189,12 @@ def validate_profile(profile: BrandProfile) -> List[str]:
         issues.append(
             f"'primary_language' non reconnu : '{profile.primary_language}'. "
             f"Valeurs acceptées : {sorted(_VALID_LANGUAGES)}"
+        )
+
+    if profile.market not in _VALID_MARKETS:
+        issues.append(
+            f"'market' non reconnu : '{profile.market}'. "
+            f"Valeurs acceptées : {sorted(_VALID_MARKETS)}"
         )
 
     if profile.voice_speed not in _VALID_VOICE_SPEEDS:

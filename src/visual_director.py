@@ -508,14 +508,14 @@ class VisualDirector:
         if script is None:
             return ""
 
-        lines: List[str] = ["", "=== CONTINUITE VISUELLE (script complet, dans l'ordre) ==="]
+        lines: List[str] = ["", "=== VISUAL CONTINUITY (full script, in order) ==="]
         for scene in sorted(script.scenes, key=lambda s: s.order):
-            marker = " <<< SCENE ACTUELLE" if scene.order == current_order else ""
-            lines.append(f"  [{scene.order}] {scene.narration}{marker}")
+            marker = " <<< CURRENT SCENE" if scene.order == current_order else ""
+            lines.append(f"  [{scene.order}] ({scene.scene.type}) {scene.narration_text}{marker}")
 
         if self._shot_plans_history:
             lines.append("")
-            lines.append("=== PLANS DEJA ETABLIS (a faire evoluer naturellement, pas de rupture) ===")
+            lines.append("=== SHOT PLANS ALREADY ESTABLISHED (evolve naturally, no abrupt break) ===")
             for order in sorted(self._shot_plans_history):
                 plan = self._shot_plans_history[order]
                 lines.append(
@@ -525,11 +525,11 @@ class VisualDirector:
                 )
         else:
             lines.append("")
-            lines.append("(Aucun plan etabli pour l'instant — cette scene peut poser les bases du langage visuel.)")
+            lines.append("(No shot plan established yet — this scene may set the visual language.)")
 
         return "\n".join(lines)
 
-    # ── Construction du prompt ────────────────────────────────────────────────
+    # ── Construction du prompt (en anglais, Sprint 32.1 — cf. dernière consigne) ─
 
     def _build_user_prompt(
         self,
@@ -537,27 +537,36 @@ class VisualDirector:
         script_scene: ScriptScene,
         brand_profile: Optional[BrandProfile],
     ) -> str:
+        desc = script_scene.scene.description
         lines: List[str] = [
-            "Prends les decisions de realisation (ShotPlan) pour la scene suivante.",
-            "Raisonne d'abord en silence sur l'emotion, le moment a figer et la hierarchie visuelle, "
-            "puis rends uniquement le JSON du contrat ShotPlan, dans l'ordre exact du schema.",
+            "Make the cinematography decisions (ShotPlan) for the following scene.",
+            "First reason silently about the emotion, the moment to freeze, and the visual hierarchy, "
+            "then return ONLY the ShotPlan contract JSON, in the exact order of the schema.",
             "",
-            "=== SCENE DU SCRIPT (scene courante) ===",
-            f"  Titre       : {script_scene.title}",
-            f"  Narration   : {script_scene.narration}",
-            f"  Description : {script_scene.visual_description}",
-            f"  Duree       : {script_scene.duration_seconds}s",
+            "=== SCRIPT SCENE (current) — structured storyboard fields ===",
+            f"  Type             : {script_scene.scene.type}",
+            f"  Setting          : {desc.setting}",
+            f"  Composition      : {desc.composition}",
+            f"  Characters       : {desc.characters}",
+            f"  Lighting         : {desc.lighting}",
+            f"  Camera           : {desc.camera}",
+            f"  Mood             : {desc.mood}",
+            f"  Symbolism        : {desc.symbolism}",
+            f"  Director's notes : {desc.director_notes}",
+            f"  Viewer emotion   : {desc.viewer_emotion}",
+            f"  Dialogues        : {script_scene.narration_text}",
+            f"  Duration         : {script_scene.duration_seconds}s",
         ]
         if brand_profile is not None:
             lines += [
                 "",
-                "=== IDENTITE DE MARQUE ===",
-                f"  Marque      : {brand_profile.name}",
+                "=== BRAND IDENTITY ===",
+                f"  Brand       : {brand_profile.name}",
                 f"  Tone        : {brand_profile.tone}",
-                f"  Style visuel: {brand_profile.visual_style}",
+                f"  Visual style: {brand_profile.visual_style}",
             ]
         lines.append(self._build_continuity_block(script, script_scene.order))
-        lines += ["", "Genere maintenant le JSON du contrat ShotPlan."]
+        lines += ["", "Generate the ShotPlan contract JSON now."]
         return "\n".join(lines)
 
     # ── Extraction et validation JSON ────────────────────────────────────────
@@ -637,7 +646,8 @@ class VisualDirector:
         "json_invalid", "json_incomplete", "timeout", "api_error",
         "validation_failed", "empty_response") — utile pour le diagnostic.
         """
-        focal_point = script_scene.title.strip() or "Main Subject"
+        setting = script_scene.scene.description.setting.strip()
+        focal_point = setting[:60] or "Main Subject"
         color_palette = _DEFAULT_COLOR_PALETTE
         if brand_profile is not None and brand_profile.visual_style:
             color_palette = f"{brand_profile.visual_style.strip()} tones"
@@ -652,7 +662,7 @@ class VisualDirector:
             color_palette=color_palette,
             focal_point=focal_point,
             visual_priority=[focal_point],
-            thumbnail_moment=script_scene.visual_description.strip() or script_scene.narration.strip(),
+            thumbnail_moment=setting or script_scene.narration_text.strip(),
             cinematic_goal="Communicate the core moment of the scene with instant clarity.",
             metadata={
                 "provider": "fallback_heuristic",

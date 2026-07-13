@@ -3,7 +3,7 @@
 Daily Pipeline — Studio de production autonome (Sprint 28).
 
 Orchestre la chaîne complète Collecte → Analyse → Décision → Création en
-8 étapes, en composant les moteurs existants SANS EN MODIFIER AUCUN, pour
+9 étapes, en composant les moteurs existants SANS EN MODIFIER AUCUN, pour
 produire exactement 2 vidéos/jour (une par niche/chaîne active) :
 
     1.  Chargement des données (Supabase en source principale, CsvStorage
@@ -14,27 +14,34 @@ produire exactement 2 vidéos/jour (une par niche/chaîne active) :
         une niche n'est remplacée que par une candidate significativement
         meilleure (voir src/niche_selector.py).
     4.  Sélection des meilleures opportunités par niche active (max 3/niche).
-    5.  Production complète par niche (répétée une fois par niche active,
+    5.  Filtrage anti-doublon (TopicHistoryFilter, Sprint 33, persistance
+        `topic_history`) — écarte les opportunités dont le sujet ressemble
+        trop à une vidéo produite récemment dans la même niche ; un sujet
+        modérément proche est conservé mais annoté "sequel_of" pour que le
+        script généré construise une vraie SUITE plutôt qu'un remake
+        (voir src/topic_history.py).
+    6.  Production complète par niche (répétée une fois par niche active,
         2 fois/jour au maximum) : CreativeBrief → scripts LLM DeepSeek →
         évaluation → réécriture optionnelle → VisualPlan → ShotPlan
         (VisualDirector) → ImagePrompt → AnimationPrompt. La chaîne (BrandProfile)
         de chaque niche est déterminée via BrandProfile.niche_keywords
         (select_brand_for_niche), avec repli sur --brand si aucun mapping.
-    6.  Construction du package de production propre par niche
+    7.  Construction du package de production propre par niche
         (outputs/YYYY-MM-DD/niche_XX/{final_script.json, image_prompts/,
         animation_prompts/, report.md} — ProductionPackageBuilder) + sauvegarde
         des sorties techniques internes (shot_plans, scripts intermédiaires,
-        benchmark.json, rapport.md) séparément.
-    7.  Envoi vers Supabase Storage (StorageUploader, Sprint 30 — remplace
+        benchmark.json, rapport.md) séparément + enregistrement du sujet
+        produit dans `topic_history` (pour le filtrage anti-doublon de demain).
+    8.  Envoi vers Supabase Storage (StorageUploader, Sprint 30 — remplace
         Google Drive, qui n'a aucun quota de stockage utilisable par un
         compte de service) — upload réel si SUPABASE_URL/SUPABASE_SERVICE_ROLE_KEY
         sont configurés (SupabaseStorageUploader), sinon NoOpStorageUploader
         (aucune régression). Échec d'upload capturé : n'interrompt jamais le
         pipeline.
-    8.  Notification du résumé quotidien (NotificationService) — envoi réel
+    9.  Notification du résumé quotidien (NotificationService) — envoi réel
         via Telegram si TELEGRAM_BOT_TOKEN/TELEGRAM_CHAT_ID sont configurés
         (TelegramNotificationService, avec lien direct vers le package
-        Supabase Storage de l'étape 7 quand l'upload a réussi), sinon
+        Supabase Storage de l'étape 8 quand l'upload a réussi), sinon
         LoggingNotificationService journalise le résumé formaté. Échec
         réseau/API capturé : n'interrompt jamais le pipeline.
 
@@ -90,6 +97,7 @@ from src.niche_intelligence import Niche, NicheAnalyzer
 from src.niche_selector import NicheSelector
 from src.opportunity_engine import Opportunity, OpportunityEngine
 from src.production_package_builder import NicheProductionResult, ProductionPackageBuilder
+from src.topic_history import TopicHistoryFilter, TopicHistoryStore, TopicRecord, build_topic_history_store
 from src.supabase_storage_uploader import UploadResult, build_storage_uploader
 from src.notification_service import (
     ChannelSummary,
@@ -121,7 +129,7 @@ MAX_NICHES = 2
 MAX_OPPORTUNITIES_PER_NICHE = 3
 MAX_SCRIPTS_PER_OPPORTUNITY = 2  # nombre de CreativeBrief transformés en script LLM
 
-TOTAL_STEPS = 8
+TOTAL_STEPS = 9
 DEFAULT_CSV_FALLBACK = Path("data/videos.csv")
 
 # Identité des générateurs de secours (Sprint 26/29.1) — sert à distinguer
@@ -219,31 +227,39 @@ def step_build_knowledge(timelines):
 
 # ── Étape 3 : Détection des niches candidates + sélection des niches actives ─
 
-def step_detect_niches(mirror_csv: Path) -> List[Niche]:
+def step_detect_niches(mirror_csv: Path, market: Optional[str] = None) -> List[Niche]:
     """
     Retourne TOUTES les niches candidates (triées par score décroissant) —
     aucune troncature ici. C'est NicheSelector (step_select_active_niches)
     qui décide, à partir de ce classement, des niches réellement actives
     aujourd'hui (règles business : conservation vs remplacement significatif).
+
+    `market` (Sprint 34) restreint le calcul aux vidéos collectées pour ce
+    marché (VideoSnapshot.market) — permet un classement de niches
+    indépendant par marché (voir src/niche_intelligence.py::NicheAnalyzer).
     """
-    analyzer = NicheAnalyzer(csv_path=mirror_csv)
+    analyzer = NicheAnalyzer(csv_path=mirror_csv, market=market)
     all_niches = analyzer.analyze()
     if not all_niches:
-        raise RuntimeError("Aucune niche détectée à partir des données chargées.")
+        raise RuntimeError(
+            f"Aucune niche détectée à partir des données chargées"
+            f"{f' pour le marché {market}' if market else ''}."
+        )
     for n in all_niches[:10]:
         logger.info("  Niche candidate : %-30s score=%.3f volume=%d", n.name, n.niche_score, n.volume)
     return all_niches
 
 
 def step_select_active_niches(
-    mirror_csv: Path, selector: NicheSelector
+    mirror_csv: Path, selector: NicheSelector, market: str
 ) -> tuple[List[Niche], List[Niche]]:
     """
-    Détecte les candidates puis applique NicheSelector pour obtenir les
-    niches actives du jour (persistées dans `active_niches`, Sprint 28).
+    Détecte les candidates du marché `market` puis applique NicheSelector
+    pour obtenir la niche active du jour pour ce marché (persistée dans
+    `active_niches`, isolée par marché depuis le Sprint 34).
     """
-    candidates = step_detect_niches(mirror_csv)
-    selected = selector.select_daily_niches(candidates)
+    candidates = step_detect_niches(mirror_csv, market=market)
+    selected = selector.select_daily_niches(candidates, market=market)
     return candidates, selected
 
 
@@ -287,7 +303,32 @@ def step_select_opportunities(
     return selected
 
 
-# ── Étape 5 : CreativeBrief ──────────────────────────────────────────────────
+# ── Étape 5 : Filtrage anti-doublon (sujets déjà produits récemment) ────────
+
+def step_filter_recent_topics(
+    opportunities_by_niche: Dict[str, List[Opportunity]],
+    topic_filter: TopicHistoryFilter,
+    market: str = "FR",
+) -> Dict[str, List[Opportunity]]:
+    """
+    Écarte, pour chaque niche, les opportunités dont le titre ressemble trop
+    (similarité lexicale) à un sujet déjà produit récemment dans la même
+    niche ET le même marché (voir src/topic_history.py — TopicHistoryFilter,
+    Sprint 34). Un sujet modérément proche est conservé mais annoté
+    "sequel_of" dans Opportunity.metadata, pour que le script généré
+    construise une vraie suite plutôt qu'un remake.
+
+    Ne lève jamais si une niche perd toutes ses opportunités : le filtre
+    garde alors le candidat le moins similaire (voir
+    TopicHistoryFilter.filter_opportunities) plutôt que de vider la niche.
+    """
+    filtered: Dict[str, List[Opportunity]] = {}
+    for niche_name, opportunities in opportunities_by_niche.items():
+        filtered[niche_name] = topic_filter.filter_opportunities(opportunities, niche_name, market=market)
+    return filtered
+
+
+# ── Étape 6 : CreativeBrief ──────────────────────────────────────────────────
 
 def step_generate_briefs(opportunities: List[Opportunity]) -> Dict[str, List[CreativeBrief]]:
     briefs_map = CreativeEngine().generate_all(opportunities)
@@ -296,7 +337,7 @@ def step_generate_briefs(opportunities: List[Opportunity]) -> Dict[str, List[Cre
     return briefs_map
 
 
-# ── Étape 6 : Scripts LLM (DeepSeek) ─────────────────────────────────────────
+# ── Étape 7 : Scripts LLM (DeepSeek) ─────────────────────────────────────────
 
 def step_generate_scripts(
     opportunities: List[Opportunity],
@@ -337,7 +378,7 @@ def step_generate_scripts(
     return entries
 
 
-# ── Étape 7 : Évaluation ─────────────────────────────────────────────────────
+# ── Étape 8 : Évaluation ─────────────────────────────────────────────────────
 
 def step_evaluate_scripts(
     entries: List[Dict[str, Any]], provider: str, use_llm_judge: bool
@@ -366,7 +407,7 @@ def pick_best_entry(entries: List[Dict[str, Any]]) -> Dict[str, Any]:
     return max(entries, key=lambda e: e["heuristic_score"].composite_score)
 
 
-# ── Étape 8+9 : Réécriture + réévaluation (RewriteEngine) ───────────────────
+# ── Étape 9+10 : Réécriture + réévaluation (RewriteEngine) ──────────────────
 
 def step_rewrite_best_script(
     best_entry: Dict[str, Any], provider: str
@@ -408,7 +449,7 @@ def step_rewrite_best_script(
     }
 
 
-# ── Étape 10 : VisualPlan ────────────────────────────────────────────────────
+# ── Étape 11 : VisualPlan ───────────────────────────────────────────────────
 
 def step_generate_visual_plan(script: Script):
     plan = VisualEngine().generate(script)
@@ -417,7 +458,7 @@ def step_generate_visual_plan(script: Script):
     return plan
 
 
-# ── Étape 11 : ShotPlan — décisions de réalisation (VisualDirector, Sprint 26) ─
+# ── Étape 12 : ShotPlan — décisions de réalisation (VisualDirector, Sprint 26) ─
 
 def step_generate_shot_plans(
     script: Script, brand: BrandProfile, provider: str
@@ -478,7 +519,7 @@ def _apply_shot_plan_to_visual_scene(visual_scene: VisualScene, shot_plan: Optio
     )
 
 
-# ── Étape 12 : Prompts image Nano Banana (dirigés par le ShotPlan) ──────────
+# ── Étape 13 : Prompts image Nano Banana (dirigés par le ShotPlan) ──────────
 
 def step_generate_image_prompts(
     script: Script, visual_plan, shot_plans: Dict[int, ShotPlan], brand: BrandProfile, provider: str
@@ -514,7 +555,7 @@ def step_generate_image_prompts(
     return entries
 
 
-# ── Étape 13 : Prompts d'animation (Veo/Kling/Runway, dirigés par le ShotPlan) ─
+# ── Étape 14 : Prompts d'animation (Veo/Kling/Runway, dirigés par le ShotPlan) ─
 
 def step_generate_animation_prompts(
     script: Script, visual_plan, shot_plans: Dict[int, ShotPlan],
@@ -566,21 +607,27 @@ def _keyword_matches_niche(niche_name_lower: str, keyword_lower: str) -> bool:
     )
 
 
-def select_brand_for_niche(niche: Niche, brand_engine: BrandEngine, default_brand_id: str) -> BrandProfile:
+def select_brand_for_niche(
+    niche: Niche, brand_engine: BrandEngine, default_brand_id: str, market: str,
+) -> BrandProfile:
     """
     Fait correspondre une Niche détectée à une chaîne via BrandProfile.niche_keywords
-    (correspondance mot entier, insensible à la casse, dans les deux sens).
-    Retombe sur `default_brand_id` (--brand) si aucun mapping ne matche.
+    (correspondance mot entier, insensible à la casse, dans les deux sens),
+    parmi les marques du marché `market` uniquement (Sprint 34 — une niche
+    "IA" côté US ne doit jamais recevoir une marque française, même si son
+    nom matche). Retombe sur `default_brand_id` si aucun mapping ne matche.
     """
     niche_name_lower = niche.name.lower()
     for profile in brand_engine.list():
+        if profile.market != market:
+            continue
         if any(_keyword_matches_niche(niche_name_lower, kw.lower()) for kw in profile.niche_keywords):
-            logger.info("  Niche '%s' → chaîne '%s' (mapping niche_keywords).", niche.name, profile.id)
+            logger.info("  Niche '%s' (%s) → chaîne '%s' (mapping niche_keywords).", niche.name, market, profile.id)
             return profile
 
     logger.warning(
-        "  Aucun mapping niche_keywords pour '%s' — repli sur la marque par défaut '%s'.",
-        niche.name, default_brand_id,
+        "  Aucun mapping niche_keywords pour '%s' (marché %s) — repli sur la marque par défaut '%s'.",
+        niche.name, market, default_brand_id,
     )
     fallback = brand_engine.load(default_brand_id)
     if fallback is None:
@@ -598,14 +645,15 @@ def produce_niche(
     provider: str,
     use_llm_judge: bool,
     do_rewrite: bool,
+    market: str,
 ) -> Dict[str, Any]:
     """
     Produit une vidéo complète (brief → script → réécriture → visuel →
     shot plans → prompts image/animation) pour une seule niche, en composant
     les étapes existantes (aucune n'est modifiée) — appelée une fois par
-    niche active du jour (2 fois/jour au maximum).
+    marché actif du jour (2 fois/jour : 1 US + 1 FR, Sprint 34).
     """
-    brand = select_brand_for_niche(niche, brand_engine, default_brand_id)
+    brand = select_brand_for_niche(niche, brand_engine, default_brand_id, market)
 
     briefs_map = step_generate_briefs(opportunities)
     entries = step_generate_scripts(opportunities, briefs_map, brand, provider)
@@ -631,6 +679,7 @@ def produce_niche(
 
     return {
         "niche": niche,
+        "market": market,
         "brand": brand,
         "entries": entries,
         "best_entry": best_entry,
@@ -649,11 +698,18 @@ def step_build_packages(
     output_dir: Path,
     niche_productions: List[Dict[str, Any]],
     builder: ProductionPackageBuilder,
+    topic_store: Optional[TopicHistoryStore] = None,
 ) -> List[Path]:
     """
     Construit le package de production propre (outputs/YYYY-MM-DD/niche_XX/)
-    de chaque niche produite — voir ProductionPackageBuilder.
+    de chaque niche produite — voir ProductionPackageBuilder — et enregistre
+    le sujet produit dans `topic_history` (Sprint 33) pour que le filtrage
+    anti-doublon de demain en tienne compte. L'échec d'enregistrement
+    (Supabase indisponible, etc.) est capturé : il n'interrompt jamais le
+    pipeline, comme les autres écritures best-effort (Storage, Telegram).
     """
+    store = topic_store or build_topic_history_store()
+    today_str = date.today().isoformat()
     package_dirs: List[Path] = []
     for idx, prod in enumerate(niche_productions, 1):
         package_result = NicheProductionResult(
@@ -665,6 +721,22 @@ def step_build_packages(
             rewrite_result=prod["rewrite_result"],
         )
         package_dirs.append(builder.build(output_dir, idx, package_result))
+
+        try:
+            store.save_topic(TopicRecord(
+                title=prod["final_script"].title,
+                niche=prod["niche"].name,
+                brand_id=prod["brand"].id,
+                produced_date=today_str,
+                source_video_id=prod["best_entry"]["opportunity"].source_video_id,
+                market=prod["market"],
+            ))
+        except Exception as exc:
+            logger.warning(
+                "  Enregistrement topic_history impossible pour '%s' (%s) — "
+                "le filtrage anti-doublon de demain ne verra pas ce sujet.",
+                prod["final_script"].title[:50], exc,
+            )
     return package_dirs
 
 
@@ -988,27 +1060,55 @@ def main() -> None:
 
         profiles, kb = run_step(2, "Construction de la KnowledgeBase", step_build_knowledge, timelines)
 
-        niche_selector = NicheSelector(max_niches=MAX_NICHES)
-        candidate_niches, niches = run_step(
-            3, "Sélection des niches actives (NicheAnalyzer + NicheSelector — persistance)",
-            step_select_active_niches, mirror_csv, niche_selector,
-        )
-
-        opportunities_by_niche = run_step(
-            4, "Sélection des meilleures opportunités",
-            step_select_opportunities, profiles, timelines, kb, niches, args.top,
-        )
-
+        # Sprint 34 : 1 niche PAR MARCHÉ (US=anglais, FR=français) au lieu de
+        # 2 niches choisies globalement par score — chaque marché a son propre
+        # classement de niches (calculé sur ses seules données collectées) et
+        # sa propre marque (BrandProfile.market), garantissant une vidéo
+        # réellement adaptée à chaque marché tous les jours.
+        niche_selector = NicheSelector(max_niches=1)
+        topic_store = build_topic_history_store()
+        topic_filter = TopicHistoryFilter(store=topic_store)
         be = BrandEngine()
+        default_brand_by_market = {"US": "global_us", "FR": args.brand}
+
+        candidate_niches: List[Niche] = []
+        niches: List[Niche] = []
+        niche_market_pairs: List[tuple[str, Niche]] = []
+        opportunities_by_niche: Dict[str, List[Opportunity]] = {}
+
+        for market in ("US", "FR"):
+            market_candidates, market_selected = run_step(
+                3, f"Sélection de la niche active — marché {market}",
+                step_select_active_niches, mirror_csv, niche_selector, market,
+            )
+            niche = market_selected[0]
+            candidate_niches.extend(market_candidates[:10])
+            niches.append(niche)
+            niche_market_pairs.append((market, niche))
+
+            market_opportunities = run_step(
+                4, f"Sélection des meilleures opportunités — marché {market}",
+                step_select_opportunities, profiles, timelines, kb, [niche], args.top,
+            )
+            opportunities = market_opportunities.get(niche.name, [])
+
+            opportunities = run_step(
+                5, f"Filtrage anti-doublon (topic_history) — marché {market}",
+                step_filter_recent_topics, {niche.name: opportunities}, topic_filter, market,
+            )[niche.name]
+
+            opportunities_by_niche[f"{market}:{niche.name}"] = opportunities
+
         niche_productions: List[Dict[str, Any]] = []
-        for idx, niche in enumerate(niches, 1):
-            opportunities = opportunities_by_niche.get(niche.name, [])
+        for idx, (market, niche) in enumerate(niche_market_pairs, 1):
+            opportunities = opportunities_by_niche.get(f"{market}:{niche.name}", [])
             if not opportunities:
-                logger.warning("Niche '%s' sans opportunité — production ignorée pour cette niche.", niche.name)
+                logger.warning("Niche '%s' (marché %s) sans opportunité — production ignorée.", niche.name, market)
                 continue
             prod = run_step(
-                5, f"Production niche {idx}/{len(niches)} — {niche.name}",
-                produce_niche, niche, opportunities, be, args.brand, args.provider, args.llm_judge, args.rewrite,
+                6, f"Production {market} {idx}/{len(niche_market_pairs)} — {niche.name}",
+                produce_niche, niche, opportunities, be, default_brand_by_market[market],
+                args.provider, args.llm_judge, args.rewrite, market,
             )
             niche_productions.append(prod)
 
@@ -1017,8 +1117,8 @@ def main() -> None:
 
         builder = ProductionPackageBuilder()
         package_dirs = run_step(
-            6, "Construction des packages de production + sauvegarde technique",
-            step_build_packages, output_dir, niche_productions, builder,
+            7, "Construction des packages de production + sauvegarde technique + topic_history",
+            step_build_packages, output_dir, niche_productions, builder, topic_store,
         )
         step_save_technical_outputs(output_dir, args, kb, candidate_niches, niches, opportunities_by_niche, niche_productions)
 
@@ -1039,7 +1139,7 @@ def main() -> None:
                 results.append(result)
             return results
 
-        storage_results = run_step(7, "Envoi Supabase Storage (upload des packages de production)", _upload_packages)
+        storage_results = run_step(8, "Envoi Supabase Storage (upload des packages de production)", _upload_packages)
 
         notifier = build_notification_service()
 
@@ -1062,7 +1162,7 @@ def main() -> None:
             )
             return notifier.send_daily_summary(summary)
 
-        telegram_result = run_step(8, "Notification du résumé quotidien", _send_notification)
+        telegram_result = run_step(9, "Notification du résumé quotidien", _send_notification)
 
     except PipelineStepError as exc:
         logger.error("=" * 76)

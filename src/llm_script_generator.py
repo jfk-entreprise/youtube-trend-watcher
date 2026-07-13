@@ -39,7 +39,10 @@ from src.brand_engine import BrandProfile
 from src.creative_engine import CreativeBrief
 from src.llm import LLMMessage, build_llm
 from src.opportunity_engine import Opportunity
-from src.script_engine import Script, ScriptGenerator, ScriptScene
+from src.script_engine import (
+    Dialogue, Scene, SceneDescription, Script, ScriptGenerator, ScriptScene,
+    estimate_scene_duration,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -66,6 +69,20 @@ _TARGET_DURATION_MAX_SEC = 130
 _TARGET_DURATION_SEC = 115  # cible utilisee pour le calcul du nombre de mots
 _TARGET_SCENES_MIN = 8
 _TARGET_SCENES_MAX = 10
+
+# Nom complet de chaque langue supportée — utilisé pour interpoler l'instruction
+# de langue du prompt (Sprint 34 : la langue des repliques suit la marque,
+# elle n'est plus hardcodée en français). Mêmes codes que brand_engine._VALID_LANGUAGES.
+_LANGUAGE_NAMES = {
+    "fr": "French", "en": "English", "es": "Spanish", "pt": "Portuguese",
+    "de": "German", "it": "Italian", "ar": "Arabic", "zh": "Chinese",
+    "ja": "Japanese", "ko": "Korean",
+}
+
+
+def _language_name(code: str) -> str:
+    return _LANGUAGE_NAMES.get(code, code)
+
 
 _BANNED_OPENERS = (
     "imagine", "imaginez",
@@ -397,14 +414,22 @@ class LLMScriptGenerator(ScriptGenerator):
             logger.info("LLM Script Generator — JSON corrigé avec succès.")
 
         # ── Validation de la durée (Sprint 20.1 — format Shorts fixe) ──────────
+        # Sprint 32.1 : le LLM ne fournit plus duration_seconds — la durée
+        # estimée ici vient de estimate_scene_duration() (même logique que
+        # la reconstruction finale), à partir des repliques de chaque scène.
         target_sec = _TARGET_DURATION_SEC
-        estimated_dur = sum(s["duration_seconds"] for s in data["scenes"])
-        total_words = sum(len(s["narration"].split()) for s in data["scenes"])
-        # aussi compter hook + intro + conclusion + cta comme parole
-        total_words += len(data.get("hook", "").split())
-        total_words += len(data.get("introduction", "").split())
-        total_words += len(data.get("conclusion", "").split())
-        total_words += len(data.get("call_to_action", "").split())
+        estimated_dur = sum(
+            estimate_scene_duration(
+                [Dialogue(personnage=str(d.get("personnage", "")), replique=str(d.get("replique", "")))
+                 for d in s.get("dialogues", [])]
+            )
+            for s in data["scenes"]
+        )
+        total_words = sum(
+            len(d.get("replique", "").split())
+            for s in data["scenes"]
+            for d in s.get("dialogues", [])
+        )
 
         dur_diff_pct = abs(estimated_dur - target_sec) / max(target_sec, 1) * 100
         dur_out_of_range = not (_TARGET_DURATION_MIN_SEC <= estimated_dur <= _TARGET_DURATION_MAX_SEC)
@@ -423,16 +448,18 @@ class LLMScriptGenerator(ScriptGenerator):
                 "Validation durée échouée (%ds hors de [%d, %d]s) — seconde génération corrective",
                 estimated_dur, _TARGET_DURATION_MIN_SEC, _TARGET_DURATION_MAX_SEC,
             )
-            # Seconde génération avec un message correctif
+            # Seconde génération avec un message correctif — Sprint 32.1 : la
+            # duree n'est plus un champ que le LLM ecrit, seul le nombre de
+            # mots des dialogues la determine (estimate_scene_duration()).
             correction_msg = (
-                f"⚠️ CORRECTION : Le script precedent durait {estimated_dur} "
-                f"secondes avec {total_words} mots au total, mais la duree cible doit etre "
+                f"⚠️ CORRECTION : Le script precedent representait environ {estimated_dur} "
+                f"secondes de parole ({total_words} mots au total), mais la duree cible doit etre "
                 f"entre {_TARGET_DURATION_MIN_SEC} et {_TARGET_DURATION_MAX_SEC} secondes "
                 f"(environ {expected_words} mots).\n"
                 f"Reecris le script en respectant STRICTEMENT ces contraintes :\n"
-                f"- Somme des duration_seconds entre {_TARGET_DURATION_MIN_SEC}s et {_TARGET_DURATION_MAX_SEC}s\n"
-                f"- Total de mots ≈ {expected_words}\n"
-                f"- Ajuste le nombre de scenes ({_TARGET_SCENES_MIN}-{_TARGET_SCENES_MAX}) et la narration."
+                f"- Total de mots parles (toutes repliques confondues) ≈ {expected_words}\n"
+                f"- Ajuste le nombre de scenes ({_TARGET_SCENES_MIN}-{_TARGET_SCENES_MAX}) et la longueur des dialogues.\n"
+                f"- Ne fournis toujours PAS de champ duration_seconds — il est calcule automatiquement."
             )
             # Ajouter le message de correction au prompt
             messages.append(LLMMessage(role="user", content=correction_msg))
@@ -446,12 +473,18 @@ class LLMScriptGenerator(ScriptGenerator):
             elapsed_ms = elapsed_ms + elapsed_ms2
 
             # Re-vérifier la durée après correction
-            estimated_dur2 = sum(s["duration_seconds"] for s in data["scenes"])
-            total_words2 = sum(len(s["narration"].split()) for s in data["scenes"])
-            total_words2 += len(data.get("hook", "").split())
-            total_words2 += len(data.get("introduction", "").split())
-            total_words2 += len(data.get("conclusion", "").split())
-            total_words2 += len(data.get("call_to_action", "").split())
+            estimated_dur2 = sum(
+                estimate_scene_duration(
+                    [Dialogue(personnage=str(d.get("personnage", "")), replique=str(d.get("replique", "")))
+                     for d in s.get("dialogues", [])]
+                )
+                for s in data["scenes"]
+            )
+            total_words2 = sum(
+                len(d.get("replique", "").split())
+                for s in data["scenes"]
+                for d in s.get("dialogues", [])
+            )
 
             dur_diff_pct2 = abs(estimated_dur2 - target_sec) / max(target_sec, 1) * 100
             logger.info(
@@ -558,61 +591,82 @@ class LLMScriptGenerator(ScriptGenerator):
         creative_brief: CreativeBrief,
         brand_profile: BrandProfile,
     ) -> str:
-        """Construit le prompt utilisateur à partir des données d'entrée."""
+        """Construit le prompt utilisateur à partir des données d'entrée (en anglais, Sprint 32.1)."""
         # Sprint 20.1 : cible fixe format Shorts (100-130s / 8-10 scenes),
         # independamment de creative_brief.duration_seconds (format long/standard).
         target_sec = _TARGET_DURATION_SEC
         target_words = round(target_sec * 150 / 60)
+        language_name = _language_name(brand_profile.primary_language)
 
         lines: List[str] = [
-            "Cree un script YouTube Shorts original et captivant en francais.",
-            "INSPIRE-TOI des elements ci-dessous mais NE LES RECOPIE PAS. Sois creatif !",
+            "Create an original, captivating YouTube Shorts script. All production fields "
+            f"(title, scene descriptions, transitions) must be written in ENGLISH — ONLY the "
+            f"spoken dialogues/repliques must be written in {language_name}.",
+            "DRAW INSPIRATION from the elements below but DO NOT COPY THEM. Be creative!",
             "",
-            f"### DUREE TOTALE CIBLE : {target_sec} secondes (format Shorts, {_TARGET_DURATION_MIN_SEC}-{_TARGET_DURATION_MAX_SEC}s) ###",
-            f"La SOMME des duration_seconds de toutes tes scenes DOIT etre comprise entre {_TARGET_DURATION_MIN_SEC} et {_TARGET_DURATION_MAX_SEC} secondes.",
-            f"Le nombre TOTAL de mots de toutes les narrations doit etre d'environ {target_words} mots (150 mots/minute = 2.5 mots par seconde).",
+            f"### TARGET TOTAL DURATION: {target_sec} seconds (Shorts format, {_TARGET_DURATION_MIN_SEC}-{_TARGET_DURATION_MAX_SEC}s) ###",
+            f"The TOTAL spoken word count across every replique must be approximately {target_words} words "
+            f"(150 words/minute = 2.5 words per second). You do NOT provide duration_seconds — it is computed automatically afterward.",
             "",
-            "Voici un exemple de repartition pour te guider (adapte selon le nombre de scenes) :",
+            "Here is an example breakdown to guide you (adapt to your actual scene count):",
             self._build_duration_breakdown(target_sec),
             "",
-            "=== NICHE / SUJET ===",
-            f"  Sujet     : {opportunity.niche}",
-            f"  Titre video source : {opportunity.title}",
-            f"  Score potentiel    : {opportunity.overall_score}/100",
+            "=== NICHE / TOPIC ===",
+            f"  Topic          : {opportunity.niche}",
+            f"  Source video title : {opportunity.title}",
+            f"  Potential score    : {opportunity.overall_score}/100",
             "",
-            "=== INSPIRATIONS (adapte-les librement) ===",
-            f"  Titre suggere  : {creative_brief.title}",
-            f"  Angle suggere  : {creative_brief.angle} (tu PEUX en choisir un autre si pertinent)",
-            f"  Accroche       : {creative_brief.hook}",
-            f"  Promesse       : {creative_brief.promise}",
-            f"  Audience       : {creative_brief.audience}",
-            f"  CTA suggere    : {creative_brief.cta} (reformule-le pour qu'il soit specifique au sujet s'il est generique)",
-            f"  Emotion        : {creative_brief.emotion}",
+        ]
+
+        sequel_hint = opportunity.metadata.get("sequel_of")
+        if sequel_hint:
+            lines += [
+                "=== CONTINUATION CONTEXT (Sprint 33 — topic_history) ===",
+                f"A closely related topic was already covered recently: \"{sequel_hint.get('title', '')}\" "
+                f"(published {sequel_hint.get('date', 'recently')}).",
+                "Do NOT repeat that video. Write this one as an explicit CONTINUATION or a genuinely NEW ANGLE: "
+                "reference what was already covered only briefly (one sentence at most), then go further — "
+                "new facts, the next chapter, a deeper level, or a twist the previous video did not cover.",
+                "Make the continuation clear from the hook itself, without generic transition phrases like "
+                "'as promised' or 'as we said before'.",
+                "",
+            ]
+
+        lines += [
+            "=== INSPIRATION (adapt freely) ===",
+            f"  Suggested title : {creative_brief.title}",
+            f"  Suggested angle : {creative_brief.angle} (you MAY choose a different one if relevant)",
+            f"  Hook            : {creative_brief.hook}",
+            f"  Promise         : {creative_brief.promise}",
+            f"  Audience        : {creative_brief.audience}",
+            f"  Suggested CTA   : {creative_brief.cta} (rephrase it to be specific to the topic if it is generic)",
+            f"  Emotion         : {creative_brief.emotion}",
             "",
-            "=== PROFIL DE MARQUE ===",
-            f"  Marque         : {brand_profile.name}",
+            "=== BRAND PROFILE ===",
+            f"  Brand          : {brand_profile.name}",
             f"  Tone           : {brand_profile.tone}",
-            f"  Langue         : {brand_profile.primary_language}",
-            f"  Duree preferee (format long, non applicable ici) : {brand_profile.preferred_video_duration} secondes",
+            f"  Language       : {brand_profile.primary_language}",
+            f"  Preferred duration (long format, not applicable here): {brand_profile.preferred_video_duration} seconds",
             f"  Audience       : {brand_profile.target_audience}",
             "",
-            "=== CONSIGNES OBLIGATOIRES (format Shorts) ===",
-            f"  - NOMBRE DE SCENES : EXACTEMENT entre {_TARGET_SCENES_MIN} et {_TARGET_SCENES_MAX} scenes. Pas moins, pas plus.",
-            f"  - DUREE TOTALE : La somme des duration_seconds doit etre dans [{_TARGET_DURATION_MIN_SEC}s, {_TARGET_DURATION_MAX_SEC}s]. Verifie la somme avant de repondre.",
-            f"  - NOMBRE DE MOTS : Environ {target_words} mots au total pour toutes les narrations combinees ({round(target_words / 2.5)}s de parole).",
-            "  - HOOK EN 3 SECONDES : 1 phrase courte qui ouvre une boucle de curiosite des le premier mot.",
-            "  - INTERDICTION FORMELLE d'ouvrir avec 'Imagine'/'Imaginez', 'Dans cette video', 'Aujourd'hui nous allons' ou 'Bienvenue'.",
-            "  - RYTHME RAPIDE : une seule idee par scene, aucune phrase de remplissage.",
-            "  - RETENTION : utilise pattern interrupt, tension, payoff et montee progressive au fil des scenes.",
-            "  - CTA SPECIFIQUE AU SUJET : INTERDICTION d'ecrire 'Abonne-toi pour plus' ou toute variante generique.",
-            f"  - Respecte le tone '{brand_profile.tone}' de la marque",
-            "  - INVENTE un titre original (ne copie pas le titre suggere)",
-            "  - Structure les scenes de facon surprenante et naturelle",
-            "  - Utilise des titres de scenes descriptifs et uniques",
-            "  - Scenes detaillees avec instructions visuelles et sonores",
-            "  - Reponds UNIQUEMENT en JSON valide, pas de texte avant/apres",
+            "=== MANDATORY REQUIREMENTS (Shorts format) ===",
+            f"  - SCENE COUNT: EXACTLY between {_TARGET_SCENES_MIN} and {_TARGET_SCENES_MAX} scenes. Not fewer, not more.",
+            f"  - WORD COUNT: About {target_words} words total across all repliques combined (~{round(target_words / 2.5)}s of speech).",
+            "  - HOOK IN 3 SECONDS: one short line that opens a curiosity gap from the very first word.",
+            "  - STRICTLY FORBIDDEN to open with 'Imagine', 'In this video', 'Today we are going to', or 'Welcome' (in any language).",
+            "  - FAST PACE: one idea per scene, no filler lines.",
+            "  - RETENTION: use pattern interrupts, tension, payoff, and escalation across scenes.",
+            "  - TOPIC-SPECIFIC CTA: FORBIDDEN to write a generic 'Subscribe for more' or any variant.",
+            f"  - Respect the brand's tone: '{brand_profile.tone}'",
+            "  - INVENT an original title (do not copy the suggested title) — write it in ENGLISH",
+            "  - Structure the scenes in a surprising, natural way",
+            "  - Every 'scene.description' field must be extremely rich (setting, composition, characters, lighting, camera, mood, symbolism, director_notes, viewer_emotion) — write it in ENGLISH",
+            "  - Every 'transition' field must be written in ENGLISH",
+            f"  - Every 'replique' must sound natural, credible, and cinematic — write it in {language_name.upper()}",
+            "  - Do NOT include a 'duration_seconds' field anywhere",
+            "  - Respond ONLY with valid JSON, no text before/after",
             "",
-            "Genere maintenant le script JSON.",
+            "Generate the script JSON now.",
         ]
         return "\n".join(lines)
 
@@ -658,11 +712,22 @@ class LLMScriptGenerator(ScriptGenerator):
         text = _clean_json_text(text)
         return text.strip()
 
-    @staticmethod
-    def _validate_json_structure(data: Dict[str, Any]) -> None:
-        """Valide la structure du JSON de réponse."""
-        required_fields = ["title", "hook", "introduction", "conclusion",
-                           "call_to_action", "scenes", "language", "style"]
+    # Les 9 champs obligatoires de SceneDescription (Sprint 32.1).
+    _REQUIRED_DESCRIPTION_FIELDS = (
+        "setting", "composition", "characters", "lighting", "camera",
+        "mood", "symbolism", "director_notes", "viewer_emotion",
+    )
+
+    @classmethod
+    def _validate_json_structure(cls, data: Dict[str, Any]) -> None:
+        """
+        Valide la structure du JSON de réponse — storyboard cinématographique
+        (Sprint 32.1) : chaque scène porte un objet "scene" imbriqué
+        {number, type, description{9 champs}}, des "dialogues", et une
+        "transition". Le LLM ne fournit plus "duration_seconds" — elle est
+        calculée après coup par estimate_scene_duration().
+        """
+        required_fields = ["title", "scenes"]
 
         for field in required_fields:
             if field not in data:
@@ -681,26 +746,54 @@ class LLMScriptGenerator(ScriptGenerator):
                 f"Trop de scènes : {len(data['scenes'])} (maximum {_TARGET_SCENES_MAX})"
             )
 
-        required_scene_fields = [
-            "order", "title", "narration", "visual_description",
-            "image_prompt", "animation_notes", "sound_effects", "duration_seconds",
-        ]
-        for i, scene in enumerate(data["scenes"]):
-            if not isinstance(scene, dict):
+        for i, storyboard_scene in enumerate(data["scenes"]):
+            if not isinstance(storyboard_scene, dict):
                 raise ValueError(f"La scène {i} n'est pas un dictionnaire")
-            for field in required_scene_fields:
-                if field not in scene:
+            for field in ("scene", "dialogues", "transition"):
+                if field not in storyboard_scene:
+                    raise ValueError(f"Champ '{field}' manquant dans la scène {i}")
+            if not isinstance(storyboard_scene.get("transition"), str):
+                raise ValueError(f"Le champ 'transition' de la scène {i} doit être une chaîne")
+
+            scene_obj = storyboard_scene["scene"]
+            if not isinstance(scene_obj, dict):
+                raise ValueError(f"Le champ 'scene' de la scène {i} doit être un objet")
+            if not isinstance(scene_obj.get("number"), int) or scene_obj["number"] < 1:
+                raise ValueError(f"'scene.number' de la scène {i} doit être un entier >= 1")
+            if not isinstance(scene_obj.get("type"), str) or not scene_obj["type"].strip():
+                raise ValueError(f"'scene.type' de la scène {i} doit être une chaîne non vide")
+
+            description = scene_obj.get("description")
+            if not isinstance(description, dict):
+                raise ValueError(f"'scene.description' de la scène {i} doit être un objet")
+            for field in cls._REQUIRED_DESCRIPTION_FIELDS:
+                if field not in description:
                     raise ValueError(
-                        f"Champ '{field}' manquant dans la scène {i}"
+                        f"Champ 'scene.description.{field}' manquant dans la scène {i}"
                     )
-            if not isinstance(scene.get("order"), int) or scene["order"] < 1:
+                if not isinstance(description[field], str) or not description[field].strip():
+                    raise ValueError(
+                        f"'scene.description.{field}' de la scène {i} doit être une chaîne non vide"
+                    )
+
+            dialogues = storyboard_scene.get("dialogues")
+            if not isinstance(dialogues, list) or not dialogues:
                 raise ValueError(
-                    f"L'ordre de la scène {i} doit être un entier >= 1"
+                    f"Le champ 'dialogues' de la scène {i} doit être une liste non vide"
                 )
-            if not isinstance(scene.get("duration_seconds"), int) or scene["duration_seconds"] < 1:
-                raise ValueError(
-                    f"La durée de la scène {i} doit être un entier >= 1"
-                )
+            for j, dlg in enumerate(dialogues):
+                if not isinstance(dlg, dict):
+                    raise ValueError(f"Le dialogue {j} de la scène {i} n'est pas un dictionnaire")
+                if not isinstance(dlg.get("personnage"), str) or not dlg["personnage"].strip():
+                    raise ValueError(
+                        f"Le champ 'personnage' du dialogue {j} de la scène {i} "
+                        "doit être une chaîne non vide"
+                    )
+                if not isinstance(dlg.get("replique"), str) or not dlg["replique"].strip():
+                    raise ValueError(
+                        f"Le champ 'replique' du dialogue {j} de la scène {i} "
+                        "doit être une chaîne non vide"
+                    )
 
     # ── Reconstruction Script ──────────────────────────────────────────────────
 
@@ -716,20 +809,36 @@ class LLMScriptGenerator(ScriptGenerator):
         llm_provider: str = "",
         llm_model: str = "",
     ) -> Script:
-        """Reconstruit un objet Script à partir du JSON validé."""
+        """
+        Reconstruit un objet Script à partir du JSON validé (Sprint 32.1) —
+        `duration_seconds` n'est JAMAIS lu depuis le JSON : il est calculé
+        ici par estimate_scene_duration(), seule source de vérité.
+        """
         scenes_raw: List[Dict[str, Any]] = data["scenes"]
 
         scenes: List[ScriptScene] = []
         for scene_data in scenes_raw:
+            dialogues = [
+                Dialogue(personnage=str(d["personnage"]), replique=str(d["replique"]))
+                for d in scene_data["dialogues"]
+            ]
+            scene_obj = scene_data["scene"]
+            description = SceneDescription(**{
+                field: str(scene_obj["description"][field])
+                for field in (
+                    "setting", "composition", "characters", "lighting", "camera",
+                    "mood", "symbolism", "director_notes", "viewer_emotion",
+                )
+            })
             scene = ScriptScene(
-                order=int(scene_data["order"]),
-                title=str(scene_data["title"]),
-                narration=str(scene_data["narration"]),
-                visual_description=str(scene_data["visual_description"]),
-                image_prompt=str(scene_data["image_prompt"]),
-                animation_notes=str(scene_data["animation_notes"]),
-                sound_effects=str(scene_data["sound_effects"]),
-                duration_seconds=int(scene_data["duration_seconds"]),
+                scene=Scene(
+                    number=int(scene_obj["number"]),
+                    type=str(scene_obj["type"]),
+                    description=description,
+                ),
+                dialogues=dialogues,
+                transition=str(scene_data["transition"]),
+                duration_seconds=estimate_scene_duration(dialogues),
             )
             scenes.append(scene)
 
@@ -756,11 +865,7 @@ class LLMScriptGenerator(ScriptGenerator):
 
         script = Script(
             title=str(data["title"]),
-            hook=str(data["hook"]),
-            introduction=str(data["introduction"]),
             scenes=scenes,
-            conclusion=str(data["conclusion"]),
-            call_to_action=str(data["call_to_action"]),
             estimated_duration=estimated_duration,
             language=str(data.get("language", brand_profile.primary_language)),
             target_audience=str(data.get("target_audience", creative_brief.audience)),

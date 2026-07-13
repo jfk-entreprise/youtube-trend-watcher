@@ -35,6 +35,7 @@ class TestVideoSnapshot:
         assert snap.like_count is None
         assert snap.comment_count is None
         assert snap.source == "keyword"  # valeur par défaut
+        assert snap.market == "FR"  # valeur par défaut (Sprint 34)
         assert snap.collected_at is not None  # généré automatiquement
 
     def test_full_creation(self):
@@ -53,10 +54,12 @@ class TestVideoSnapshot:
             comment_count=300,
             keyword="IA",
             source="trending",
+            market="US",
             collected_at="2026-06-20T10:00:00Z",
         )
         assert snap.view_count == 50000
         assert snap.source == "trending"
+        assert snap.market == "US"
         assert snap.collected_at == "2026-06-20T10:00:00Z"
 
     def test_repr(self):

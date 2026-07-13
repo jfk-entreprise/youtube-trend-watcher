@@ -42,5 +42,6 @@
     "monetization": ["livre numérique", "cours histoire en ligne", "mécénat communautaire"],
     "version": "1.0"
   },
-  "niche_keywords": ["histoire", "history", "guerre", "civilisation", "empire", "moyen age", "moyen-age", "antiquite"]
+  "niche_keywords": ["histoire", "history", "guerre", "civilisation", "empire", "moyen age", "moyen-age", "antiquite"],
+  "market": "FR"
 }

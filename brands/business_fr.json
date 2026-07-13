@@ -42,5 +42,6 @@
     "monetization": ["formations", "consulting", "affiliation outils SaaS"],
     "version": "1.0"
   },
-  "niche_keywords": ["business", "argent", "finance", "entrepreneuriat", "entrepreneur", "investissement", "marketing"]
+  "niche_keywords": ["business", "argent", "finance", "entrepreneuriat", "entrepreneur", "investissement", "marketing"],
+  "market": "FR"
 }

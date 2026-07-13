@@ -111,8 +111,9 @@ class TrendingAgent(BaseAgent):
                     view_count=_safe_int(stats.get("viewCount")),
                     like_count=_safe_int(stats.get("likeCount")),
                     comment_count=_safe_int(stats.get("commentCount")),
-                    keyword=region_code,   # pays source, pas de mot-clé pour cet agent
+                    keyword="",            # pas de mot-clé pour cet agent (bascule sur "(trending)")
                     source="trending",
+                    market=region_code,    # pays source (Sprint 34) — plus de collision avec le nom de niche
                 )
             )
         return snapshots

@@ -475,7 +475,10 @@ class LLMImageGenerator(ImageGenerator):
         )
         self._stats["fallbacks"] += 1
         self._stats["fallback_reasons"][last_reason] = self._stats["fallback_reasons"].get(last_reason, 0) + 1
-        plan = VisualPlan(title=script_scene.title, style=brand_profile.visual_style, scenes=[visual_scene])
+        plan = VisualPlan(
+            title=script_scene.scene.description.setting[:60],
+            style=brand_profile.visual_style, scenes=[visual_scene],
+        )
         fallback_image = self._fallback.generate(visual_scene, plan)
         return self._from_generated_image(fallback_image, reason=last_reason, detail=last_detail)
 
@@ -611,19 +614,19 @@ class LLMImageGenerator(ImageGenerator):
         if script is None:
             return ""
 
-        lines: List[str] = ["", "=== CONTINUITE NARRATIVE (script complet, dans l'ordre) ==="]
+        lines: List[str] = ["", "=== NARRATIVE CONTINUITY (full script, in order) ==="]
         for scene in sorted(script.scenes, key=lambda s: s.order):
             marker = " <<< SCENE ACTUELLE" if scene.order == current_order else ""
-            lines.append(f"  [{scene.order}] {scene.narration}{marker}")
+            lines.append(f"  [{scene.order}] {scene.narration_text}{marker}")
 
         if self._characters_bible:
             lines.append("")
-            lines.append("=== PERSONNAGES DEJA ETABLIS (a reutiliser A L'IDENTIQUE si reapparition) ===")
+            lines.append("=== CHARACTERS ALREADY ESTABLISHED (reuse EXACTLY if they reappear) ===")
             for name, desc in self._characters_bible.items():
                 lines.append(f"  - {name} : {desc}")
         else:
             lines.append("")
-            lines.append("(Aucun personnage etabli pour l'instant — si cette scene en introduit, decris-les de facon precise et stable pour les scenes suivantes.)")
+            lines.append("(No character established yet — if this scene introduces one, describe them precisely and stably for future scenes.)")
 
         return "\n".join(lines)
 
@@ -661,30 +664,40 @@ class LLMImageGenerator(ImageGenerator):
         visual_scene: VisualScene,
         brand_profile: BrandProfile,
     ) -> str:
+        desc = script_scene.scene.description
         lines: List[str] = [
-            "Redige le contrat ImagePrompt pour la scene suivante.",
-            "Raisonne d'abord sur l'objectif narratif, l'emotion et les personnages presents avant d'ecrire subject/scene_description/style/prompt.",
+            "Write the ImagePrompt contract for the following scene.",
+            "First reason about the narrative goal, the emotion, and the characters present, "
+            "before writing subject/scene_description/style/prompt.",
             "",
-            "=== SCENE DU SCRIPT (scene courante) ===",
-            f"  Titre       : {script_scene.title}",
-            f"  Narration   : {script_scene.narration}",
-            f"  Description : {script_scene.visual_description}",
-            f"  Duree       : {script_scene.duration_seconds}s",
+            "=== SCRIPT SCENE (current) — structured storyboard fields ===",
+            f"  Type             : {script_scene.scene.type}",
+            f"  Setting          : {desc.setting}",
+            f"  Composition      : {desc.composition}",
+            f"  Characters       : {desc.characters}",
+            f"  Lighting         : {desc.lighting}",
+            f"  Camera           : {desc.camera}",
+            f"  Mood             : {desc.mood}",
+            f"  Symbolism        : {desc.symbolism}",
+            f"  Director's notes : {desc.director_notes}",
+            f"  Viewer emotion   : {desc.viewer_emotion}",
+            f"  Dialogues        : {script_scene.narration_text}",
+            f"  Duration         : {script_scene.duration_seconds}s",
             "",
-            "=== PLAN VISUEL (base) ===",
-            f"  Type de plan     : {visual_scene.shot_type}",
-            f"  Mouvement camera : {visual_scene.camera_motion}",
-            f"  Composition      : {visual_scene.composition}",
-            f"  Eclairage        : {visual_scene.lighting}",
-            f"  Palette          : {', '.join(visual_scene.color_palette) or 'non specifiee'}",
+            "=== VISUAL PLAN (base) ===",
+            f"  Shot type      : {visual_scene.shot_type}",
+            f"  Camera motion  : {visual_scene.camera_motion}",
+            f"  Composition    : {visual_scene.composition}",
+            f"  Lighting       : {visual_scene.lighting}",
+            f"  Palette        : {', '.join(visual_scene.color_palette) or 'unspecified'}",
             "",
-            "=== IDENTITE DE MARQUE ===",
-            f"  Marque      : {brand_profile.name}",
+            "=== BRAND IDENTITY ===",
+            f"  Brand       : {brand_profile.name}",
             f"  Tone        : {brand_profile.tone}",
-            f"  Style visuel: {brand_profile.visual_style}",
+            f"  Visual style: {brand_profile.visual_style}",
         ]
         lines.append(self._build_continuity_block(script, script_scene.order))
-        lines += ["", "Genere maintenant le JSON du contrat ImagePrompt."]
+        lines += ["", "Generate the ImagePrompt contract JSON now."]
         return "\n".join(lines)
 
     # ── Extraction et validation JSON ──────────────────────────────────────────

@@ -46,10 +46,19 @@ class YouTubeCollector:
         snapshots = collector.collect_for_keywords(["IA", "Business"], days_back=7)
     """
 
-    def __init__(self, api_key: str, region_code: str = "FR", language: str = "fr"):
+    def __init__(
+        self,
+        api_key: str,
+        region_code: str = "FR",
+        language: str = "fr",
+        market: Optional[str] = None,
+    ):
         self._youtube = build("youtube", "v3", developerKey=api_key)
         self._region_code = region_code
         self._language = language
+        # Marché cible des snapshots produits (Sprint 34) — par défaut le
+        # region_code, cohérent avec l'usage historique (1 région = 1 marché).
+        self._market = market or region_code
 
     # ------------------------------------------------------------------
     # Interface publique
@@ -170,6 +179,7 @@ class YouTubeCollector:
                     like_count=_safe_int(stats.get("likeCount")),
                     comment_count=_safe_int(stats.get("commentCount")),
                     keyword=id_to_keyword[vid_id],
+                    market=self._market,
                 )
             )
         return snapshots

@@ -162,3 +162,46 @@ class TestEdgeCases:
         selected = selector.select_daily_niches(candidates)
 
         assert {n.name for n in selected} == {"ia", "histoire"}
+
+
+class TestMarketIsolation:
+    """Sprint 34 — une même niche peut être active simultanément sur
+    plusieurs marchés ; un appel pour un marché ne doit jamais affecter
+    l'état persisté d'un autre marché."""
+
+    def test_default_market_is_fr(self, store):
+        selector = NicheSelector(store=store, max_niches=1)
+        selector.select_daily_niches([_niche("ia", 5.0)])
+
+        records = store.load_active()
+        assert [r.market for r in records] == ["FR"]
+
+    def test_same_niche_active_on_two_markets_simultaneously(self, store):
+        selector = NicheSelector(store=store, max_niches=1)
+        selector.select_daily_niches([_niche("ia", 5.0)], market="US")
+        selector.select_daily_niches([_niche("ia", 5.0)], market="FR")
+
+        records = store.load_active()
+        assert {(r.niche_name, r.market) for r in records} == {("ia", "US"), ("ia", "FR")}
+
+    def test_second_market_call_does_not_erase_first(self, store):
+        selector = NicheSelector(store=store, max_niches=1)
+        selector.select_daily_niches([_niche("ia", 5.0)], market="US")
+        selector.select_daily_niches([_niche("histoire", 4.0)], market="FR")
+
+        records = {(r.niche_name, r.market) for r in store.load_active()}
+        assert records == {("ia", "US"), ("histoire", "FR")}
+
+    def test_replacement_only_considers_same_market(self, store):
+        """Une niche active côté US ne doit pas être remplacée par une
+        candidate qui ne concerne que le marché FR (et inversement) — la
+        comparaison de score se fait uniquement entre niches du même marché."""
+        selector = NicheSelector(store=store, max_niches=1, replacement_threshold=0.15)
+        selector.select_daily_niches([_niche("ia", 5.0)], market="US")
+
+        # Côté FR, une niche bien plus forte apparaît — ne doit affecter que FR.
+        selected_fr = selector.select_daily_niches([_niche("crypto", 50.0)], market="FR")
+        assert {n.name for n in selected_fr} == {"crypto"}
+
+        records = {(r.niche_name, r.market) for r in store.load_active()}
+        assert records == {("ia", "US"), ("crypto", "FR")}

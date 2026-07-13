@@ -21,6 +21,7 @@ import math
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
+from typing import Optional
 
 from src.virality_engine import VideoTimeline
 from src.utils import fmt_views as _fmt_views, csv_snapshots_to_timelines
@@ -61,9 +62,14 @@ class NicheAnalyzer:
         niches = analyzer.analyze()   # list[Niche] triée par score décroissant
     """
 
-    def __init__(self, csv_path: Path, top_n: int = 10) -> None:
+    def __init__(self, csv_path: Path, top_n: int = 10, market: Optional[str] = None) -> None:
         self._csv_path = csv_path
         self._top_n = top_n
+        # Sprint 34 : si fourni, ne considère que les vidéos collectées pour ce
+        # marché (VideoSnapshot.market) — permet de calculer des classements de
+        # niches indépendants par marché (ex. "IA" peut scorer différemment
+        # côté US et côté FR, sur des données réellement distinctes).
+        self._market = market
 
     # ── Interface publique ─────────────────────────────────────────────────────
 
@@ -89,7 +95,10 @@ class NicheAnalyzer:
     def _load_timelines(self) -> list[VideoTimeline]:
         """Charge le CSV et regroupe les snapshots en VideoTimeline par video_id."""
         buckets = csv_snapshots_to_timelines(self._csv_path)
-        return [VideoTimeline(vid_id, snaps) for vid_id, snaps in buckets.items()]
+        timelines = [VideoTimeline(vid_id, snaps) for vid_id, snaps in buckets.items()]
+        if self._market is not None:
+            timelines = [tl for tl in timelines if tl.latest.market == self._market]
+        return timelines
 
     # ── Regroupement & calcul des niches ──────────────────────────────────────
 

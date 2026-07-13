@@ -46,7 +46,7 @@ from src.llm_image_generator import (
 )
 from src.image_engine import GeneratedImage, HeuristicImageGenerator, ImageGenerator
 from src.visual_engine import VisualPlan, VisualScene
-from src.script_engine import Script, ScriptScene
+from src.script_engine import Dialogue, Scene, SceneDescription, Script, ScriptScene
 from src.brand_engine import BrandProfile, JsonBrandStore
 
 
@@ -63,11 +63,28 @@ def brand() -> BrandProfile:
 @pytest.fixture
 def script_scene() -> ScriptScene:
     return ScriptScene(
-        order=1, title="Hook",
-        narration="Et si votre prochain outil IA remplacait votre monteur video ?",
-        visual_description="Plan choc sur une interface d'edition video futuriste",
-        image_prompt="futuristic video editing interface",
-        animation_notes="Fade-in rapide", sound_effects="Whoosh",
+        scene=Scene(
+            number=1,
+            type="hook",
+            description=SceneDescription(
+                setting="Plan choc sur une interface d'edition video futuriste",
+                composition="Plan serre, sujet centre",
+                characters="Aucun personnage visible, juste l'interface",
+                lighting="Lumiere froide bleutee",
+                camera="Zoom rapide avant",
+                mood="Tension, futuriste",
+                symbolism="La machine qui prend le controle",
+                director_notes="Insister sur le contraste sombre/lumineux",
+                viewer_emotion="Surprise, curiosite",
+            ),
+        ),
+        dialogues=[
+            Dialogue(
+                personnage="NARRATEUR",
+                replique="Et si votre prochain outil IA remplacait votre monteur video ?",
+            )
+        ],
+        transition="Fade-in rapide",
         duration_seconds=8,
     )
 
@@ -75,11 +92,28 @@ def script_scene() -> ScriptScene:
 @pytest.fixture
 def second_scene() -> ScriptScene:
     return ScriptScene(
-        order=2, title="Suite",
-        narration="La journaliste Sarah Chen decouvre l'ampleur du changement.",
-        visual_description="Sarah Chen face a l'ecran, stupefaite",
-        image_prompt="journalist reacting to a screen",
-        animation_notes="Zoom lent", sound_effects="Tension sonore",
+        scene=Scene(
+            number=2,
+            type="context",
+            description=SceneDescription(
+                setting="Sarah Chen face a l'ecran, stupefaite",
+                composition="Plan moyen, sujet centre-gauche",
+                characters="Sarah Chen, journaliste",
+                lighting="Lumiere douce de l'ecran",
+                camera="Zoom lent",
+                mood="Etonnement",
+                symbolism="La prise de conscience du changement",
+                director_notes="Capturer l'expression du visage",
+                viewer_emotion="Empathie, curiosite",
+            ),
+        ),
+        dialogues=[
+            Dialogue(
+                personnage="NARRATEUR",
+                replique="La journaliste Sarah Chen decouvre l'ampleur du changement.",
+            )
+        ],
+        transition="Zoom lent",
         duration_seconds=9,
     )
 
@@ -101,11 +135,7 @@ def visual_scene() -> VisualScene:
 def sample_script(script_scene, second_scene) -> Script:
     return Script(
         title="L'IA qui remplace les monteurs video",
-        hook=script_scene.narration,
-        introduction="Voici ce qui vient de changer.",
         scenes=[script_scene, second_scene],
-        conclusion="Le montage ne sera plus jamais pareil.",
-        call_to_action="Quel logiciel de montage utilises-tu ? Dis-le en commentaire.",
         estimated_duration=17,
         language="fr",
         target_audience="Createurs de contenu",
@@ -178,8 +208,8 @@ class TestBuildUserPrompt:
     def test_prompt_contains_script_scene(self, script_scene, visual_scene, brand):
         gen = LLMImageGenerator()
         prompt = gen._build_user_prompt(None, script_scene, visual_scene, brand)
-        assert script_scene.narration in prompt
-        assert script_scene.visual_description in prompt
+        assert script_scene.narration_text in prompt
+        assert script_scene.scene.description.setting in prompt
 
     def test_prompt_contains_visual_scene(self, script_scene, visual_scene, brand):
         gen = LLMImageGenerator()
@@ -197,21 +227,21 @@ class TestBuildUserPrompt:
     def test_no_continuity_block_without_script(self, script_scene, visual_scene, brand):
         gen = LLMImageGenerator()
         prompt = gen._build_user_prompt(None, script_scene, visual_scene, brand)
-        assert "CONTINUITE NARRATIVE" not in prompt
+        assert "NARRATIVE CONTINUITY" not in prompt
 
     def test_continuity_block_lists_all_scenes_in_order(self, sample_script, script_scene, visual_scene, brand):
         gen = LLMImageGenerator()
         prompt = gen._build_user_prompt(sample_script, script_scene, visual_scene, brand)
-        assert "CONTINUITE NARRATIVE" in prompt
-        assert sample_script.scenes[0].narration in prompt
-        assert sample_script.scenes[1].narration in prompt
+        assert "NARRATIVE CONTINUITY" in prompt
+        assert sample_script.scenes[0].narration_text in prompt
+        assert sample_script.scenes[1].narration_text in prompt
         assert "SCENE ACTUELLE" in prompt
 
     def test_continuity_block_includes_established_characters(self, sample_script, script_scene, visual_scene, brand):
         gen = LLMImageGenerator()
         gen._characters_bible["Sarah Chen"] = "journaliste, blazer rouge, cheveux courts noirs"
         prompt = gen._build_user_prompt(sample_script, script_scene, visual_scene, brand)
-        assert "PERSONNAGES DEJA ETABLIS" in prompt
+        assert "CHARACTERS ALREADY ESTABLISHED" in prompt
         assert "Sarah Chen" in prompt
         assert "blazer rouge" in prompt
 

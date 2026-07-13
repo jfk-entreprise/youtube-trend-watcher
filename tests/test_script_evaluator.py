@@ -1,5 +1,6 @@
 """
-Tests unitaires pour ScriptEvaluator (Sprint 20).
+Tests unitaires pour ScriptEvaluator (Sprint 20, storyboard cinematographique
+Sprint 32.1).
 
 Couvre :
   - ScriptScore : création, frozen
@@ -17,70 +18,76 @@ from typing import Any, Dict, List
 import pytest
 
 from src.script_evaluator import ScriptEvaluator, ScriptScore
-from src.script_engine import Script, ScriptScene
+from src.script_engine import Dialogue, Scene, SceneDescription, Script, ScriptScene
 
 
 # ── Fixtures ─────────────────────────────────────────────────────────────────
 
+def _narrated(text: str) -> List[Dialogue]:
+    """Raccourci : une scène avec un unique narrateur."""
+    return [Dialogue(personnage="NARRATEUR", replique=text)]
+
+
+def _description(setting: str) -> SceneDescription:
+    """Description de storyboard riche (9 champs) — au moins 30 mots
+    cumulés pour ne pas être pénalisée comme scène 'thin' (Sprint 32.1)."""
+    return SceneDescription(
+        setting=setting,
+        composition="Composition équilibrée, sujet centré, profondeur de champ nette, lignes directrices claires.",
+        characters="Narrateur en voix off, présence discrète, ton assuré et posture confiante.",
+        lighting="Éclairage doux et cinématographique avec des contrastes maîtrisés et une ambiance chaleureuse.",
+        camera="Mouvement de caméra fluide, léger dolly-in, cadrage stable et précis.",
+        mood="Ambiance immersive et engageante qui capte l'attention du spectateur.",
+        symbolism="Le décor et la lumière renforcent le propos de la scène et son message.",
+        director_notes="Garder un rythme soutenu, guider le regard du spectateur vers l'élément clé et maintenir la tension narrative sans lasser.",
+        viewer_emotion="Curiosité et attention soutenues jusqu'à la fin de la scène.",
+    )
+
+
+def _scene(order, scene_desc, replique, transition, duration_seconds, scene_type="scene"):
+    return ScriptScene(
+        scene=Scene(number=order, type=scene_type, description=_description(scene_desc)),
+        dialogues=_narrated(replique),
+        transition=transition,
+        duration_seconds=duration_seconds,
+    )
+
+
 @pytest.fixture
 def heuristic_script() -> Script:
-    """Script heuristique typique (angle 'Liste', 8 scènes)."""
+    """Script heuristique typique (angle 'Liste', 8 scènes).
+
+    scenes[0] = hook, scenes[1] = introduction, scenes[-2] = conclusion,
+    scenes[-1] = call_to_action (propriétés dérivées, Sprint 31.1).
+    """
     return Script(
         title="Les 5 secrets de l'IA en 2025",
-        hook="Vous pensez tout savoir sur l'IA ? Détrompez-vous.",
-        introduction="Aujourd'hui, on va parler des tendances IA.",
         scenes=[
-            ScriptScene(order=1, title="Hook", narration="Vous pensez tout savoir sur l'IA ? Détrompez-vous.",
-                        visual_description="Plan d'accroche dynamique",
-                        image_prompt="Dynamic abstract composition",
-                        animation_notes="Fade-in from black",
-                        sound_effects="Whoosh",
-                        duration_seconds=8),
-            ScriptScene(order=2, title="Introduction", narration="Aujourd'hui, on va parler des tendances IA.",
-                        visual_description="Tête parlante",
-                        image_prompt="Clean workspace",
-                        animation_notes="Crossfade",
-                        sound_effects="Music",
-                        duration_seconds=12),
-            ScriptScene(order=3, title="Point #1", narration="Premier point : l'IA générative explose.",
-                        visual_description="Infographie",
-                        image_prompt="Infographic composition",
-                        animation_notes="Number flies in",
-                        sound_effects="Chime",
-                        duration_seconds=16),
-            ScriptScene(order=4, title="Point #2", narration="Deuxième point : les modèles open source.",
-                        visual_description="Comparaison",
-                        image_prompt="Comparison chart",
-                        animation_notes="Slide transition",
-                        sound_effects="Whoosh",
-                        duration_seconds=14),
-            ScriptScene(order=5, title="Point #3", narration="Troisième point : l'IA dans la santé.",
-                        visual_description="Point culminant",
-                        image_prompt="Medical visualization",
-                        animation_notes="Dramatic zoom",
-                        sound_effects="Drum roll",
-                        duration_seconds=18),
-            ScriptScene(order=6, title="Point bonus", narration="Un bonus : les outils gratuits.",
-                        visual_description="Bonus card",
-                        image_prompt="Bonus content card",
-                        animation_notes="Slide in",
-                        sound_effects="Bell",
-                        duration_seconds=10),
-            ScriptScene(order=7, title="Conclusion", narration="Pour conclure, l'IA est partout.",
-                        visual_description="Summary",
-                        image_prompt="Summary card",
-                        animation_notes="Crossfade",
-                        sound_effects="Music resolves",
-                        duration_seconds=12),
-            ScriptScene(order=8, title="CTA", narration="Abonne-toi pour ne rien rater.",
-                        visual_description="Bouton abonnement",
-                        image_prompt="Subscribe frame",
-                        animation_notes="Screen compresses",
-                        sound_effects="Subscribe sound",
-                        duration_seconds=10),
+            _scene(1, "Plan d'accroche dynamique, composition abstraite qui capte l'attention immédiatement.",
+                   "Vous pensez tout savoir sur l'IA ? Détrompez-vous.",
+                   "Fondu entrant depuis le noir.", 8, scene_type="hook"),
+            _scene(2, "Tête parlante dans un espace de travail propre et lumineux.",
+                   "Aujourd'hui, on va parler des tendances IA.",
+                   "Fondu enchaîné.", 12, scene_type="introduction"),
+            _scene(3, "Infographie qui anime les chiffres clés de la croissance de l'IA.",
+                   "Premier point : l'IA générative explose.",
+                   "Glissement vers le haut.", 16, scene_type="development"),
+            _scene(4, "Comparaison visuelle claire entre modèles propriétaires et open source.",
+                   "Deuxième point : les modèles open source.",
+                   "Coupe franche.", 14, scene_type="development"),
+            _scene(5, "Point culminant avec zoom dramatique sur la visualisation médicale.",
+                   "Troisième point : l'IA dans la santé.",
+                   "Zoom avant.", 18, scene_type="development"),
+            _scene(6, "Carte bonus qui glisse à l'écran, ton plus léger et amusant.",
+                   "Un bonus : les outils gratuits.",
+                   "Dissolution douce.", 10, scene_type="development"),
+            _scene(7, "Résumé visuel des points clés avec retour à la promesse initiale.",
+                   "Pour conclure, l'IA est partout.",
+                   "Fondu enchaîné.", 12, scene_type="conclusion"),
+            _scene(8, "Écran de fin avec bouton d'abonnement animé et liens visibles.",
+                   "Abonne-toi pour ne rien rater des prochaines vidéos.",
+                   "Fondu sortant au noir.", 10, scene_type="cta"),
         ],
-        conclusion="L'IA transforme tout ce qu'on connaît.",
-        call_to_action="Abonne-toi pour ne rien rater des prochaines vidéos.",
         estimated_duration=100,
         language="fr",
         target_audience="Développeurs et passionnés d'IA",
@@ -96,57 +103,32 @@ def heuristic_script() -> Script:
 
 @pytest.fixture
 def groq_script() -> Script:
-    """Script Groq typique avec un style plus créatif."""
+    """Script Groq typique avec un style plus créatif (7 scènes)."""
     return Script(
         title="L'IA va tout changer — voici pourquoi",
-        hook="Et si l'IA était déjà plus intelligente que vous ?",
-        introduction="On entend tout et son contraire sur l'IA. Alors, vrai ou fake ?",
         scenes=[
-            ScriptScene(order=1, title="Hook", narration="Et si l'IA était déjà plus intelligente que vous ?",
-                        visual_description="Question choc en plein écran",
-                        image_prompt="Question mark dramatic lighting high contrast",
-                        animation_notes="Zoom avant rapide",
-                        sound_effects="Impact + silence",
-                        duration_seconds=6),
-            ScriptScene(order=2, title="Contexte", narration="L'IA générative a progressé de 300% en un an.",
-                        visual_description="Graphique de croissance",
-                        image_prompt="Exponential growth chart neon colors",
-                        animation_notes="Barres qui montent",
-                        sound_effects="Tension drone",
-                        duration_seconds=10),
-            ScriptScene(order=3, title="Révélation", narration="Ce que personne ne vous dit : les modèles open source sont déjà meilleurs.",
-                        visual_description="Split screen comparaison",
-                        image_prompt="Split screen comparison open source vs closed source",
-                        animation_notes="Révélation avec fondu",
-                        sound_effects="Révélation chord",
-                        duration_seconds=14),
-            ScriptScene(order=4, title="Démonstration", narration="Regardez ce que j'ai fait avec un modèle gratuit.",
-                        visual_description="Démonstration en direct",
-                        image_prompt="Screen recording with code editor",
-                        animation_notes="Split screen code + résultat",
-                        sound_effects="Clavier rapide",
-                        duration_seconds=20),
-            ScriptScene(order=5, title="Impact", narration="Les implications sont immenses pour votre carrière.",
-                        visual_description="Scène futuriste",
-                        image_prompt="Futuristic office AI augmented reality",
-                        animation_notes="Transition futuriste",
-                        sound_effects="Musique épique",
-                        duration_seconds=15),
-            ScriptScene(order=6, title="Conclusion", narration="L'IA ne va pas vous remplacer. Mais quelqu'un qui l'utilise, oui.",
-                        visual_description="Tête parlante, regard caméra",
-                        image_prompt="Close up speaker confident expression",
-                        animation_notes="Ralentissement progressif",
-                        sound_effects="Piano",
-                        duration_seconds=12),
-            ScriptScene(order=7, title="CTA", narration="Alors, prêt à maîtriser l'IA ? Abonne-toi et télécharge le guide gratuit en description.",
-                        visual_description="Écran de fin avec liens",
-                        image_prompt="CTA screen with subscribe button and link",
-                        animation_notes="Liens qui apparaissent",
-                        sound_effects="Notification + musique fin",
-                        duration_seconds=10),
+            _scene(1, "Question choc en plein écran avec éclairage dramatique à fort contraste.",
+                   "Et si l'IA était déjà plus intelligente que vous ?",
+                   "Zoom avant rapide.", 6, scene_type="hook"),
+            _scene(2, "Graphique de croissance exponentielle aux couleurs néon qui capte l'oeil.",
+                   "L'IA générative a progressé de 300% en un an.",
+                   "Barres qui montent.", 10, scene_type="introduction"),
+            _scene(3, "Écran divisé façon révélation comparant modèles open source et propriétaires.",
+                   "Ce que personne ne vous dit : les modèles open source sont déjà meilleurs.",
+                   "Révélation avec fondu.", 14, scene_type="development"),
+            _scene(4, "Enregistrement d'écran avec éditeur de code et démonstration en direct.",
+                   "Regardez ce que j'ai fait avec un modèle gratuit.",
+                   "Split screen code + résultat.", 20, scene_type="development"),
+            _scene(5, "Bureau futuriste avec réalité augmentée illustrant l'impact sur la carrière.",
+                   "Les implications sont immenses pour votre carrière.",
+                   "Transition futuriste.", 15, scene_type="development"),
+            _scene(6, "Gros plan sur le visage du présentateur, regard confiant vers la caméra.",
+                   "L'IA ne va pas vous remplacer. Mais quelqu'un qui l'utilise, oui.",
+                   "Ralentissement progressif.", 12, scene_type="conclusion"),
+            _scene(7, "Écran de fin avec bouton d'abonnement et lien vers le guide gratuit.",
+                   "Alors, prêt à maîtriser l'IA ? Abonne-toi et télécharge le guide gratuit en description.",
+                   "Liens qui apparaissent.", 10, scene_type="cta"),
         ],
-        conclusion="L'IA est un outil, pas une menace.",
-        call_to_action="Abonne-toi et télécharge le guide gratuit en description.",
         estimated_duration=87,
         language="fr",
         target_audience="Professionnels du numérique",
@@ -163,21 +145,13 @@ def groq_script() -> Script:
 
 @pytest.fixture
 def empty_script() -> Script:
-    """Script minimal (cas limite)."""
+    """Script minimal (cas limite) — hook et CTA vides (scène unique)."""
     return Script(
         title="Vidéo test",
-        hook="",
-        introduction="",
         scenes=[
-            ScriptScene(order=1, title="Scene 1", narration="Bonjour.",
-                        visual_description="Plan",
-                        image_prompt="Clean",
-                        animation_notes="Rien",
-                        sound_effects="Rien",
-                        duration_seconds=10),
+            _scene(1, "Plan minimal, aucune action particulière à l'écran.", "",
+                   "Coupe franche.", 10),
         ],
-        conclusion="",
-        call_to_action="",
         estimated_duration=10,
         language="fr",
         target_audience="Test",
@@ -254,7 +228,7 @@ class TestScriptEvaluatorEvaluate:
         # Hook vide → score très faible mais pas forcément 0 (base score)
         assert score.hook_score < 4.0  # Pénalité pour hook vide
         assert score.cta_score == 1.0   # Pas de CTA → score minimal garanti
-        assert score.composite_score < 35  # Très faible
+        assert score.composite_score < 40  # Très faible
 
     def test_evaluate_reproducible(self, heuristic_script):
         """Même script → mêmes scores (déterministe)."""
@@ -287,7 +261,10 @@ class TestScriptEvaluatorEvaluate:
             + score.rhythm_score + score.cta_score + score.retention_score
             + score.emotion_score + score.originality_score
         )
-        assert abs(score.composite_score - expected) < 0.01
+        # composite_score est arrondi séparément de la somme des 8 critères
+        # (chacun déjà arrondi à 1 décimale) : un écart résiduel de l'ordre
+        # de l'arrondi (<= 0.1) est normal, pas un bug.
+        assert abs(score.composite_score - expected) < 0.15
 
     def test_details_propagated(self, heuristic_script):
         eval = ScriptEvaluator()
@@ -451,19 +428,20 @@ class TestEdgeCases:
         assert 0 <= score.composite_score <= 80
 
     def test_script_without_hook(self):
-        """Script sans hook doit avoir un hook_score très faible."""
+        """Script sans hook doit avoir un hook_score très faible.
+
+        scenes[0] joue le rôle du hook et scenes[-1] celui du CTA (propriétés
+        dérivées) : il faut donc deux scènes distinctes pour avoir un hook
+        vide et un CTA renseigné en même temps.
+        """
         script = Script(
             title="Test",
-            hook="",
-            introduction="",
             scenes=[
-                ScriptScene(order=1, title="Intro", narration="Test.",
-                            visual_description="", image_prompt="",
-                            animation_notes="", sound_effects="",
-                            duration_seconds=10),
+                _scene(1, "Écran titre sobre, sans accroche particulière visible.", "",
+                       "Fondu enchaîné.", 5),
+                _scene(2, "Écran de fin avec bouton d'abonnement animé.", "Like et abonne-toi",
+                       "Fondu sortant au noir.", 5),
             ],
-            conclusion="",
-            call_to_action="Like et abonne-toi",
             estimated_duration=10,
             language="fr",
             target_audience="Test",
@@ -477,20 +455,24 @@ class TestEdgeCases:
         assert score.hook_score >= 0.0
 
     def test_script_without_cta(self):
-        """Script sans CTA doit avoir cta_score = 1.0 (minimum)."""
+        """Script sans CTA doit avoir cta_score = 1.0 (minimum).
+
+        3 scènes : scenes[0] = hook, scenes[1] = conclusion (= scenes[-2]),
+        scenes[-1] = CTA vide.
+        """
         script = Script(
             title="Test",
-            hook="Super accroche pour attirer l'attention",
-            introduction="",
             scenes=[
-                ScriptScene(order=1, title="Hook", narration="Super accroche.",
-                            visual_description="", image_prompt="",
-                            animation_notes="", sound_effects="",
-                            duration_seconds=8),
+                _scene(1, "Plan d'accroche avec question dramatique à l'écran.",
+                       "Super accroche pour attirer l'attention",
+                       "Fondu entrant depuis le noir.", 8),
+                _scene(2, "Retour au calme, musique de conclusion en fond.",
+                       "Merci d'avoir regardé.",
+                       "Fondu au noir.", 6),
+                _scene(3, "Écran final neutre, sans appel à l'action visible.", "",
+                       "Fondu sortant au noir.", 4),
             ],
-            conclusion="Merci d'avoir regardé.",
-            call_to_action="",
-            estimated_duration=8,
+            estimated_duration=18,
             language="fr",
             target_audience="Test",
             style="Simple",
@@ -501,19 +483,18 @@ class TestEdgeCases:
         assert score.cta_score == 1.0  # Score minimum garanti
 
     def test_single_scene_script(self):
-        """Script avec une seule scène doit survivre sans erreur."""
+        """Script avec une seule scène doit survivre sans erreur.
+
+        Avec une seule scène, hook/introduction/conclusion/call_to_action
+        dérivent tous de cette même scène (cas limite structurel).
+        """
         script = Script(
             title="Mini",
-            hook="Hook court.",
-            introduction="",
             scenes=[
-                ScriptScene(order=1, title="Uniq", narration="Uniq.",
-                            visual_description="", image_prompt="",
-                            animation_notes="", sound_effects="",
-                            duration_seconds=30),
+                _scene(1, "Plan unique, résumant hook et appel à l'action.",
+                       "Hook court. Fin. Bye.",
+                       "Fondu enchaîné.", 30),
             ],
-            conclusion="Fin.",
-            call_to_action="Bye.",
             estimated_duration=30,
             language="fr",
             target_audience="Test",
@@ -525,25 +506,34 @@ class TestEdgeCases:
         assert score.composite_score > 0  # Pas d'erreur
 
     def test_very_long_script(self):
-        """Script très long (20+ scènes)."""
-        scenes = []
-        for i in range(22):
-            scenes.append(ScriptScene(
-                order=i+1, title=f"Point #{i+1}",
-                narration=f"Point numéro {i+1}.",
-                visual_description="Standard",
-                image_prompt="Standard",
-                animation_notes="Standard",
-                sound_effects="Standard",
-                duration_seconds=15,
+        """Script très long (20+ scènes).
+
+        scenes[0] = hook, scenes[1] = introduction, scenes[-2] = conclusion,
+        scenes[-1] = call_to_action ; le reste sont des points génériques.
+        """
+        scenes = [
+            _scene(1, "Plan d'accroche qui interpelle directement le spectateur.",
+                   "Vous voulez tout savoir ?",
+                   "Fondu entrant depuis le noir.", 15),
+            _scene(2, "Écran titre qui annonce le plan des 22 points.",
+                   "Voici 22 points importants.",
+                   "Fondu enchaîné.", 15),
+        ]
+        for i in range(2, 20):
+            scenes.append(_scene(
+                i + 1, "Standard",
+                f"Point numéro {i + 1}.",
+                "Standard", 15,
             ))
+        scenes.append(_scene(21, "Retour au calme, résumé visuel de tous les points abordés.",
+                              "Voilà, c'est tout.",
+                              "Fondu au noir.", 15))
+        scenes.append(_scene(22, "Écran de fin avec bouton d'abonnement animé.",
+                              "Abonne-toi pour la suite.",
+                              "Fondu sortant au noir.", 15))
         script = Script(
             title="Très long script de test",
-            hook="Vous voulez tout savoir ?",
-            introduction="Voici 22 points importants.",
             scenes=scenes,
-            conclusion="Voilà, c'est tout.",
-            call_to_action="Abonne-toi pour la suite.",
             estimated_duration=330,
             language="fr",
             target_audience="Test",

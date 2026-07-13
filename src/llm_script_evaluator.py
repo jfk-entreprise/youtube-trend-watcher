@@ -286,7 +286,7 @@ class LLMScriptEvaluator(BaseEvaluator):
             "=== SCENES ===",
         ]
         for scene in script.scenes:
-            lines.append(f"  [{scene.order}] ({scene.duration_seconds}s) {scene.title} : {scene.narration}")
+            lines.append(f"  [{scene.order}] ({scene.duration_seconds}s) {scene.narration_text}")
         lines.extend([
             "",
             f"=== CONCLUSION === \n{script.conclusion}",

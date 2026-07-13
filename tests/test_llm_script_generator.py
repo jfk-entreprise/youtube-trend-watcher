@@ -1,7 +1,9 @@
 """
 Tests unitaires pour le LLM Script Generator (Sprint 21 — Contrôle durée,
 Sprint 20.1 — cible fixe format Shorts, Sprint 27 — fiabilisation JSON
-alignée sur VisualDirector / LLMImageGenerator / LLMAnimationGenerator).
+alignée sur VisualDirector / LLMImageGenerator / LLMAnimationGenerator,
+Sprint 31.1 — format Storyboard Studio unifié : plus de hook/introduction/
+conclusion/call_to_action séparés, scene/dialogues/transition par scène).
 
 Teste :
   1. LLMScriptGenerator — création, nom, stats
@@ -10,7 +12,7 @@ Teste :
      <think>, Markdown, texte parasite, virgules traînantes, caractères de
      contrôle)
   4. validate_json_structure / parse_and_validate — validation stricte et
-     classification des causes d'échec (Sprint 27)
+     classification des causes d'échec (Sprint 27/31.1)
   5. build_script_from_json — reconstruction complète de Script
   6. generate — fallback vers HeuristicScriptGenerator si LLM échoue, avec
      la raison enregistrée (Sprint 27)
@@ -39,7 +41,7 @@ from src.llm_script_generator import (
     _TARGET_SCENES_MIN,
     _TARGET_SCENES_MAX,
 )
-from src.script_engine import Script, ScriptScene, ScriptGenerator
+from src.script_engine import Dialogue, Scene, SceneDescription, Script, ScriptScene, ScriptGenerator, estimate_scene_duration
 from src.opportunity_engine import Opportunity
 from src.creative_engine import CreativeBrief
 from src.brand_engine import BrandProfile, JsonBrandStore
@@ -97,96 +99,46 @@ def sample_brand() -> BrandProfile:
     return profile
 
 
+def _json_description(setting=None) -> Dict[str, str]:
+    return {
+        "setting": setting or "Rich description of the setting — architecture, era, textures, atmosphere.",
+        "composition": "Balanced composition, subject centered, clear depth of field.",
+        "characters": "Narrator only — no visible character on screen.",
+        "lighting": "Soft, warm key light with subtle contrast.",
+        "camera": "A very slow 6-second dolly-in with a slight low angle.",
+        "mood": "Rising curiosity tinged with quiet tension.",
+        "symbolism": "The décor evokes the transformation underway.",
+        "director_notes": "Keep the pace tight, guide the viewer's gaze toward the main subject, avoid lingering.",
+        "viewer_emotion": "Curiosity should gradually give way to a quiet fascination.",
+    }
+
+
+def _json_scene(number, replique, scene_type="hook", transition=None, setting=None):
+    return {
+        "scene": {
+            "number": number,
+            "type": scene_type,
+            "description": _json_description(setting=setting),
+        },
+        "dialogues": [{"personnage": "NARRATEUR", "replique": replique}],
+        "transition": transition or "Fondu enchaine vers la scene suivante.",
+    }
+
+
 @pytest.fixture
 def valid_llm_json() -> Dict[str, Any]:
-    """JSON valide genere par un LLM (8+ scenes pour respecter la contrainte Sprint 21)."""
+    """JSON valide genere par un LLM — storyboard cinematographique (Sprint 32.1, 8+ scenes)."""
     return {
         "title": "5 metiers developpeur transformes par l'IA en 2027",
-        "hook": "Voici pourquoi 80% des developpeurs sous-estiment l'IA.",
-        "introduction": "Aujourd'hui, on va decouvrir les 5 metiers les plus impactes.",
-        "conclusion": "Pour conclure, l'IA ne remplace pas les developpeurs, elle transforme leur travail.",
-        "call_to_action": "Abonne-toi pour plus d'analyses tech chaque semaine.",
         "scenes": [
-            {
-                "order": 1,
-                "title": "Accroche choc",
-                "narration": "Voici pourquoi 80% des developpeurs sous-estiment l'IA.",
-                "visual_description": "Plan d'accroche dynamique avec texte impactant",
-                "image_prompt": "Dynamic abstract composition with bold typography",
-                "animation_notes": "Fade-in from black. Bold text animation.",
-                "sound_effects": "Whoosh + impact sound",
-                "duration_seconds": 8,
-            },
-            {
-                "order": 2,
-                "title": "Introduction du sujet",
-                "narration": "Aujourd'hui, on va decouvrir les 5 metiers les plus impactes.",
-                "visual_description": "Tete parlante face camera",
-                "image_prompt": "Clean professional workspace",
-                "animation_notes": "Crossfade transition",
-                "sound_effects": "Background music",
-                "duration_seconds": 12,
-            },
-            {
-                "order": 3,
-                "title": "Metier 1: Full-stack",
-                "narration": "Premier metier: le developpeur full-stack va etre transforme.",
-                "visual_description": "Infographie animee montrant les donnees",
-                "image_prompt": "Infographic style composition with data visualization",
-                "animation_notes": "Number flies in from left",
-                "sound_effects": "Soft chime on number reveal",
-                "duration_seconds": 15,
-            },
-            {
-                "order": 4,
-                "title": "Metier 2: Data scientist",
-                "narration": "Deuxieme metier: le data scientist doit s'adapter aux nouveaux outils.",
-                "visual_description": "Graphiques et courbes animees",
-                "image_prompt": "Data visualization charts and graphs",
-                "animation_notes": "Bar chart grows upward",
-                "sound_effects": "Upbeat transition",
-                "duration_seconds": 14,
-            },
-            {
-                "order": 5,
-                "title": "Metier 3: DevOps",
-                "narration": "Troisieme metier: le DevOps automatise de nouvelles taches.",
-                "visual_description": "Diagramme de pipeline CI/CD anime",
-                "image_prompt": "DevOps pipeline diagram animated style",
-                "animation_notes": "Flow animation from left to right",
-                "sound_effects": "Digital sounds",
-                "duration_seconds": 13,
-            },
-            {
-                "order": 6,
-                "title": "Metier 4: Designer UX",
-                "narration": "Quatrieme metier: le designer UX utilise l'IA pour generer des maquettes.",
-                "visual_description": "Interface utilisateur en evolution",
-                "image_prompt": "UI/UX design tools with AI elements",
-                "animation_notes": "Screen mockup morphs and changes",
-                "sound_effects": "Click and swipe sounds",
-                "duration_seconds": 12,
-            },
-            {
-                "order": 7,
-                "title": "Metier 5: Architecte cloud",
-                "narration": "Cinquieme metier: l'architecte cloud orchestre des infrastructures intelligentes.",
-                "visual_description": "Schema d'infrastructure cloud anime",
-                "image_prompt": "Cloud architecture diagram with connected services",
-                "animation_notes": "Nodes connect with glowing lines",
-                "sound_effects": "Ambient technology music",
-                "duration_seconds": 14,
-            },
-            {
-                "order": 8,
-                "title": "Conclusion et conseils",
-                "narration": "Pour finir, voici comment se preparer a ces transformations.",
-                "visual_description": "Tete parlante avec points cles en incrustation",
-                "image_prompt": "Speaker with key takeaways overlaid",
-                "animation_notes": "Key points appear one by one",
-                "sound_effects": "Soft background music",
-                "duration_seconds": 12,
-            },
+            _json_scene(1, "Voici pourquoi 80% des developpeurs sous-estiment l'IA.", scene_type="hook"),
+            _json_scene(2, "Aujourd'hui, on va decouvrir les 5 metiers les plus impactes.", scene_type="introduction"),
+            _json_scene(3, "Premier metier: le developpeur full-stack va etre transforme.", scene_type="development"),
+            _json_scene(4, "Deuxieme metier: le data scientist doit s'adapter aux nouveaux outils.", scene_type="development"),
+            _json_scene(5, "Troisieme metier: le DevOps automatise de nouvelles taches.", scene_type="development"),
+            _json_scene(6, "Quatrieme metier: le designer UX utilise l'IA pour generer des maquettes.", scene_type="development"),
+            _json_scene(7, "Cinquieme metier: l'architecte cloud orchestre des infrastructures intelligentes.", scene_type="twist"),
+            _json_scene(8, "Pour finir, voici comment se preparer a ces transformations.", scene_type="cta"),
         ],
         "language": "fr",
         "target_audience": "Developpeurs curieux de l'IA",
@@ -332,8 +284,8 @@ class TestBuildUserPrompt:
         assert str(_TARGET_DURATION_SEC) in prompt
         assert str(_TARGET_DURATION_MIN_SEC) in prompt
         assert str(_TARGET_DURATION_MAX_SEC) in prompt
-        assert "DUREE TOTALE CIBLE" in prompt
-        assert "SOMME des duration_seconds" in prompt
+        assert "TARGET TOTAL DURATION" in prompt
+        assert "duration_seconds" in prompt
 
     def test_prompt_contains_word_count(self, sample_opportunity, sample_brief, sample_brand):
         """Le prompt contient le nombre de mots attendus."""
@@ -341,8 +293,8 @@ class TestBuildUserPrompt:
         prompt = gen._build_user_prompt(sample_opportunity, sample_brief, sample_brand)
         expected_words = round(_TARGET_DURATION_SEC * 150 / 60)
         assert str(expected_words) in prompt
-        assert "mots" in prompt.lower()
-        assert "150 mots/minute" in prompt
+        assert "words" in prompt.lower()
+        assert "150 words/minute" in prompt
 
     def test_prompt_contains_breakdown(self, sample_opportunity, sample_brief, sample_brand):
         """Le prompt contient un exemple de répartition."""
@@ -389,6 +341,50 @@ class TestBuildUserPrompt:
         prompt = gen._build_user_prompt(sample_opportunity, sample_brief, sample_brand)
         assert str(_TARGET_DURATION_MIN_SEC) in prompt
         assert str(_TARGET_DURATION_MAX_SEC) in prompt
+
+    # ── Tests Sprint 34 : langue du script suit la marque ─────────────────────
+
+    def test_prompt_language_follows_french_brand(self, sample_opportunity, sample_brief, sample_brand):
+        """Sprint 34.1 — seules les repliques suivent la langue de la marque ;
+        titre/description/transition restent toujours en anglais."""
+        gen = LLMScriptGenerator()
+        prompt = gen._build_user_prompt(sample_opportunity, sample_brief, sample_brand)
+        assert "spoken dialogues/repliques must be written in French" in prompt
+        assert "write it in FRENCH" in prompt
+        assert "write it in ENGLISH" in prompt  # les champs description restent toujours en anglais
+        assert "INVENT an original title" in prompt and "write it in ENGLISH" in prompt
+        assert "'transition' field must be written in ENGLISH" in prompt
+
+    def test_prompt_language_follows_english_brand(self, sample_opportunity, sample_brief):
+        import dataclasses
+        store = JsonBrandStore(Path(__file__).resolve().parent.parent / "brands")
+        us_brand = store.load("global_us")
+        assert us_brand is not None, "Brand global_us doit exister"
+        gen = LLMScriptGenerator()
+        prompt = gen._build_user_prompt(sample_opportunity, sample_brief, us_brand)
+        assert "spoken dialogues/repliques must be written in English" in prompt
+        assert "write it in ENGLISH" in prompt
+        assert "French" not in prompt
+
+    # ── Tests Sprint 33 : indice de suite (topic_history) ─────────────────────
+
+    def test_no_sequel_hint_by_default(self, sample_opportunity, sample_brief, sample_brand):
+        gen = LLMScriptGenerator()
+        prompt = gen._build_user_prompt(sample_opportunity, sample_brief, sample_brand)
+        assert "CONTINUATION CONTEXT" not in prompt
+
+    def test_sequel_hint_added_when_opportunity_flagged(self, sample_opportunity, sample_brief, sample_brand):
+        import dataclasses
+        opportunity = dataclasses.replace(
+            sample_opportunity,
+            metadata={**sample_opportunity.metadata, "sequel_of": {"title": "Ancien sujet", "date": "2026-01-05"}},
+        )
+        gen = LLMScriptGenerator()
+        prompt = gen._build_user_prompt(opportunity, sample_brief, sample_brand)
+        assert "CONTINUATION CONTEXT" in prompt
+        assert "Ancien sujet" in prompt
+        assert "2026-01-05" in prompt
+        assert "Do NOT repeat" in prompt
 
 
 # ── Tests : build_duration_breakdown ─────────────────────────────────────────
@@ -526,59 +522,115 @@ class TestValidateJsonStructure:
         with pytest.raises(ValueError, match="liste"):
             LLMScriptGenerator._validate_json_structure(data)
 
-    def test_scene_missing_order(self, valid_llm_json):
-        """Champ order manquant dans une scene."""
+    def test_scene_missing_scene_number(self, valid_llm_json):
+        """Champ 'scene.number' manquant dans une scene."""
         data = dict(valid_llm_json)
         data["scenes"] = [dict(s) for s in data["scenes"]]
-        del data["scenes"][0]["order"]
-        with pytest.raises(ValueError, match="order"):
+        data["scenes"][0] = dict(data["scenes"][0])
+        data["scenes"][0]["scene"] = dict(data["scenes"][0]["scene"])
+        del data["scenes"][0]["scene"]["number"]
+        with pytest.raises(ValueError, match="number"):
             LLMScriptGenerator._validate_json_structure(data)
 
-    def test_scene_missing_narration(self, valid_llm_json):
-        """Champ narration manquant dans une scene."""
+    def test_scene_missing_scene_object(self, valid_llm_json):
+        """Champ 'scene' (objet imbrique) manquant dans une scene."""
         data = dict(valid_llm_json)
         data["scenes"] = [dict(s) for s in data["scenes"]]
-        del data["scenes"][0]["narration"]
-        with pytest.raises(ValueError, match="narration"):
+        del data["scenes"][0]["scene"]
+        with pytest.raises(ValueError, match="scene"):
             LLMScriptGenerator._validate_json_structure(data)
 
-    def test_scene_missing_duration(self, valid_llm_json):
-        """Champ duration_seconds manquant."""
+    def test_scene_missing_scene_type(self, valid_llm_json):
+        """Champ 'scene.type' manquant dans une scene."""
         data = dict(valid_llm_json)
         data["scenes"] = [dict(s) for s in data["scenes"]]
-        del data["scenes"][0]["duration_seconds"]
-        with pytest.raises(ValueError, match="duration_seconds"):
+        data["scenes"][0] = dict(data["scenes"][0])
+        data["scenes"][0]["scene"] = dict(data["scenes"][0]["scene"])
+        del data["scenes"][0]["scene"]["type"]
+        with pytest.raises(ValueError, match="type"):
             LLMScriptGenerator._validate_json_structure(data)
 
-    def test_scene_invalid_order(self, valid_llm_json):
-        """Order inferieur a 1."""
+    def test_scene_missing_description(self, valid_llm_json):
+        """Champ 'scene.description' manquant dans une scene."""
         data = dict(valid_llm_json)
         data["scenes"] = [dict(s) for s in data["scenes"]]
-        data["scenes"][0]["order"] = 0
-        with pytest.raises(ValueError, match="ordre"):
+        data["scenes"][0] = dict(data["scenes"][0])
+        data["scenes"][0]["scene"] = dict(data["scenes"][0]["scene"])
+        del data["scenes"][0]["scene"]["description"]
+        with pytest.raises(ValueError, match="description"):
             LLMScriptGenerator._validate_json_structure(data)
 
-    def test_scene_invalid_duration(self, valid_llm_json):
-        """Duration inferieur a 1."""
+    def test_scene_description_missing_field(self, valid_llm_json):
+        """Un champ de 'scene.description' (ex. 'camera') manquant est rejeté."""
         data = dict(valid_llm_json)
         data["scenes"] = [dict(s) for s in data["scenes"]]
-        data["scenes"][0]["duration_seconds"] = 0
+        data["scenes"][0] = dict(data["scenes"][0])
+        data["scenes"][0]["scene"] = dict(data["scenes"][0]["scene"])
+        data["scenes"][0]["scene"]["description"] = dict(data["scenes"][0]["scene"]["description"])
+        del data["scenes"][0]["scene"]["description"]["camera"]
+        with pytest.raises(ValueError, match="camera"):
+            LLMScriptGenerator._validate_json_structure(data)
+
+    def test_scene_missing_dialogues(self, valid_llm_json):
+        """Champ dialogues manquant dans une scene."""
+        data = dict(valid_llm_json)
+        data["scenes"] = [dict(s) for s in data["scenes"]]
+        del data["scenes"][0]["dialogues"]
+        with pytest.raises(ValueError, match="dialogues"):
+            LLMScriptGenerator._validate_json_structure(data)
+
+    def test_scene_empty_dialogues_list(self, valid_llm_json):
+        """dialogues est une liste vide — rejeté."""
+        data = dict(valid_llm_json)
+        data["scenes"] = [dict(s) for s in data["scenes"]]
+        data["scenes"][0]["dialogues"] = []
+        with pytest.raises(ValueError, match="dialogues"):
+            LLMScriptGenerator._validate_json_structure(data)
+
+    def test_dialogue_missing_personnage(self, valid_llm_json):
+        """Un dialogue sans 'personnage' est rejeté."""
+        data = dict(valid_llm_json)
+        data["scenes"] = [dict(s) for s in data["scenes"]]
+        data["scenes"][0]["dialogues"] = [{"replique": "Sans personnage."}]
+        with pytest.raises(ValueError, match="personnage"):
+            LLMScriptGenerator._validate_json_structure(data)
+
+    def test_dialogue_missing_replique(self, valid_llm_json):
+        """Un dialogue sans 'replique' est rejeté."""
+        data = dict(valid_llm_json)
+        data["scenes"] = [dict(s) for s in data["scenes"]]
+        data["scenes"][0]["dialogues"] = [{"personnage": "NARRATEUR"}]
+        with pytest.raises(ValueError, match="replique"):
+            LLMScriptGenerator._validate_json_structure(data)
+
+    def test_scene_missing_transition(self, valid_llm_json):
+        """Champ transition manquant dans une scene."""
+        data = dict(valid_llm_json)
+        data["scenes"] = [dict(s) for s in data["scenes"]]
+        del data["scenes"][0]["transition"]
+        with pytest.raises(ValueError, match="transition"):
+            LLMScriptGenerator._validate_json_structure(data)
+
+    def test_scene_invalid_number(self, valid_llm_json):
+        """scene.number inferieur a 1."""
+        data = dict(valid_llm_json)
+        data["scenes"] = [dict(s) for s in data["scenes"]]
+        data["scenes"][0] = dict(data["scenes"][0])
+        data["scenes"][0]["scene"] = dict(data["scenes"][0]["scene"])
+        data["scenes"][0]["scene"]["number"] = 0
         with pytest.raises(ValueError, match="entier"):
             LLMScriptGenerator._validate_json_structure(data)
 
-    def test_missing_language(self, valid_llm_json):
-        """Champ language manquant."""
+    def test_language_and_style_are_optional(self, valid_llm_json):
+        """
+        Sprint 31.1 : 'language'/'style' ne sont plus des champs obligatoires
+        du schéma Storyboard Studio — ils retombent sur BrandProfile si absents
+        (voir _build_script_from_json), donc leur absence ne doit PAS lever.
+        """
         data = dict(valid_llm_json)
         del data["language"]
-        with pytest.raises(ValueError, match="language"):
-            LLMScriptGenerator._validate_json_structure(data)
-
-    def test_missing_style(self, valid_llm_json):
-        """Champ style manquant."""
-        data = dict(valid_llm_json)
         del data["style"]
-        with pytest.raises(ValueError, match="style"):
-            LLMScriptGenerator._validate_json_structure(data)
+        LLMScriptGenerator._validate_json_structure(data)  # ne doit pas lever
 
 
 # ── Tests : extract_json — robustesse (Sprint 27) ────────────────────────────
@@ -784,10 +836,8 @@ class TestBuildScriptFromJson:
         )
         assert isinstance(script, Script)
         assert script.title == valid_llm_json["title"]
-        assert script.hook == valid_llm_json["hook"]
-        assert script.introduction == valid_llm_json["introduction"]
-        assert script.conclusion == valid_llm_json["conclusion"]
-        assert script.call_to_action == valid_llm_json["call_to_action"]
+        assert script.hook == valid_llm_json["scenes"][0]["dialogues"][0]["replique"]
+        assert script.call_to_action == valid_llm_json["scenes"][-1]["dialogues"][0]["replique"]
         assert len(script.scenes) == 8  # valid_llm_json a 8 scenes (contrainte Sprint 21)
 
     def test_build_scenes(self, valid_llm_json, sample_opportunity, sample_brief, sample_brand):
@@ -800,19 +850,26 @@ class TestBuildScriptFromJson:
             assert isinstance(scene, ScriptScene)
             assert scene.order == i + 1
             assert scene.duration_seconds > 0
-            assert len(scene.narration) > 0
-            assert len(scene.visual_description) > 0
-            assert len(scene.image_prompt) > 0
-            assert len(scene.animation_notes) > 0
-            assert len(scene.sound_effects) > 0
+            assert len(scene.narration_text) > 0
+            assert isinstance(scene.scene, Scene)
+            assert len(scene.scene.type) > 0
+            assert len(scene.scene.description.setting) > 0
+            assert len(scene.transition) > 0
+            assert len(scene.dialogues) > 0
+            assert all(isinstance(d, Dialogue) for d in scene.dialogues)
 
     def test_estimated_duration(self, valid_llm_json, sample_opportunity, sample_brief, sample_brand):
-        """Duree estimee = somme des durees des scenes."""
+        """Duree estimee = somme des durees calculees via estimate_scene_duration."""
         script = LLMScriptGenerator._build_script_from_json(
             valid_llm_json, sample_opportunity, sample_brief, sample_brand,
             1000, 500, 0.001,
         )
-        expected_duration = sum(s["duration_seconds"] for s in valid_llm_json["scenes"])
+        expected_duration = sum(
+            estimate_scene_duration(
+                [Dialogue(personnage=d["personnage"], replique=d["replique"]) for d in s["dialogues"]]
+            )
+            for s in valid_llm_json["scenes"]
+        )
         assert script.estimated_duration == expected_duration
 
     def test_metadata_contains_llm_info(self, valid_llm_json, sample_opportunity, sample_brief, sample_brand):
@@ -839,7 +896,7 @@ class TestBuildScriptFromJson:
         with pytest.raises(FrozenInstanceError):
             script.scenes[0].order = 999
         with pytest.raises(FrozenInstanceError):
-            script.scenes[0].narration = "modified"
+            script.scenes[0].dialogues = []
 
     def test_script_language_from_json(self, valid_llm_json, sample_opportunity, sample_brief, sample_brand):
         """La langue vient du JSON si present."""
@@ -856,6 +913,18 @@ class TestBuildScriptFromJson:
             1000, 500, 0.001,
         )
         assert script.style == "Innovant"
+
+    def test_script_language_falls_back_to_brand(self, valid_llm_json, sample_opportunity, sample_brief, sample_brand):
+        """Sprint 31.1 : si 'language'/'style' sont absents du JSON, on retombe sur le BrandProfile."""
+        data = dict(valid_llm_json)
+        del data["language"]
+        del data["style"]
+        script = LLMScriptGenerator._build_script_from_json(
+            data, sample_opportunity, sample_brief, sample_brand,
+            1000, 500, 0.001,
+        )
+        assert script.language == sample_brand.primary_language
+        assert script.style == sample_brand.tone
 
 
 # ── Tests : generate (fallback) ─────────────────────────────────────────────
@@ -954,7 +1023,7 @@ class TestDecoupling:
         assert "from src.opportunity_engine import Opportunity" in content
         assert "from src.creative_engine import CreativeBrief" in content
         assert "from src.brand_engine import BrandProfile" in content
-        assert "from src.script_engine import Script" in content
+        assert "from src.script_engine import" in content
         assert "ScriptGenerator" in content
         assert "ScriptScene" in content
 

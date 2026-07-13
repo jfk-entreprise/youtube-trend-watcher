@@ -1,27 +1,26 @@
 """
-Tests unitaires pour le Script Engine v1.
+Tests unitaires pour le Script Engine v1 (storyboard cinématographique, Sprint 32.1).
 
 Couvre :
-  - ScriptScene     : création, frozen, égalité
-  - Script          : création, champs, métadonnées
+  - Dialogue        : création, frozen
+  - SceneDescription / Scene : création, frozen
+  - ScriptScene     : création, frozen, égalité, narration_text, order (alias)
+  - estimate_scene_duration : calcul de durée centralisé
+  - Script          : création, champs, métadonnées, propriétés dérivées
+    (hook/introduction/conclusion/call_to_action)
   - HeuristicScriptGenerator : génération complète, tous les angles
   - ScriptEngine    : orchestration, generate_single, generate_all
   - Découplage      : le moteur n'importe pas VideoSnapshot / KnowledgeEngine
-
-Contraintes de conception vérifiées :
-  - ScriptGenerator (ABC) interchangeable
-  - ScriptEngine ne dépend pas des moteurs internes
-  - Chaque scène prépare les futurs Visual/Animation/Video Engine
 """
 
 import pytest
-from datetime import datetime, timezone
-from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
 
 # ── Imports du Script Engine uniquement ──────────────────────────────────────
-from src.script_engine import (ScriptScene, Script, ScriptGenerator,
-                                HeuristicScriptGenerator, ScriptEngine)
+from src.script_engine import (
+    Dialogue, Scene, SceneDescription, ScriptScene, Script, ScriptGenerator,
+    HeuristicScriptGenerator, ScriptEngine, estimate_scene_duration,
+    NARRATION_WORDS_PER_MINUTE,
+)
 
 # ── Imports des contrats (uniquement ce que le moteur est censé connaître) ───
 from src.opportunity_engine import Opportunity
@@ -123,69 +122,167 @@ def sample_brand() -> BrandProfile:
     )
 
 
+def _description(**overrides) -> SceneDescription:
+    base = dict(
+        setting="A dimly lit futuristic office at night.",
+        composition="Rule of thirds, subject centered-left.",
+        characters="A calm off-screen narrator.",
+        lighting="Cool blue rim lighting, hard shadows.",
+        camera="Slow 6-second dolly-in, slight low angle.",
+        mood="Tense curiosity.",
+        symbolism="The darkness represents the unknown risk.",
+        director_notes="This scene must hook attention in under 3 seconds.",
+        viewer_emotion="Curiosity slowly turning into unease.",
+    )
+    base.update(overrides)
+    return SceneDescription(**base)
+
+
+def _scene(number, replique, personnage="NARRATEUR", scene_type="hook", transition="Cut.", duration_seconds=10):
+    return ScriptScene(
+        scene=Scene(number=number, type=scene_type, description=_description()),
+        dialogues=[Dialogue(personnage=personnage, replique=replique)],
+        transition=transition, duration_seconds=duration_seconds,
+    )
+
+
+# ── Dialogue ──────────────────────────────────────────────────────────────────
+
+class TestDialogue:
+    def test_creation(self):
+        d = Dialogue(personnage="NARRATEUR", replique="Accroche puissante.")
+        assert d.personnage == "NARRATEUR"
+        assert d.replique == "Accroche puissante."
+
+    def test_frozen(self):
+        d = Dialogue(personnage="NARRATEUR", replique="N")
+        with pytest.raises(Exception):
+            d.replique = "Modifié"  # type: ignore
+
+
+# ── SceneDescription / Scene ─────────────────────────────────────────────────
+
+class TestSceneDescription:
+    def test_creation_all_nine_fields(self):
+        desc = _description()
+        assert desc.setting
+        assert desc.composition
+        assert desc.characters
+        assert desc.lighting
+        assert desc.camera
+        assert desc.mood
+        assert desc.symbolism
+        assert desc.director_notes
+        assert desc.viewer_emotion
+
+    def test_frozen(self):
+        desc = _description()
+        with pytest.raises(Exception):
+            desc.setting = "Modifié"  # type: ignore
+
+
+class TestScene:
+    def test_creation(self):
+        desc = _description()
+        scene = Scene(number=1, type="hook", description=desc)
+        assert scene.number == 1
+        assert scene.type == "hook"
+        assert scene.description is desc
+
+    def test_frozen(self):
+        scene = Scene(number=1, type="hook", description=_description())
+        with pytest.raises(Exception):
+            scene.number = 2  # type: ignore
+
+
 # ── ScriptScene ──────────────────────────────────────────────────────────────
 
 class TestScriptScene:
 
     def test_creation(self):
         scene = ScriptScene(
-            order=1,
-            title="Hook",
-            narration="Accroche puissante.",
-            visual_description="Plan large, lumière naturelle",
-            image_prompt="Cinematic shot, dramatic lighting",
-            animation_notes="Fade-in from black",
-            sound_effects="Whoosh impact",
+            scene=Scene(number=1, type="hook", description=_description()),
+            dialogues=[Dialogue(personnage="NARRATEUR", replique="Accroche puissante.")],
+            transition="Fondu entrant.",
             duration_seconds=8,
         )
         assert scene.order == 1
-        assert scene.title == "Hook"
-        assert scene.narration == "Accroche puissante."
+        assert scene.scene.number == 1
+        assert scene.scene.type == "hook"
+        assert scene.dialogues[0].replique == "Accroche puissante."
         assert scene.duration_seconds == 8
-        assert scene.visual_description == "Plan large, lumière naturelle"
+        assert scene.transition == "Fondu entrant."
+
+    def test_order_is_alias_for_scene_number(self):
+        scene = _scene(7, "N")
+        assert scene.order == 7
+        assert scene.order == scene.scene.number
 
     def test_frozen(self):
-        scene = ScriptScene(
-            order=1, title="T", narration="N",
-            visual_description="V", image_prompt="I",
-            animation_notes="A", sound_effects="S",
-            duration_seconds=10,
-        )
+        scene = _scene(1, "N")
         with pytest.raises(Exception):
-            scene.title = "Modifié"  # type: ignore
+            scene.scene = Scene(number=2, type="hook", description=_description())  # type: ignore
 
     def test_equality(self):
+        desc = _description()
         kwargs = dict(
-            order=1, title="T", narration="N",
-            visual_description="V", image_prompt="I",
-            animation_notes="A", sound_effects="S",
-            duration_seconds=10,
+            scene=Scene(number=1, type="hook", description=desc),
+            dialogues=[Dialogue(personnage="NARRATEUR", replique="N")],
+            transition="T", duration_seconds=10,
         )
         assert ScriptScene(**kwargs) == ScriptScene(**kwargs)
 
-    def test_all_fields_future_proof(self):
-        """Chaque scène contient les champs pour les futurs moteurs."""
+    def test_narration_text_joins_dialogues(self):
         scene = ScriptScene(
-            order=1, title="Hook", narration="N",
-            visual_description="V", image_prompt="I",
-            animation_notes="A", sound_effects="S",
-            duration_seconds=8,
+            scene=Scene(number=1, type="hook", description=_description()),
+            dialogues=[
+                Dialogue(personnage="Roi", replique="Bonjour."),
+                Dialogue(personnage="Conseiller", replique="Sire."),
+            ],
+            transition="T", duration_seconds=10,
         )
-        assert hasattr(scene, "image_prompt")
-        assert hasattr(scene, "visual_description")
-        assert hasattr(scene, "animation_notes")
-        assert hasattr(scene, "sound_effects")
+        assert scene.narration_text == "Bonjour. Sire."
+
+    def test_narration_text_single_narrator(self):
+        scene = _scene(1, "Une narration classique.")
+        assert scene.narration_text == "Une narration classique."
 
     def test_repr(self):
-        scene = ScriptScene(
-            order=1, title="Hook", narration="N",
-            visual_description="V", image_prompt="I",
-            animation_notes="A", sound_effects="S",
-            duration_seconds=8,
-        )
+        scene = _scene(1, "N")
         r = repr(scene)
         assert "ScriptScene" in r
-        assert "title='Hook'" in r
+
+
+# ── estimate_scene_duration ──────────────────────────────────────────────────
+
+class TestEstimateSceneDuration:
+    def test_computes_from_word_count(self):
+        # 150 words/minute (default) = 2.5 words/second
+        dialogues = [Dialogue(personnage="NARRATEUR", replique=" ".join(["mot"] * 25))]
+        duration = estimate_scene_duration(dialogues)
+        assert duration == round(25 / NARRATION_WORDS_PER_MINUTE * 60)
+
+    def test_empty_dialogues_returns_minimum(self):
+        assert estimate_scene_duration([Dialogue(personnage="NARRATEUR", replique="")]) == 2
+
+    def test_never_below_minimum(self):
+        dialogues = [Dialogue(personnage="NARRATEUR", replique="Un mot.")]
+        assert estimate_scene_duration(dialogues) >= 2
+
+    def test_custom_words_per_minute(self):
+        dialogues = [Dialogue(personnage="NARRATEUR", replique=" ".join(["mot"] * 30))]
+        fast = estimate_scene_duration(dialogues, words_per_minute=300.0)
+        slow = estimate_scene_duration(dialogues, words_per_minute=100.0)
+        assert fast < slow
+
+    def test_multi_dialogue_scene_sums_all_repliques(self):
+        dialogues = [
+            Dialogue(personnage="A", replique=" ".join(["mot"] * 10)),
+            Dialogue(personnage="B", replique=" ".join(["mot"] * 10)),
+        ]
+        combined = estimate_scene_duration(dialogues)
+        single = estimate_scene_duration([Dialogue(personnage="A", replique=" ".join(["mot"] * 10))])
+        assert combined > single
 
 
 # ── Script ───────────────────────────────────────────────────────────────────
@@ -194,22 +291,12 @@ class TestScript:
 
     def test_creation(self, sample_brief, sample_brand):
         scenes = [
-            ScriptScene(order=1, title="Hook", narration="Accroche.",
-                       visual_description="V", image_prompt="I",
-                       animation_notes="A", sound_effects="S",
-                       duration_seconds=8),
-            ScriptScene(order=2, title="Introduction", narration="Intro.",
-                       visual_description="V", image_prompt="I",
-                       animation_notes="A", sound_effects="S",
-                       duration_seconds=12),
+            _scene(1, "Accroche.", duration_seconds=8),
+            _scene(2, "Intro.", duration_seconds=12),
         ]
         script = Script(
             title=sample_brief.title,
-            hook=sample_brief.hook,
-            introduction="Introduction complète.",
             scenes=scenes,
-            conclusion="Conclusion finale.",
-            call_to_action=sample_brief.cta,
             estimated_duration=20,
             language=sample_brand.primary_language,
             target_audience=sample_brand.target_audience,
@@ -221,38 +308,87 @@ class TestScript:
         assert script.language == "fr"
         assert len(script.scenes) == 2
 
-    def test_frozen(self, sample_brief, sample_brand):
+    def test_frozen(self):
         script = Script(
-            title="Test", hook="H", introduction="I",
-            scenes=[], conclusion="C", call_to_action="CTA",
-            estimated_duration=0, language="fr",
-            target_audience="Tous", style="Neutre",
-            metadata={},
+            title="Test", scenes=[], estimated_duration=0, language="fr",
+            target_audience="Tous", style="Neutre", metadata={},
         )
         with pytest.raises(Exception):
             script.title = "Modifié"  # type: ignore
 
-    def test_estimated_duration_sum(self, sample_brief, sample_brand):
-        """estimated_duration doit correspondre à la somme des scènes."""
+    def test_estimated_duration_sum(self):
         scenes = [
-            ScriptScene(order=1, title="Hook", narration="N",
-                       visual_description="V", image_prompt="I",
-                       animation_notes="A", sound_effects="S",
-                       duration_seconds=8),
-            ScriptScene(order=2, title="C", narration="N",
-                       visual_description="V", image_prompt="I",
-                       animation_notes="A", sound_effects="S",
-                       duration_seconds=12),
+            _scene(1, "N", duration_seconds=8),
+            _scene(2, "N", duration_seconds=12),
         ]
         script = Script(
-            title="Test", hook="H", introduction="I",
-            scenes=scenes, conclusion="C", call_to_action="CTA",
-            estimated_duration=20, language="fr",
-            target_audience="Tous", style="Neutre",
-            metadata={},
+            title="Test", scenes=scenes, estimated_duration=20, language="fr",
+            target_audience="Tous", style="Neutre", metadata={},
         )
         total = sum(s.duration_seconds for s in script.scenes)
         assert script.estimated_duration == total
+
+    def test_hook_is_first_scene_narration(self):
+        scenes = [_scene(1, "Accroche."), _scene(2, "Suite."), _scene(3, "CTA final.")]
+        script = Script(
+            title="T", scenes=scenes, estimated_duration=30, language="fr",
+            target_audience="Tous", style="Neutre", metadata={},
+        )
+        assert script.hook == "Accroche."
+
+    def test_call_to_action_is_last_scene_narration(self):
+        scenes = [_scene(1, "Accroche."), _scene(2, "Suite."), _scene(3, "CTA final.")]
+        script = Script(
+            title="T", scenes=scenes, estimated_duration=30, language="fr",
+            target_audience="Tous", style="Neutre", metadata={},
+        )
+        assert script.call_to_action == "CTA final."
+
+    def test_introduction_and_conclusion_derived(self):
+        scenes = [_scene(1, "A"), _scene(2, "B"), _scene(3, "C"), _scene(4, "D")]
+        script = Script(
+            title="T", scenes=scenes, estimated_duration=40, language="fr",
+            target_audience="Tous", style="Neutre", metadata={},
+        )
+        assert script.introduction == "B"
+        assert script.conclusion == "C"
+
+    def test_hook_and_cta_empty_for_no_scenes(self):
+        script = Script(
+            title="T", scenes=[], estimated_duration=0, language="fr",
+            target_audience="Tous", style="Neutre", metadata={},
+        )
+        assert script.hook == ""
+        assert script.call_to_action == ""
+
+    def test_derived_properties_not_in_asdict(self):
+        """hook/introduction/conclusion/call_to_action sont des propriétés
+        calculées — jamais sérialisées par dataclasses.asdict() (Sprint 31.1/32.1)."""
+        import dataclasses
+        scenes = [_scene(1, "A"), _scene(2, "B")]
+        script = Script(
+            title="T", scenes=scenes, estimated_duration=20, language="fr",
+            target_audience="Tous", style="Neutre", metadata={},
+        )
+        keys = set(dataclasses.asdict(script).keys())
+        assert "hook" not in keys
+        assert "introduction" not in keys
+        assert "conclusion" not in keys
+        assert "call_to_action" not in keys
+        assert keys == {"title", "scenes", "estimated_duration", "language", "target_audience", "style", "metadata"}
+
+    def test_scene_asdict_has_nested_storyboard_shape(self):
+        """Sprint 32.1 : dataclasses.asdict() sur une scène doit refléter
+        exactement le contrat storyboard imbriqué."""
+        import dataclasses
+        scene = _scene(1, "A")
+        data = dataclasses.asdict(scene)
+        assert set(data.keys()) == {"scene", "dialogues", "transition", "duration_seconds"}
+        assert set(data["scene"].keys()) == {"number", "type", "description"}
+        assert set(data["scene"]["description"].keys()) == {
+            "setting", "composition", "characters", "lighting", "camera",
+            "mood", "symbolism", "director_notes", "viewer_emotion",
+        }
 
 
 # ── HeuristicScriptGenerator ─────────────────────────────────────────────────
@@ -265,8 +401,8 @@ class TestHeuristicScriptGenerator:
         script = gen.generate(sample_opportunity, sample_brief, sample_brand)
         assert isinstance(script, Script)
         assert len(script.scenes) >= 4
-        assert script.scenes[0].title == "Hook"
-        assert script.scenes[-1].title == "CTA"
+        assert script.hook == sample_brief.hook
+        assert script.call_to_action == sample_brief.cta
         assert script.estimated_duration > 0
         assert script.language == "fr"
         assert script.style == "Professionnel"
@@ -296,33 +432,55 @@ class TestHeuristicScriptGenerator:
             gen = HeuristicScriptGenerator()
             script = gen.generate(sample_opportunity, brief, sample_brand)
             assert len(script.scenes) == 8
-            assert "Hook" in [s.title for s in script.scenes]
-            assert "CTA" in [s.title for s in script.scenes]
+            assert script.hook == f"Hook {angle}"
+            assert script.call_to_action == "Abonne-toi"
 
     def test_hook_injected(self, sample_opportunity, sample_brief, sample_brand):
         """Le hook du brief est injecté dans la première scène."""
         gen = HeuristicScriptGenerator()
         script = gen.generate(sample_opportunity, sample_brief, sample_brand)
         assert script.hook == sample_brief.hook
-        assert script.scenes[0].narration == sample_brief.hook
+        assert script.scenes[0].narration_text == sample_brief.hook
 
     def test_cta_injected(self, sample_opportunity, sample_brief, sample_brand):
         """Le CTA du brief est injecté dans la dernière scène."""
         gen = HeuristicScriptGenerator()
         script = gen.generate(sample_opportunity, sample_brief, sample_brand)
         assert script.call_to_action == sample_brief.cta
-        assert script.scenes[-1].narration == sample_brief.cta
+        assert script.scenes[-1].narration_text == sample_brief.cta
 
-    def test_scene_has_future_fields(self, sample_opportunity, sample_brief, sample_brand):
-        """Chaque scène contient image_prompt, visual_description, etc."""
+    def test_scene_has_storyboard_fields(self, sample_opportunity, sample_brief, sample_brand):
+        """Chaque scène contient un Scene/SceneDescription complet + dialogues/transition."""
         gen = HeuristicScriptGenerator()
         script = gen.generate(sample_opportunity, sample_brief, sample_brand)
         for scene in script.scenes:
-            assert scene.image_prompt, f"Scène {scene.order} : image_prompt vide"
-            assert scene.visual_description, f"Scène {scene.order} : visual_description vide"
-            assert scene.animation_notes, f"Scène {scene.order} : animation_notes vide"
-            assert scene.sound_effects, f"Scène {scene.order} : sound_effects vide"
-            assert scene.duration_seconds >= 4
+            assert scene.scene.type, f"Scène {scene.order} : type vide"
+            desc = scene.scene.description
+            for field_name in (
+                "setting", "composition", "characters", "lighting", "camera",
+                "mood", "symbolism", "director_notes", "viewer_emotion",
+            ):
+                assert getattr(desc, field_name), f"Scène {scene.order} : {field_name} vide"
+            assert scene.dialogues, f"Scène {scene.order} : dialogues vides"
+            assert scene.narration_text, f"Scène {scene.order} : narration_text vide"
+            assert scene.transition, f"Scène {scene.order} : transition vide"
+            assert scene.duration_seconds >= 2
+
+    def test_first_scene_type_is_hook_last_is_cta(self, sample_opportunity, sample_brief, sample_brand):
+        gen = HeuristicScriptGenerator()
+        script = gen.generate(sample_opportunity, sample_brief, sample_brand)
+        assert script.scenes[0].scene.type == "hook"
+        assert script.scenes[-1].scene.type == "cta"
+
+    def test_duration_derived_from_estimate_scene_duration(self, sample_opportunity, sample_brief, sample_brand):
+        """Sprint 32.1 : la durée de chaque scène vient de estimate_scene_duration(),
+        pondérée par le facteur de marque — jamais une valeur fixe arbitraire."""
+        gen = HeuristicScriptGenerator()
+        script = gen.generate(sample_opportunity, sample_brief, sample_brand)
+        for scene in script.scenes:
+            baseline = estimate_scene_duration(scene.dialogues)
+            # Le facteur de marque (~0.6-1.5) explique l'écart avec la baseline brute.
+            assert scene.duration_seconds >= max(2, round(baseline * 0.6) - 1)
 
     def test_duration_adjusted_by_brand(self, sample_opportunity, sample_brief):
         """La durée des scènes est ajustée par le profil de marque."""
@@ -451,9 +609,6 @@ class TestDecoupling:
 
     def test_no_video_snapshot_import(self):
         """Le Script Engine ne doit pas importer VideoSnapshot."""
-        import src.script_engine as se
-        mod = se.__name__
-        # Vérifie que l'import de VideoSnapshot n'est pas dans le module
         with pytest.raises(ImportError):
             from src.script_engine import VideoSnapshot  # type: ignore
 
