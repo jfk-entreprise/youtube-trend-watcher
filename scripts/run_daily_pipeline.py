@@ -1077,27 +1077,41 @@ def main() -> None:
         opportunities_by_niche: Dict[str, List[Opportunity]] = {}
 
         for market in ("US", "FR"):
-            market_candidates, market_selected = run_step(
-                3, f"Sélection de la niche active — marché {market}",
-                step_select_active_niches, mirror_csv, niche_selector, market,
-            )
-            niche = market_selected[0]
-            candidate_niches.extend(market_candidates[:10])
+            try:
+                market_candidates, market_selected = run_step(
+                    3, f"Sélection de la niche active — marché {market}",
+                    step_select_active_niches, mirror_csv, niche_selector, market,
+                )
+                niche = market_selected[0]
+                candidate_niches.extend(market_candidates[:10])
+
+                market_opportunities = run_step(
+                    4, f"Sélection des meilleures opportunités — marché {market}",
+                    step_select_opportunities, profiles, timelines, kb, [niche], args.top,
+                )
+                opportunities = market_opportunities.get(niche.name, [])
+
+                opportunities = run_step(
+                    5, f"Filtrage anti-doublon (topic_history) — marché {market}",
+                    step_filter_recent_topics, {niche.name: opportunities}, topic_filter, market,
+                )[niche.name]
+            except PipelineStepError as exc:
+                # Un marché sans données exploitables (ex : marché US pas encore
+                # assez collecté) ne doit jamais interrompre le pipeline entier —
+                # on l'ignore aujourd'hui, l'autre marché continue normalement.
+                logger.warning(
+                    "Marché %s ignoré aujourd'hui (données insuffisantes) : %s", market, exc,
+                )
+                continue
+
             niches.append(niche)
             niche_market_pairs.append((market, niche))
-
-            market_opportunities = run_step(
-                4, f"Sélection des meilleures opportunités — marché {market}",
-                step_select_opportunities, profiles, timelines, kb, [niche], args.top,
-            )
-            opportunities = market_opportunities.get(niche.name, [])
-
-            opportunities = run_step(
-                5, f"Filtrage anti-doublon (topic_history) — marché {market}",
-                step_filter_recent_topics, {niche.name: opportunities}, topic_filter, market,
-            )[niche.name]
-
             opportunities_by_niche[f"{market}:{niche.name}"] = opportunities
+
+        if not niche_market_pairs:
+            raise PipelineStepError(
+                "Aucun marché n'a de niche/opportunité exploitable aujourd'hui — pipeline interrompu."
+            )
 
         niche_productions: List[Dict[str, Any]] = []
         for idx, (market, niche) in enumerate(niche_market_pairs, 1):
