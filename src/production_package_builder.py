@@ -44,19 +44,32 @@ déjà produits (Script, ImagePrompt, AnimationPrompt, ShotPlan) via
 NicheProductionResult.
 """
 
+import dataclasses
 import json
 import logging
+import re
+import string
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from src.brand_engine import BrandProfile
 from src.niche_intelligence import Niche
-from src.script_engine import Script
+from src.script_engine import Dialogue, Script, estimate_scene_duration
 
 logger = logging.getLogger(__name__)
 
 _INSTRUCTION_FORMAT = "Respond STRICTLY in valid JSON. Do not include any explanation or markdown."
+
+# Sprint 36 — l'outil de génération vidéo de l'utilisateur ne produit jamais
+# plus de 8 secondes par clip. Une scène plus longue est donc exportée en
+# plusieurs fichiers animation_prompts_*/scene_XXa.json, scene_XXb.json...
+# qui réutilisent tous la même image (même sujet/décor/style) mais couvrent
+# chacun une tranche de dialogue distincte, à assembler bout à bout au montage.
+MAX_CLIP_DURATION_SECONDS = 8
+_CLIP_SUFFIXES = string.ascii_lowercase
+
+_SENTENCE_SPLIT_RE = re.compile(r"(?<=[.!?])\s+")
 
 
 # ── Contrat d'entrée ──────────────────────────────────────────────────────────
@@ -264,6 +277,101 @@ def _build_animation_prompt_file(
     }
 
 
+def _split_single_dialogue(dialogue: Dialogue, max_seconds: int) -> List[Dialogue]:
+    """
+    Scinde UNE réplique trop longue pour tenir seule dans max_seconds, en
+    coupant sur les frontières de phrases (jamais au milieu d'une phrase),
+    et en dernier recours sur les mots si une phrase unique dépasse déjà
+    max_seconds à elle seule.
+    """
+    if estimate_scene_duration([dialogue]) <= max_seconds:
+        return [dialogue]
+
+    sentences = [s for s in _SENTENCE_SPLIT_RE.split(dialogue.replique.strip()) if s]
+    if len(sentences) <= 1:
+        words = dialogue.replique.split()
+        words_per_second = estimate_scene_duration.__globals__["NARRATION_WORDS_PER_MINUTE"] / 60.0
+        max_words = max(1, int(max_seconds * words_per_second))
+        return [
+            Dialogue(personnage=dialogue.personnage, replique=" ".join(words[i : i + max_words]))
+            for i in range(0, len(words), max_words)
+        ] or [dialogue]
+
+    parts: List[Dialogue] = []
+    current: List[str] = []
+    for sentence in sentences:
+        candidate = " ".join(current + [sentence])
+        if current and estimate_scene_duration([Dialogue(dialogue.personnage, candidate)]) > max_seconds:
+            parts.append(Dialogue(personnage=dialogue.personnage, replique=" ".join(current)))
+            current = [sentence]
+        else:
+            current.append(sentence)
+    if current:
+        parts.append(Dialogue(personnage=dialogue.personnage, replique=" ".join(current)))
+    return parts
+
+
+def _split_dialogues_for_clip_limit(
+    dialogues: List[Dialogue], max_seconds: int = MAX_CLIP_DURATION_SECONDS,
+) -> List[List[Dialogue]]:
+    """
+    Regroupe les répliques d'une scène en clips consécutifs dont la durée
+    estimée ne dépasse jamais max_seconds — nécessaire car l'outil de
+    génération vidéo cible ne produit que des clips de 8s maximum. Une seule
+    réplique déjà trop longue est elle-même scindée (voir _split_single_dialogue).
+    """
+    atomic: List[Dialogue] = []
+    for d in dialogues:
+        atomic.extend(_split_single_dialogue(d, max_seconds))
+
+    if not atomic:
+        return [[]]
+
+    groups: List[List[Dialogue]] = []
+    current: List[Dialogue] = []
+    for d in atomic:
+        candidate = current + [d]
+        if current and estimate_scene_duration(candidate) > max_seconds:
+            groups.append(current)
+            current = [d]
+        else:
+            current = candidate
+    if current:
+        groups.append(current)
+    return groups
+
+
+def _split_animation_for_clip_limit(animation_prompt: Any, max_seconds: int = MAX_CLIP_DURATION_SECONDS) -> List[Any]:
+    """
+    Décline un AnimationPrompt (scène complète, potentiellement > 8s) en une
+    liste d'AnimationPrompt "clips", chacun ≤ max_seconds. Réutilise
+    intégralement tous les champs de mouvement/son/style de la scène — seuls
+    dialogues/duration/transition diffèrent par clip. Seul le DERNIER clip
+    porte la vraie transition vers la scène suivante ; les clips
+    intermédiaires indiquent une continuité (même scène, à recoller au montage).
+    """
+    groups = _split_dialogues_for_clip_limit(animation_prompt.dialogues, max_seconds)
+    if len(groups) <= 1:
+        return [animation_prompt]
+
+    clips = []
+    last_index = len(groups) - 1
+    for idx, group in enumerate(groups):
+        is_last = idx == last_index
+        clips.append(
+            dataclasses.replace(
+                animation_prompt,
+                dialogues=group,
+                duration=estimate_scene_duration(group) if group else 0,
+                transition=(
+                    animation_prompt.transition if is_last
+                    else "Continuous shot — hard cut directly to the next clip of the same scene."
+                ),
+            )
+        )
+    return clips
+
+
 # ── ProductionPackageBuilder ─────────────────────────────────────────────────
 
 class ProductionPackageBuilder:
@@ -302,6 +410,7 @@ class ProductionPackageBuilder:
                 ),
             )
 
+        clip_counts: Dict[str, int] = {"English": 0, "French": 0}
         for animation_dir, animations, language in (
             (animation_dir_en, result.animations_en, "English"),
             (animation_dir_fr, result.animations_fr, "French"),
@@ -310,15 +419,26 @@ class ProductionPackageBuilder:
                 script_scene = scenes_by_number.get(entry["scene_order"])
                 description = script_scene.scene.description if script_scene else None
                 image_entry = images_by_order.get(entry["scene_order"], {})
-                _write_json(
-                    animation_dir / f"scene_{entry['scene_order']:02d}.json",
-                    _build_animation_prompt_file(
-                        entry["animation_prompt"], image_entry.get("image_prompt"),
-                        image_entry.get("shot_plan"), description, language,
-                    ),
-                )
+                clips = _split_animation_for_clip_limit(entry["animation_prompt"])
+                clip_counts[language] += len(clips)
+                if len(clips) > 1:
+                    logger.info(
+                        "Scène %d (%ds, %s) découpée en %d clips de %ds max : %s",
+                        entry["scene_order"], entry["animation_prompt"].duration, language,
+                        len(clips), MAX_CLIP_DURATION_SECONDS,
+                        ", ".join(f"{c.duration}s" for c in clips),
+                    )
+                for idx, clip in enumerate(clips):
+                    suffix = _CLIP_SUFFIXES[idx] if len(clips) > 1 else ""
+                    _write_json(
+                        animation_dir / f"scene_{entry['scene_order']:02d}{suffix}.json",
+                        _build_animation_prompt_file(
+                            clip, image_entry.get("image_prompt"),
+                            image_entry.get("shot_plan"), description, language,
+                        ),
+                    )
 
-        (package_dir / "report.md").write_text(self._build_report(result), encoding="utf-8")
+        (package_dir / "report.md").write_text(self._build_report(result, clip_counts), encoding="utf-8")
 
         logger.info("Package de production créé : %s", package_dir)
         return package_dir
@@ -336,7 +456,8 @@ class ProductionPackageBuilder:
         return (provider, status, f"{time_ms} ms", f"${cost:.6f}")
 
     @staticmethod
-    def _build_report(result: NicheProductionResult) -> str:
+    def _build_report(result: NicheProductionResult, clip_counts: Optional[Dict[str, int]] = None) -> str:
+        clip_counts = clip_counts or {}
         script_en = result.final_script_en
         script_fr = result.final_script_fr
         lines = [
@@ -357,8 +478,12 @@ class ProductionPackageBuilder:
         lines += [
             "",
             f"- Prompts image générés : {len(result.images)} (partagés entre les 2 langues)",
-            f"- Prompts animation générés : {len(result.animations_en)} en anglais "
-            "(la version française réutilise les mêmes prompts, dialogues/durée substitués)",
+            f"- Scènes → clips vidéo (limite {MAX_CLIP_DURATION_SECONDS}s/clip) : "
+            f"{len(result.animations_en)} scènes → {clip_counts.get('English', len(result.animations_en))} "
+            f"clips EN / {clip_counts.get('French', len(result.animations_fr))} clips FR "
+            "(une scène plus longue que "
+            f"{MAX_CLIP_DURATION_SECONDS}s est exportée en plusieurs fichiers scene_XXa/b/c.json, "
+            "même image, à recoller au montage)",
             "",
             "## Métriques techniques par scène",
             "",
