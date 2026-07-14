@@ -79,21 +79,28 @@ class TestStepFilterRecentTopics:
         assert result == {"IA": []}
 
 
+def _production(final_script_title: str = "Titre du script") -> dict:
+    """Sprint 35 — un dict de production couvre désormais 1 niche/2 langues."""
+    final_script_en = SimpleNamespace(title=final_script_title, scenes=[], estimated_duration=100)
+    final_script_fr = SimpleNamespace(title=final_script_title, scenes=[], estimated_duration=100)
+    return {
+        "niche": _niche("IA"),
+        "brand_en": SimpleNamespace(id="global_us", name="Global US"),
+        "brand_fr": SimpleNamespace(id="ia_fr", name="IA FR"),
+        "final_script_en": final_script_en,
+        "final_script_fr": final_script_fr,
+        "images": [],
+        "animations_en": [],
+        "animations_fr": [],
+        "rewrite_result": None,
+        "best_entry": {"opportunity": _opportunity("Sujet du jour", "vid_today")},
+    }
+
+
 class TestStepBuildPackagesSavesTopicHistory:
     def test_saves_one_topic_record_per_niche_production(self, tmp_path):
         store = JsonTopicHistoryStore(tmp_path / "topic_history.json")
-
-        final_script = SimpleNamespace(title="Titre du script", scenes=[], estimated_duration=100)
-        prod = {
-            "niche": _niche("IA"),
-            "market": "FR",
-            "brand": SimpleNamespace(id="ia_fr", name="IA FR"),
-            "final_script": final_script,
-            "images": [],
-            "animations": [],
-            "rewrite_result": None,
-            "best_entry": {"opportunity": _opportunity("Sujet du jour", "vid_today")},
-        }
+        prod = _production()
 
         class _StubBuilder:
             def build(self, output_dir, idx, package_result):
@@ -114,17 +121,7 @@ class TestStepBuildPackagesSavesTopicHistory:
             def save_topic(self, record):
                 raise RuntimeError("relation 'topic_history' does not exist")
 
-        final_script = SimpleNamespace(title="Titre du script", scenes=[], estimated_duration=100)
-        prod = {
-            "niche": _niche("IA"),
-            "market": "FR",
-            "brand": SimpleNamespace(id="ia_fr", name="IA FR"),
-            "final_script": final_script,
-            "images": [],
-            "animations": [],
-            "rewrite_result": None,
-            "best_entry": {"opportunity": _opportunity("Sujet du jour", "vid_today")},
-        }
+        prod = _production()
 
         class _StubBuilder:
             def build(self, output_dir, idx, package_result):

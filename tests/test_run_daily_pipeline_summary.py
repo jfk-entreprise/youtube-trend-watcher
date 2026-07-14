@@ -38,7 +38,7 @@ def _prod(images_providers, animations_providers):
             {"scene_order": i + 1, "image_prompt": SimpleNamespace(metadata={"provider": p})}
             for i, p in enumerate(images_providers)
         ],
-        "animations": [
+        "animations_en": [
             {"scene_order": i + 1, "animation_prompt": SimpleNamespace(metadata={"provider": p})}
             for i, p in enumerate(animations_providers)
         ],
@@ -57,7 +57,7 @@ class TestCountLlmVsFallback:
         assert (images_llm, images_fallback) == (1, 2)
 
         animations_llm, animations_fallback = run_daily_pipeline._count_llm_vs_fallback(
-            prods, "animations", "animation_prompt", run_daily_pipeline._ANIMATION_FALLBACK_PROVIDER,
+            prods, "animations_en", "animation_prompt", run_daily_pipeline._ANIMATION_FALLBACK_PROVIDER,
         )
         assert (animations_llm, animations_fallback) == (2, 1)
 

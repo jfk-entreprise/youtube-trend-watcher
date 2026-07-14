@@ -1,15 +1,18 @@
 """
 Production Package Builder — Sprint 28 (Studio de production autonome),
-mis à jour Sprint 31.1 (Storyboard JSON + nettoyage des métadonnées techniques)
-puis Sprint 34.6 (prompts image/vidéo au format riche "mega-prompt").
+mis à jour Sprint 31.1 (Storyboard JSON + nettoyage des métadonnées techniques),
+Sprint 34.6 (prompts image/vidéo au format riche "mega-prompt"), puis
+Sprint 35 (1 niche/jour déclinée en 2 langues, visuels partagés).
 
-Construit, pour une niche/chaîne donnée, le package de production "propre"
+Construit, pour LA niche/histoire du jour, le package de production "propre"
 attendu en sortie quotidienne du pipeline :
 
     outputs/YYYY-MM-DD/niche_01/
-        final_script.json
-        image_prompts/
-        animation_prompts/
+        final_script_en.json
+        final_script_fr.json
+        image_prompts/            (UNIQUE, partagé — les visuels ne changent pas)
+        animation_prompts_en/
+        animation_prompts_fr/
         report.md
 
 Les dossiers techniques internes (shot_plans, .cache, benchmark.json) restent
@@ -18,17 +21,23 @@ les duplique jamais : seul ce qui est nécessaire à la production réelle de la
 vidéo se retrouve dans niche_XX/.
 
 Sprint 31.1 :
-  - final_script.json adopte le format Storyboard Studio unifié
+  - final_script_*.json adopte le format Storyboard Studio unifié
     (title + scenes[{order, scene, dialogues, transition, duration_seconds}])
     — aucun champ interne (metadata, language, style...) n'y est écrit.
 
 Sprint 34.6 :
-  - image_prompts/scene_XX.json et animation_prompts/scene_XX.json adoptent un
-    format "mega-prompt" à 3 clés {prompt, negative_prompt, instruction_format}
+  - image_prompts/scene_XX.json et animation_prompts_*/scene_XX.json adoptent
+    un format "mega-prompt" à 3 clés {prompt, negative_prompt, instruction_format}
     — le champ "prompt" concatène des libellés riches ("Subject: ... Clothing:
     ... Camera Angle: ...") construits à partir du contenu déjà généré
     (ImagePrompt/AnimationPrompt, ShotPlan, SceneDescription, BrandProfile) —
     aucune nouvelle génération LLM ici, uniquement une reformulation.
+
+Sprint 35 :
+  - Une seule niche/histoire est produite chaque jour, déclinée en 2 vidéos
+    (anglais + français) qui partagent EXACTEMENT le même contenu visuel —
+    un seul `image_prompts/`, deux `animation_prompts_en/`/`animation_prompts_fr/`
+    identiques sauf Dialogue/Speaker/Narration/Language/Scene Duration.
 
 Ne dépend d'aucun autre moteur créatif : il consomme uniquement les objets
 déjà produits (Script, ImagePrompt, AnimationPrompt, ShotPlan) via
@@ -55,14 +64,18 @@ _INSTRUCTION_FORMAT = "Respond STRICTLY in valid JSON. Do not include any explan
 @dataclass
 class NicheProductionResult:
     """
-    Résultat complet de production pour UNE niche/chaîne (un des deux
-    vidéos/jour). Regroupe ce qui est nécessaire au package final.
+    Résultat complet de production pour LA niche du jour (Sprint 35 — une
+    seule niche, déclinée en 2 vidéos EN/FR). Regroupe ce qui est nécessaire
+    au package final.
     """
     niche: Niche
-    brand: BrandProfile
-    final_script: Script
-    images: List[Dict[str, Any]]        # [{"scene_order": int, "image_prompt": ImagePrompt, ...}]
-    animations: List[Dict[str, Any]]    # [{"scene_order": int, "animation_prompt": AnimationPrompt}]
+    brand_en: BrandProfile              # packaging de la vidéo anglaise (ex: global_us)
+    brand_fr: BrandProfile              # marque FR qui pilote le ton du script + packaging FR
+    final_script_en: Script
+    final_script_fr: Script
+    images: List[Dict[str, Any]]           # [{"scene_order": int, "image_prompt": ImagePrompt, ...}] — partagé
+    animations_en: List[Dict[str, Any]]    # [{"scene_order": int, "animation_prompt": AnimationPrompt}]
+    animations_fr: List[Dict[str, Any]]    # mêmes AnimationPrompt que animations_en, dialogues/duration substitués
     rewrite_result: Optional[Dict[str, Any]] = None
 
 
@@ -263,16 +276,21 @@ class ProductionPackageBuilder:
     def build(self, output_dir: Path, niche_index: int, result: NicheProductionResult) -> Path:
         package_dir = Path(output_dir) / f"niche_{niche_index:02d}"
         image_dir = package_dir / "image_prompts"
-        animation_dir = package_dir / "animation_prompts"
+        animation_dir_en = package_dir / "animation_prompts_en"
+        animation_dir_fr = package_dir / "animation_prompts_fr"
         package_dir.mkdir(parents=True, exist_ok=True)
         image_dir.mkdir(parents=True, exist_ok=True)
-        animation_dir.mkdir(parents=True, exist_ok=True)
+        animation_dir_en.mkdir(parents=True, exist_ok=True)
+        animation_dir_fr.mkdir(parents=True, exist_ok=True)
 
-        _write_json(package_dir / "final_script.json", _serialize_script(result.final_script))
+        _write_json(package_dir / "final_script_en.json", _serialize_script(result.final_script_en))
+        _write_json(package_dir / "final_script_fr.json", _serialize_script(result.final_script_fr))
 
-        scenes_by_number = {s.scene.number: s for s in result.final_script.scenes}
+        # Les descriptions de scène (setting/lighting/camera/mood...) sont
+        # partagées entre les 2 langues — seules les répliques diffèrent
+        # (final_script_en/final_script_fr ont les mêmes scene.number).
+        scenes_by_number = {s.scene.number: s for s in result.final_script_en.scenes}
         images_by_order = {e["scene_order"]: e for e in result.images}
-        language = result.final_script.language
 
         for entry in sorted(result.images, key=lambda e: e["scene_order"]):
             script_scene = scenes_by_number.get(entry["scene_order"])
@@ -280,21 +298,25 @@ class ProductionPackageBuilder:
             _write_json(
                 image_dir / f"scene_{entry['scene_order']:02d}.json",
                 _build_image_prompt_file(
-                    entry["image_prompt"], entry.get("shot_plan"), description, result.brand,
+                    entry["image_prompt"], entry.get("shot_plan"), description, result.brand_en,
                 ),
             )
 
-        for entry in sorted(result.animations, key=lambda e: e["scene_order"]):
-            script_scene = scenes_by_number.get(entry["scene_order"])
-            description = script_scene.scene.description if script_scene else None
-            image_entry = images_by_order.get(entry["scene_order"], {})
-            _write_json(
-                animation_dir / f"scene_{entry['scene_order']:02d}.json",
-                _build_animation_prompt_file(
-                    entry["animation_prompt"], image_entry.get("image_prompt"),
-                    image_entry.get("shot_plan"), description, language,
-                ),
-            )
+        for animation_dir, animations, language in (
+            (animation_dir_en, result.animations_en, "English"),
+            (animation_dir_fr, result.animations_fr, "French"),
+        ):
+            for entry in sorted(animations, key=lambda e: e["scene_order"]):
+                script_scene = scenes_by_number.get(entry["scene_order"])
+                description = script_scene.scene.description if script_scene else None
+                image_entry = images_by_order.get(entry["scene_order"], {})
+                _write_json(
+                    animation_dir / f"scene_{entry['scene_order']:02d}.json",
+                    _build_animation_prompt_file(
+                        entry["animation_prompt"], image_entry.get("image_prompt"),
+                        image_entry.get("shot_plan"), description, language,
+                    ),
+                )
 
         (package_dir / "report.md").write_text(self._build_report(result), encoding="utf-8")
 
@@ -315,30 +337,36 @@ class ProductionPackageBuilder:
 
     @staticmethod
     def _build_report(result: NicheProductionResult) -> str:
-        script = result.final_script
+        script_en = result.final_script_en
+        script_fr = result.final_script_fr
         lines = [
             f"# Package de production — {result.niche.name}",
             "",
-            f"**Chaîne :** {result.brand.name} ({result.brand.id})  ",
+            f"**Chaîne EN :** {result.brand_en.name} ({result.brand_en.id})  ",
+            f"**Chaîne FR :** {result.brand_fr.name} ({result.brand_fr.id})  ",
             f"**Niche :** {result.niche.name} (score={result.niche.niche_score:.3f})  ",
-            f"**Titre :** {script.title}  ",
-            f"**Hook :** {script.hook}  ",
-            f"**Durée estimée :** {script.estimated_duration}s  ",
-            f"**Scènes :** {len(script.scenes)}  ",
+            f"**Titre :** {script_en.title}  ",
+            f"**Hook (EN) :** {script_en.hook}  ",
+            f"**Hook (FR) :** {script_fr.hook}  ",
+            f"**Durée estimée EN :** {script_en.estimated_duration}s — **FR :** {script_fr.estimated_duration}s  ",
+            f"**Scènes :** {len(script_en.scenes)}  ",
         ]
         if result.rewrite_result is not None:
             applied = result.rewrite_result.get("rewrite_applied")
             lines.append(f"**Réécriture :** {'appliquée' if applied else 'non appliquée'}  ")
         lines += [
             "",
-            f"- Prompts image générés : {len(result.images)}",
-            f"- Prompts animation générés : {len(result.animations)}",
+            f"- Prompts image générés : {len(result.images)} (partagés entre les 2 langues)",
+            f"- Prompts animation générés : {len(result.animations_en)} en anglais "
+            "(la version française réutilise les mêmes prompts, dialogues/durée substitués)",
             "",
             "## Métriques techniques par scène",
             "",
             "Source unique des informations techniques (provider, modèle, temps, "
             "coût, statut, fallback) — ces champs n'apparaissent plus dans "
-            "`image_prompts/*.json` ni `animation_prompts/*.json` (Sprint 31.1).",
+            "`image_prompts/*.json` ni `animation_prompts_*/*.json` (Sprint 31.1). "
+            "Les métriques d'animation ci-dessous portent sur la génération anglaise "
+            "(seule à faire un appel LLM — la version française réutilise ses résultats).",
             "",
             "| Scène | Image — provider | Image — statut | Image — temps | Image — coût "
             "| Animation — provider | Animation — statut | Animation — temps | Animation — coût |",
@@ -346,7 +374,7 @@ class ProductionPackageBuilder:
         ]
 
         images_by_order = {e["scene_order"]: e["image_prompt"] for e in result.images}
-        animations_by_order = {e["scene_order"]: e["animation_prompt"] for e in result.animations}
+        animations_by_order = {e["scene_order"]: e["animation_prompt"] for e in result.animations_en}
         all_orders = sorted(set(images_by_order) | set(animations_by_order))
 
         for order in all_orders:
