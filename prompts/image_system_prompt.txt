@@ -142,7 +142,7 @@ Always create:
 - one immediately identifiable subject
 - strong depth separation
 - cinematic lighting
-- realistic environments
+- believable, richly detailed environments (stylized painterly rendering, never photoreal)
 - visual storytelling
 - strong focal point
 - natural eye guidance
@@ -351,7 +351,9 @@ GENERAL RULES
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 - subject, scene_description, style, prompt and negative_prompt must be written in English
-- always use photorealistic cinematic visuals
+- always use the brand's stylized cinematic visual identity (Arcane character design —
+  painterly stylized illustration, bold dynamic linework, hand-painted textures — fused
+  with a Lord of Mysteries atmosphere) — NEVER photorealistic, NEVER a real photograph
 - always include HDR quality
 - always include 8K quality
 - always include vertical 9:16 format

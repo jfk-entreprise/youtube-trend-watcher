@@ -157,8 +157,8 @@ def valid_llm_json():
             "the room feels tense and pivotal in the story."
         ),
         "style": (
-            "cinematic photorealistic style, vertical 9:16 aspect ratio, "
-            "ultra-detailed, HDR, 8K resolution"
+            "Arcane character design, painterly stylized illustration, cinematic AI animation, "
+            "vertical 9:16 aspect ratio, ultra-detailed, HDR, 8K resolution"
         ),
         "prompt": "Generate an image where Sarah Chen stares at the glowing screen, realizing the scale of the change.",
         "negative_prompt": "blurry, low quality, distorted, extra limbs, watermark",
@@ -456,23 +456,23 @@ class TestParseAndValidate:
 
 class TestFinalizeStyleForRender:
     def test_adds_missing_format_and_quality(self):
-        result = _finalize_style_for_render("cinematic realism")
+        result = _finalize_style_for_render("moody scene")
         low = result.lower()
         assert "9:16" in low
         assert "hdr" in low or "8k" in low
-        assert "photorealistic" in low
+        assert "arcane" in low or "painterly" in low
         assert "cinematic" in low
 
     def test_does_not_duplicate_present_markers(self):
         style = (
-            "photorealistic, cinematic, vertical 9:16 aspect ratio, "
-            "ultra-detailed, HDR, 8K resolution."
+            "Arcane character design, painterly stylized illustration, cinematic, "
+            "vertical 9:16 aspect ratio, ultra-detailed, HDR, 8K resolution."
         )
         result = _finalize_style_for_render(style)
         assert result == style
 
     def test_case_insensitive_detection(self):
-        style = "PHOTOREALISTIC, CINEMATIC, VERTICAL 9:16, ULTRA-DETAILED HDR 8K"
+        style = "ARCANE, PAINTERLY, CINEMATIC, VERTICAL 9:16, ULTRA-DETAILED HDR 8K"
         result = _finalize_style_for_render(style)
         assert result == style
 
@@ -482,8 +482,15 @@ class TestFinalizeStyleForRender:
         low = result.lower()
         assert low.count("9:16") == 1
         assert "hdr" in low
-        assert "photorealistic" in low
+        assert "arcane" in low or "painterly" in low
         assert "cinematic" in low
+
+    def test_never_forces_photorealistic(self):
+        """Sprint 37.2 — la garantie de rendu ne doit plus jamais imposer
+        un registre photoréaliste, en contradiction avec le style de marque
+        (Arcane / Lord of Mysteries, painterly stylisé)."""
+        result = _finalize_style_for_render("simple scene")
+        assert "photorealistic" not in result.lower()
 
 
 class TestFinalizeNegativePrompt:
@@ -493,13 +500,22 @@ class TestFinalizeNegativePrompt:
         assert "bad hands" in low
         assert "watermark" in low
         assert "text" in low
-        assert "cartoon" in low
+        assert "photorealistic" in low
 
     def test_does_not_duplicate_present_terms(self):
         from src.llm_image_generator import _NEGATIVE_PROMPT_BASELINE
         full = ", ".join(_NEGATIVE_PROMPT_BASELINE)
         result = _finalize_negative_prompt(full)
         assert result == full
+
+    def test_never_bans_illustration_or_painting(self):
+        """Sprint 37.2 — le style de marque EST une illustration peinte
+        stylisée : bannir "cartoon/illustration/painting" contredisait le
+        style voulu et poussait vers le photoréalisme."""
+        result = _finalize_negative_prompt("bad hands").lower()
+        assert "illustration" not in result
+        assert "painting" not in result
+        assert "cartoon" not in result
 
 
 # ── Tests : contrat ImagePrompt (Sprint 24.1) ─────────────────────────────────

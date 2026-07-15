@@ -126,8 +126,16 @@ _REQUIRED_FIELDS = _REQUIRED_STRING_FIELDS + _REQUIRED_LIST_FIELDS
 _RENDER_REQUIREMENTS = (
     (("9:16", "vertical", "portrait orientation"), "vertical 9:16 aspect ratio, portrait orientation"),
     (("8k", "hdr", "ultra-detailed", "ultra detailed"), "ultra-detailed, HDR, 8K resolution"),
-    (("photorealistic", "photo-realistic", "photo realistic"), "photorealistic"),
-    (("cinematic",), "cinematic photography"),
+    # Sprint 37.2 — le style visuel de marque (Sprint 34.6 : "Arcane
+    # character design + Lord of Mysteries atmosphere") est stylisé/peint,
+    # jamais photoréaliste. Cette garantie forçait auparavant "photorealistic"
+    # sur CHAQUE style, en contradiction directe avec l'identité de marque —
+    # elle force désormais l'inverse : le registre stylisé peint.
+    (
+        ("arcane", "painterly", "stylized illustration", "hand-painted"),
+        "Arcane character design, painterly stylized illustration, hand-painted textures",
+    ),
+    (("cinematic",), "cinematic AI animation"),
 )
 
 _GENERIC_CHARACTER_LABELS = {"name", "nom", "personnage", "character", "characters"}
@@ -135,7 +143,11 @@ _GENERIC_CHARACTER_LABELS = {"name", "nom", "personnage", "character", "characte
 _NEGATIVE_PROMPT_BASELINE = (
     "text", "watermark", "logo", "signature", "blurry", "deformed",
     "distorted anatomy", "extra limbs", "low quality", "low resolution",
-    "cartoon", "illustration", "painting", "3d render", "oversaturated colors",
+    # Sprint 37.2 — bannir "photorealistic" au lieu de "cartoon/illustration/
+    # painting" : le style de marque EST une illustration peinte stylisée,
+    # bannir ces mots poussait systématiquement le rendu vers le photoréalisme.
+    "photorealistic", "photo-realistic", "photograph", "real photo", "realistic skin texture",
+    "3d render", "oversaturated colors",
     "horizontal crop", "incorrect aspect ratio", "plastic skin", "jpeg artifacts",
     # Sprint 26 — l'image doit ressembler à une scène de film, jamais à un
     # document explicatif ou une slide de présentation.

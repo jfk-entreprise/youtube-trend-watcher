@@ -137,7 +137,7 @@ def image_prompt() -> ImagePrompt:
             "A dark futuristic post-production studio, glowing holographic interface "
             "reflecting on the walls, cool blue rim lighting, shallow depth of field."
         ),
-        style="cinematic photorealistic style, vertical 9:16 aspect ratio, ultra-detailed, HDR, 8K resolution",
+        style="Arcane character design, painterly stylized illustration, cinematic AI animation, vertical 9:16 aspect ratio, ultra-detailed, HDR, 8K resolution",
         prompt="Generate an image where Sarah Chen stares at the glowing screen.",
         negative_prompt="blurry, low quality, distorted, extra limbs, watermark",
         metadata={
