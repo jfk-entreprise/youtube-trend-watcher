@@ -106,6 +106,42 @@ class Dialogue:
     replique: str
 
 
+def cap_dialogues_to_duration(
+    dialogues: List[Dialogue],
+    max_seconds: int = MAX_SCENE_DURATION_SECONDS,
+    words_per_minute: float = NARRATION_WORDS_PER_MINUTE,
+) -> List[Dialogue]:
+    """
+    Tronque une liste de dialogues (dans l'ordre) pour qu'elle tienne
+    strictement dans max_seconds de parole — garantie APPLIQUÉE, pas
+    seulement demandée au LLM (Sprint 37) : un LLM qui ignore la consigne de
+    6s/scène ne doit jamais produire un ScriptScene qui la dépasse quand
+    même. Coupe un dialogue individuel si besoin (dernier recours), jamais
+    au-delà du budget de mots restant.
+
+    Appelée par TOUS les points de construction d'un ScriptScene (LLM,
+    heuristique, traduction FR) — voir MAX_SCENE_DURATION_SECONDS.
+    """
+    if estimate_scene_duration(dialogues, words_per_minute) <= max_seconds:
+        return dialogues
+
+    max_words = max(1, int(max_seconds * words_per_minute / 60.0))
+    result: List[Dialogue] = []
+    words_used = 0
+    for d in dialogues:
+        words = d.replique.split()
+        remaining = max_words - words_used
+        if remaining <= 0:
+            break
+        if len(words) <= remaining:
+            result.append(d)
+            words_used += len(words)
+        else:
+            result.append(Dialogue(personnage=d.personnage, replique=" ".join(words[:remaining])))
+            break
+    return result
+
+
 # ── SceneDescription / Scene (Sprint 32.1 — storyboard cinématographique) ───
 
 @dataclass(frozen=True)

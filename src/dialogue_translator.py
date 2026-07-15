@@ -36,7 +36,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from src.llm import LLMMessage, build_llm
-from src.script_engine import Dialogue, Script, ScriptScene, estimate_scene_duration
+from src.script_engine import Dialogue, Script, ScriptScene, cap_dialogues_to_duration, estimate_scene_duration
 
 logger = logging.getLogger(__name__)
 
@@ -327,6 +327,11 @@ class DialogueTranslator:
                 Dialogue(personnage=orig_d.personnage, replique=str(t["replique"]).strip())
                 for orig_d, t in zip(orig_scene.dialogues, translated["dialogues"])
             ]
+            # Sprint 37 — le français est souvent plus long à l'oral que
+            # l'anglais : une traduction fidèle peut dépasser le budget de
+            # 6s/scène même quand l'original le respectait. Même garantie
+            # APPLIQUÉE qu'à la génération (voir cap_dialogues_to_duration).
+            new_dialogues = cap_dialogues_to_duration(new_dialogues)
             duration = estimate_scene_duration(new_dialogues)
             translated_scenes.append(
                 dataclasses.replace(orig_scene, dialogues=new_dialogues, duration_seconds=duration)

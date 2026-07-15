@@ -22,7 +22,7 @@ import pytest
 
 from src.rewrite_engine import RewriteEngine
 from src.llm_script_evaluator import LLMScriptScore
-from src.script_engine import Dialogue, Scene, SceneDescription, Script, ScriptScene
+from src.script_engine import Dialogue, Scene, SceneDescription, Script, ScriptScene, estimate_scene_duration
 
 
 # ── Fixtures ──────────────────────────────────────────────────────────────────
@@ -207,7 +207,7 @@ class TestExtractJson:
 # ── Tests : build_script_from_json ──────────────────────────────────────────────
 
 class TestBuildScriptFromJson:
-    def test_valid_rewrite_preserves_subject_brand_duration(self, sample_script, valid_rewrite_json):
+    def test_valid_rewrite_preserves_subject_brand(self, sample_script, valid_rewrite_json):
         result = RewriteEngine._build_script_from_json(valid_rewrite_json, sample_script)
         assert isinstance(result, Script)
         # Sujet / identité inchangés
@@ -216,17 +216,32 @@ class TestBuildScriptFromJson:
         assert result.language == sample_script.language
         assert result.style == sample_script.style
         assert result.target_audience == sample_script.target_audience
-        # Durée inchangée
-        assert result.estimated_duration == sample_script.estimated_duration
         assert len(result.scenes) == len(sample_script.scenes)
         for original, new in zip(sample_script.scenes, result.scenes):
             assert new.order == original.order
-            assert new.duration_seconds == original.duration_seconds
             assert new.scene == original.scene
             assert new.transition == original.transition
             assert len(new.dialogues) == len(original.dialogues)
             for orig_d, new_d in zip(original.dialogues, new.dialogues):
                 assert new_d.personnage == orig_d.personnage  # jamais modifié
+
+    def test_duration_recomputed_from_new_dialogues_not_preserved(self, sample_script, valid_rewrite_json):
+        """
+        Sprint 37 — duration_seconds/estimated_duration ne sont plus
+        recopiés depuis l'original : ils reflètent le texte RÉÉCRIT
+        (plafonné à MAX_SCENE_DURATION_SECONDS/scène), pour ne jamais
+        mentir sur la durée réelle d'une scène réécrite.
+        """
+        result = RewriteEngine._build_script_from_json(valid_rewrite_json, sample_script)
+        for new in result.scenes:
+            expected = estimate_scene_duration(new.dialogues)
+            assert new.duration_seconds == expected
+        assert result.estimated_duration == sum(s.duration_seconds for s in result.scenes)
+
+    def test_rewrite_replaces_replique_text(self, sample_script, valid_rewrite_json):
+        result = RewriteEngine._build_script_from_json(valid_rewrite_json, sample_script)
+        for original, new in zip(sample_script.scenes, result.scenes):
+            for orig_d, new_d in zip(original.dialogues, new.dialogues):
                 assert new_d.replique != orig_d.replique  # seule la replique change
 
     def test_rewrite_updates_hook_and_cta(self, sample_script, valid_rewrite_json):
@@ -327,8 +342,8 @@ class TestRewriteDecision:
         result = engine.rewrite(sample_script, original_eval)
         assert result is sample_script
 
-    def test_preserves_subject_brand_duration_end_to_end(self, sample_script, valid_rewrite_json):
-        """Le pipeline complet garde le sujet/marque/durée même sur une version retenue."""
+    def test_preserves_subject_brand_end_to_end(self, sample_script, valid_rewrite_json):
+        """Le pipeline complet garde le sujet/marque même sur une version retenue."""
         engine = RewriteEngine(evaluator=_StubEvaluator(80))
         engine._try_rewrite = lambda script, evaluation: RewriteEngine._build_script_from_json(
             valid_rewrite_json, script
@@ -336,8 +351,9 @@ class TestRewriteDecision:
         result = engine.rewrite(sample_script, _make_score(60))
         assert result.title == sample_script.title
         assert result.language == sample_script.language
-        assert result.estimated_duration == sample_script.estimated_duration
         assert len(result.scenes) == len(sample_script.scenes)
+        # Sprint 37 — la durée est recalculée depuis le texte réécrit, pas préservée
+        assert result.estimated_duration == sum(s.duration_seconds for s in result.scenes)
 
 
 # ── Tests : rewrite (résilience) ────────────────────────────────────────────────

@@ -22,12 +22,16 @@ Ce que le Rewrite Engine NE CHANGE JAMAIS :
   - le sujet (title, `scene` — description visuelle —, `transition` de
     chaque scène restent identiques)
   - la marque (language, style, target_audience du Script)
-  - la durée (estimated_duration du Script ET duration_seconds de chaque
-    scène — jamais envoyés au LLM, toujours recopiés depuis l'original)
   - le nombre de scènes et leur ordre (order de chaque scène est fixé et
     vérifié après coup ; toute divergence invalide la réécriture)
   - le nombre de dialogues par scène et le personnage de chacun (seule la
     réplique est réécrite, jamais qui parle ni combien de fois)
+
+Sprint 37 — duration_seconds/estimated_duration ne sont PLUS recopiés tels
+quels : ils sont recalculés depuis les répliques réécrites (comme à la
+génération et à la traduction), puis plafonnés à MAX_SCENE_DURATION_SECONDS
+par scène — le prompt demande au LLM de ne jamais rallonger le texte, mais
+cette garantie est désormais APPLIQUÉE, pas seulement demandée.
 
 Contrat :
   - Entrée : Script + LLMScriptScore (rapport de LLMScriptEvaluator).
@@ -49,7 +53,7 @@ from typing import Any, Dict, List, Optional
 
 from src.llm import LLMMessage, build_llm
 from src.llm_script_evaluator import LLMScriptEvaluator, LLMScriptScore
-from src.script_engine import Script, ScriptScene
+from src.script_engine import Script, ScriptScene, cap_dialogues_to_duration, estimate_scene_duration
 
 logger = logging.getLogger(__name__)
 
@@ -348,14 +352,23 @@ class RewriteEngine:
                 replace(dialogue, replique=new_replique)
                 for dialogue, new_replique in zip(scene.dialogues, new_repliques)
             ]
-            new_scenes.append(replace(scene, dialogues=new_dialogues))
+            # Sprint 37 — duration_seconds n'est plus recopiée aveuglément :
+            # le prompt de réécriture demande de ne jamais rallonger le
+            # nombre de mots, mais un LLM qui l'ignore ne doit pas produire
+            # une scène qui dépasse le budget de 6s. Recalculée + plafonnée
+            # comme à la génération et à la traduction (cap_dialogues_to_duration).
+            new_dialogues = cap_dialogues_to_duration(new_dialogues)
+            new_duration = estimate_scene_duration(new_dialogues)
+            new_scenes.append(replace(scene, dialogues=new_dialogues, duration_seconds=new_duration))
 
         return replace(
             original,
             scenes=new_scenes,
+            estimated_duration=sum(s.duration_seconds for s in new_scenes),
             # Champs volontairement PRÉSERVÉS (jamais lus depuis `data`) :
-            # title, estimated_duration, language, target_audience, style,
-            # scene (description visuelle), transition, duration_seconds,
-            # personnage de chaque dialogue — sujet, durée et identité de
-            # marque restent inchangés.
+            # title, language, target_audience, style, scene (description
+            # visuelle), transition, personnage de chaque dialogue — sujet
+            # et identité de marque restent inchangés. duration_seconds/
+            # estimated_duration sont désormais RECALCULÉS (voir ci-dessus),
+            # jamais recopiés tels quels depuis l'original.
         )

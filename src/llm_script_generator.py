@@ -41,7 +41,7 @@ from src.llm import LLMMessage, build_llm
 from src.opportunity_engine import Opportunity
 from src.script_engine import (
     Dialogue, Scene, SceneDescription, Script, ScriptGenerator, ScriptScene,
-    estimate_scene_duration,
+    cap_dialogues_to_duration, estimate_scene_duration,
 )
 
 logger = logging.getLogger(__name__)
@@ -835,15 +835,27 @@ class LLMScriptGenerator(ScriptGenerator):
                     "mood", "symbolism", "director_notes", "viewer_emotion",
                 )
             })
+            scene_number = int(scene_obj["number"])
+            capped_dialogues = cap_dialogues_to_duration(dialogues)
+            if len(capped_dialogues) != len(dialogues) or any(
+                a.replique != b.replique for a, b in zip(capped_dialogues, dialogues)
+            ):
+                logger.warning(
+                    "Scène %d : le LLM a dépassé le budget de %ds — répliques tronquées "
+                    "(%ds -> %ds).",
+                    scene_number, MAX_SCENE_DURATION_SEC,
+                    estimate_scene_duration(dialogues), estimate_scene_duration(capped_dialogues),
+                )
+
             scene = ScriptScene(
                 scene=Scene(
-                    number=int(scene_obj["number"]),
+                    number=scene_number,
                     type=str(scene_obj["type"]),
                     description=description,
                 ),
-                dialogues=dialogues,
+                dialogues=capped_dialogues,
                 transition=str(scene_data["transition"]),
-                duration_seconds=estimate_scene_duration(dialogues),
+                duration_seconds=estimate_scene_duration(capped_dialogues),
             )
             scenes.append(scene)
 
