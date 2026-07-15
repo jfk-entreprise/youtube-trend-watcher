@@ -137,6 +137,7 @@ class SupabaseStorageUploader(StorageUploader):
         )
 
         bucket_api = self._client.storage.from_(self._bucket)
+        self._clear_remote_folder(bucket_api, remote_folder_name)
         uploaded = 0
         failures: List[tuple] = []
 
@@ -201,6 +202,53 @@ class SupabaseStorageUploader(StorageUploader):
             success=success, uploaded_count=uploaded, total_count=total,
             remote_url=remote_url, error=error,
         )
+
+    @classmethod
+    def _list_existing_remote_files(cls, bucket_api: Any, prefix: str) -> List[str]:
+        """
+        Liste récursivement tous les fichiers déjà présents sous `prefix`
+        (l'API Storage ne liste qu'un niveau à la fois — il faut redescendre
+        manuellement dans chaque sous-dossier).
+        """
+        found: List[str] = []
+        try:
+            items = bucket_api.list(prefix)
+        except Exception as exc:
+            logger.warning("Impossible de lister le contenu distant existant sous '%s' : %s", prefix, exc)
+            return found
+        for item in items:
+            full_path = f"{prefix}/{item['name']}" if prefix else item["name"]
+            is_file = item.get("id") is not None
+            if is_file:
+                found.append(full_path)
+            else:
+                found.extend(cls._list_existing_remote_files(bucket_api, full_path))
+        return found
+
+    @classmethod
+    def _clear_remote_folder(cls, bucket_api: Any, remote_folder_name: str) -> None:
+        """
+        Supprime tout contenu déjà présent sous `remote_folder_name` avant
+        l'upload — sans cela, un deuxième run le même jour (retry manuel,
+        double déclenchement) laisse les fichiers de l'ancien run mélangés
+        avec les nouveaux (ex: scene_03.json ET scene_03a.json/scene_03b.json
+        cohabitant pour deux scripts différents), ce qui rend le dossier
+        distant incohérent pour le montage.
+        """
+        existing = cls._list_existing_remote_files(bucket_api, remote_folder_name)
+        if not existing:
+            return
+        logger.info(
+            "Nettoyage de %d fichier(s) existant(s) sous '%s' avant l'upload (éviter les orphelins d'un run précédent).",
+            len(existing), remote_folder_name,
+        )
+        batch_size = 20
+        for i in range(0, len(existing), batch_size):
+            batch = existing[i : i + batch_size]
+            try:
+                bucket_api.remove(batch)
+            except Exception as exc:
+                logger.warning("Échec de suppression d'un lot de fichiers existants (%s) : %s", batch, exc)
 
     @staticmethod
     def _verify_object_exists(bucket_api: Any, remote_path: str) -> "tuple[bool, str]":

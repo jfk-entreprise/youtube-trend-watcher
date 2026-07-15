@@ -33,11 +33,18 @@ class _FakeBucketAPI:
     dont la vérification échoue) — c'est exactement le scénario Sprint 30.5.
     """
 
-    def __init__(self, missing_paths=(), exists_raises_for=()):
+    def __init__(self, missing_paths=(), exists_raises_for=(), existing_remote_files=()):
         self.uploaded_paths = []
         self.exists_calls = []
+        self.removed_paths = []
         self._missing_paths = set(missing_paths)
         self._exists_raises_for = set(exists_raises_for)
+        # Simule un arbre de fichiers déjà présents côté serveur (Sprint 37 —
+        # nettoyage avant upload) : {"dossier/sous-dossier": ["a.json", ...]}.
+        self._remote_tree = {}
+        for path in existing_remote_files:
+            parent, _, name = path.rpartition("/")
+            self._remote_tree.setdefault(parent, []).append(name)
 
     def upload(self, path, file, file_options=None):
         self.uploaded_paths.append(path)
@@ -48,6 +55,23 @@ class _FakeBucketAPI:
         if path in self._exists_raises_for:
             raise RuntimeError(f"HEAD {path} -> 404 (simulated)")
         return path not in self._missing_paths
+
+    def list(self, prefix=""):
+        names_at_prefix = self._remote_tree.get(prefix, [])
+        # Un "dossier" est toute clé de _remote_tree préfixée par prefix/ —
+        # ses fichiers directs ont un "id" (fichier), les sous-dossiers non.
+        subfolders = {
+            key[len(prefix) + 1 :].split("/")[0]
+            for key in self._remote_tree
+            if prefix and key.startswith(prefix + "/") and key != prefix
+        }
+        items = [{"name": name, "id": "fake-id"} for name in names_at_prefix]
+        items += [{"name": name, "id": None} for name in subfolders]
+        return items
+
+    def remove(self, paths):
+        self.removed_paths.extend(paths)
+        return {"removed": paths}
 
     def get_public_url(self, path, options=None):
         return f"https://fake.supabase.co/storage/v1/object/public/{DEFAULT_BUCKET}/{path}"
@@ -177,6 +201,67 @@ class TestSupabaseStorageUploader:
         assert result.remote_url == (
             "https://proj.supabase.co/storage/v1/object/public/production/2026-07-10/niche_01"
         )
+
+
+# ── Tests : nettoyage du dossier distant avant upload (Sprint 37) ───────────
+# Bug de production confirmé : un deuxième run le même jour (retry manuel,
+# double déclenchement du workflow) laissait les fichiers de l'ancien run
+# mélangés avec les nouveaux — ex: scene_03.json (script 1, court) ET
+# scene_03a.json/scene_03b.json (script 2, plus long, découpé) cohabitant
+# pour la même scène. upload_package() doit maintenant vider le dossier
+# distant avant d'écrire les fichiers du run courant.
+
+class TestClearRemoteFolderBeforeUpload:
+    def test_removes_stale_files_not_in_current_package(self, tmp_path):
+        package_dir = _make_package(tmp_path)
+        fake_client = _FakeSupabaseClient(
+            existing_remote_files=[
+                "2026-07-10/niche_01/final_script.json",
+                "2026-07-10/niche_01/image_prompts/scene_02.json",  # orpheline d'un run precedent
+            ],
+        )
+        uploader = SupabaseStorageUploader(client=fake_client)
+
+        result = uploader.upload_package(package_dir, "2026-07-10/niche_01")
+
+        assert result.success is True
+        assert set(fake_client.bucket_api.removed_paths) == {
+            "2026-07-10/niche_01/final_script.json",
+            "2026-07-10/niche_01/image_prompts/scene_02.json",
+        }
+
+    def test_no_removal_when_remote_folder_already_empty(self, tmp_path):
+        package_dir = _make_package(tmp_path)
+        fake_client = _FakeSupabaseClient()
+        uploader = SupabaseStorageUploader(client=fake_client)
+
+        uploader.upload_package(package_dir, "2026-07-10/niche_01")
+
+        assert fake_client.bucket_api.removed_paths == []
+
+    def test_clear_failure_does_not_abort_upload(self, tmp_path):
+        package_dir = _make_package(tmp_path)
+        fake_client = _FakeSupabaseClient(
+            existing_remote_files=["2026-07-10/niche_01/stale.json"],
+        )
+        fake_client.bucket_api.remove = MagicMock(side_effect=RuntimeError("delete failed"))
+        uploader = SupabaseStorageUploader(client=fake_client)
+
+        result = uploader.upload_package(package_dir, "2026-07-10/niche_01")
+
+        assert result.success is True
+        assert result.uploaded_count == 3
+
+    def test_list_failure_does_not_abort_upload(self, tmp_path):
+        package_dir = _make_package(tmp_path)
+        fake_client = _FakeSupabaseClient()
+        fake_client.bucket_api.list = MagicMock(side_effect=RuntimeError("list failed"))
+        uploader = SupabaseStorageUploader(client=fake_client)
+
+        result = uploader.upload_package(package_dir, "2026-07-10/niche_01")
+
+        assert result.success is True
+        assert result.uploaded_count == 3
 
 
 # ── Tests : vérification post-upload (Sprint 30.5) ───────────────────────────
