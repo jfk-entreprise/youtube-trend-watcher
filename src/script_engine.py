@@ -54,6 +54,23 @@ logger = logging.getLogger(__name__)
 NARRATION_WORDS_PER_MINUTE: float = 150.0
 _MIN_SCENE_DURATION_SECONDS = 2
 
+# Sprint 37 — budget vidéo 1 minute max, filet de sécurité pour le générateur
+# heuristique (sans LLM) : une scène ne doit jamais dépasser 6s, pour rester
+# cohérent avec la contrainte de production imposée au générateur LLM
+# (voir _TARGET_SCENE_DURATION_SEC dans llm_script_generator.py).
+MAX_SCENE_DURATION_SECONDS = 6
+
+
+def _cap_narration_to_duration(
+    text: str, max_seconds: int, words_per_minute: float = NARRATION_WORDS_PER_MINUTE,
+) -> str:
+    """Tronque un texte aux premiers mots tenant dans max_seconds de parole."""
+    words = text.split()
+    max_words = max(1, int(max_seconds * words_per_minute / 60.0))
+    if len(words) <= max_words:
+        return text
+    return " ".join(words[:max_words])
+
 
 def estimate_scene_duration(
     dialogues: List["Dialogue"],
@@ -485,6 +502,7 @@ class HeuristicScriptGenerator(ScriptGenerator):
             narration = self._render_narration(
                 section_name, topic, hook_text, promise, audience, cta_text,
             )
+            narration = _cap_narration_to_duration(narration, MAX_SCENE_DURATION_SECONDS)
             dialogues = [Dialogue(personnage="NARRATEUR", replique=narration)]
             setting = _SCENE_VISUALS.get(section_name, "Plan standard.")
             transition = _SCENE_TRANSITIONS.get(section_name, "Coupe franche.")
@@ -504,9 +522,9 @@ class HeuristicScriptGenerator(ScriptGenerator):
                 ),
                 viewer_emotion="Le spectateur doit rester attentif et curieux de la suite.",
             )
-            duration = max(
-                _MIN_SCENE_DURATION_SECONDS,
-                round(estimate_scene_duration(dialogues) * brand_factor),
+            duration = min(
+                MAX_SCENE_DURATION_SECONDS,
+                max(_MIN_SCENE_DURATION_SECONDS, round(estimate_scene_duration(dialogues) * brand_factor)),
             )
 
             scene = ScriptScene(

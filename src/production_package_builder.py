@@ -66,7 +66,13 @@ _INSTRUCTION_FORMAT = "Respond STRICTLY in valid JSON. Do not include any explan
 # plusieurs fichiers animation_prompts_*/scene_XXa.json, scene_XXb.json...
 # qui réutilisent tous la même image (même sujet/décor/style) mais couvrent
 # chacun une tranche de dialogue distincte, à assembler bout à bout au montage.
-MAX_CLIP_DURATION_SECONDS = 8
+#
+# Sprint 37 — le budget de production (coût par génération de clip) impose
+# désormais une cible native de 6s/scène dès l'écriture du script (voir
+# MAX_SCENE_DURATION_SEC dans llm_script_generator.py) : ce découpage ne
+# devrait donc plus jamais se déclencher en pratique — il reste ici comme
+# filet de sécurité si un script dépasse malgré tout la cible.
+MAX_CLIP_DURATION_SECONDS = 6
 _CLIP_SUFFIXES = string.ascii_lowercase
 
 _SENTENCE_SPLIT_RE = re.compile(r"(?<=[.!?])\s+")

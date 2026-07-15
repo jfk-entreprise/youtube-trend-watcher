@@ -400,8 +400,9 @@ class TestDecoupling:
         mod_src = se.__file__
         with open(mod_src, "r", encoding="utf-8") as f:
             content = f.read()
-        # Doit importer Script
-        assert "from src.script_engine import Script" in content
+        # Doit importer Script (et uniquement depuis script_engine)
+        assert "from src.script_engine import" in content
+        assert "Script" in content
         assert "ScriptScore" in content
         # Mais pas les moteurs internes
         assert "from src.opportunity_engine" not in content

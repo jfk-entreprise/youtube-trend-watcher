@@ -339,8 +339,9 @@ lighting
 camera
   Describe precisely: angle, lens, focal length, movement, speed, height,
   framing. Always give a specific, timed, technical direction — e.g.
-  "A very slow 8-second dolly-in with a slight low angle." — and NEVER a
-  bare generic word like "Tracking shot."
+  "A slow 5-second dolly-in with a slight low angle." (never longer than
+  this scene's own duration, capped at 6 seconds) — and NEVER a bare
+  generic word like "Tracking shot."
 
 mood
   Describe precisely the emotional atmosphere of the scene.
@@ -712,6 +713,13 @@ You do NOT decide duration_seconds yourself — the pipeline computes it
 automatically from your dialogues after generation. Simply make sure each
 scene's dialogues are long enough to justify a meaningful beat, and short
 enough to keep the pacing fast.
+
+HARD PRODUCTION LIMIT: no single scene's dialogues may exceed the maximum
+scene duration stated in the user prompt (currently 6 seconds, ~15 words).
+This is a real constraint of the video-generation tool, not a stylistic
+preference — a scene that runs over risks a failed or costly re-generation.
+If a beat needs more room, split it into two shorter scenes instead of
+writing one long scene.
 
 Never generate dialogue that would be too long to read naturally.
 

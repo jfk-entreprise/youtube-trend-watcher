@@ -155,6 +155,23 @@ Prefer:
 Every sentence should move the story forward.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DURATION BUDGET — MANDATORY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Each scene has a hard production limit of 6 seconds of spoken audio
+(~15 words at 150 words/minute). duration_seconds is never provided by you —
+it is recalculated automatically from the word count of your rewritten
+repliques.
+
+For every scene, the rewritten repliques combined must NEVER contain more
+words than the original repliques for that scene (shorter is welcome,
+longer is forbidden) — a longer replique breaks the 6-second-per-scene
+production budget and makes the video generation fail.
+
+If a rewrite idea requires more words than the original allows, cut it or
+compress it further instead of lengthening the scene.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 STORYTELLING
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 

@@ -60,13 +60,21 @@ logger = logging.getLogger(__name__)
 _DEEPSEEK_SCRIPT_MODEL = os.environ.get("DEEPSEEK_MODEL_SCRIPT", "deepseek-chat")
 
 
-# ── Format cible (Sprint 20.1 — qualite Shorts) ─────────────────────────────
+# ── Format cible (Sprint 20.1 — qualite Shorts ; Sprint 37 — budget 60s) ────
 # Format court et percutant impose pour tous les scripts generes par LLM,
 # quelle que soit la duree suggeree par CreativeBrief.duration_seconds.
-
-_TARGET_DURATION_MIN_SEC = 100
-_TARGET_DURATION_MAX_SEC = 130
-_TARGET_DURATION_SEC = 115  # cible utilisee pour le calcul du nombre de mots
+#
+# Sprint 37 : la generation video (outil externe) coute cher par scene — le
+# script cible desormais 1 minute MAXIMUM, avec un plafond STRICT de 6s par
+# scene (~15 mots a 150 mots/minute), pour que chaque scene ait le maximum
+# de chances d'etre generee correctement du premier coup (moins de details a
+# faire tenir = moins de risque d'echec/regeneration payante). Le nombre de
+# scenes reste plafonne a 10 (10 x 6s = 60s pile) ; en dessous de 10, c'est
+# encore mieux (video plus courte, moins chere a produire).
+MAX_SCENE_DURATION_SEC = 6
+_TARGET_DURATION_MIN_SEC = 40
+_TARGET_DURATION_MAX_SEC = 60
+_TARGET_DURATION_SEC = 55  # cible utilisee pour le calcul du nombre de mots
 _TARGET_SCENES_MIN = 8
 _TARGET_SCENES_MAX = 10
 
@@ -650,8 +658,13 @@ class LLMScriptGenerator(ScriptGenerator):
             f"  Audience       : {brand_profile.target_audience}",
             "",
             "=== MANDATORY REQUIREMENTS (Shorts format) ===",
-            f"  - SCENE COUNT: EXACTLY between {_TARGET_SCENES_MIN} and {_TARGET_SCENES_MAX} scenes. Not fewer, not more.",
-            f"  - WORD COUNT: About {target_words} words total across all repliques combined (~{round(target_words / 2.5)}s of speech).",
+            f"  - SCENE COUNT: between {_TARGET_SCENES_MIN} and {_TARGET_SCENES_MAX} scenes MAXIMUM. Fewer is fine, never more.",
+            f"  - WORD COUNT: About {target_words} words total across all repliques combined (~{round(target_words / 2.5)}s of speech), "
+            f"NEVER above {round(_TARGET_DURATION_MAX_SEC * 2.5)} words (that would exceed the 1-minute hard limit).",
+            f"  - MAX {MAX_SCENE_DURATION_SEC} SECONDS PER SCENE (HARD LIMIT): the repliques of ANY SINGLE scene must never "
+            f"add up to more than ~{round(MAX_SCENE_DURATION_SEC * 2.5)} words (150 words/minute). This is a production "
+            "constraint — the video-generation tool can fail or need a costly retry if one scene carries too much dialogue. "
+            "Split a long beat into two shorter scenes instead of writing one long scene.",
             "  - HOOK IN 3 SECONDS: one short line that opens a curiosity gap from the very first word.",
             "  - STRICTLY FORBIDDEN to open with 'Imagine', 'In this video', 'Today we are going to', or 'Welcome' (in any language).",
             "  - FAST PACE: one idea per scene, no filler lines.",
@@ -672,26 +685,18 @@ class LLMScriptGenerator(ScriptGenerator):
 
     @staticmethod
     def _build_duration_breakdown(target_sec: int) -> str:
-        """Génère une répartition indicative de la durée entre les scenes."""
-        if target_sec <= 60:
-            return (
-                "Hook: 5s | Intro: 8s | Scene 1: 8s | Scene 2: 8s | Scene 3: 8s "
-                "| Scene 4: 8s | Conclusion: 10s | CTA: 5s | TOTAL = 60s"
-            )
-        elif target_sec <= 120:
-            n_scenes = min(_TARGET_SCENES_MAX, max(_TARGET_SCENES_MIN, (target_sec - 23) // 10))
-            per_scene = max(6, (target_sec - 23) // n_scenes)
-            return (
-                f"Hook: 3s | Intro: 7s | {n_scenes} scenes × ~{per_scene}s "
-                f"| Conclusion: 8s | CTA: 5s | TOTAL ≈ {target_sec}s"
-            )
-        else:
-            n_scenes = min(12, max(8, target_sec // 18))
-            base_per_scene = max(8, (target_sec - 36) // n_scenes)
-            return (
-                f"Hook: 6s | Intro: 10s | {n_scenes} scenes × {base_per_scene}s "
-                f"| Conclusion: 12s | CTA: 8s | TOTAL ≈ {target_sec}s"
-            )
+        """
+        Génère une répartition indicative de la durée entre les scenes —
+        Sprint 37 : chaque scene (hook et CTA inclus, ce sont juste la
+        premiere et la derniere scene) est plafonnee a MAX_SCENE_DURATION_SEC.
+        """
+        n_scenes = min(_TARGET_SCENES_MAX, max(_TARGET_SCENES_MIN, -(-target_sec // MAX_SCENE_DURATION_SEC)))
+        return (
+            f"Hook (scene 1): {MAX_SCENE_DURATION_SEC}s max | "
+            f"{n_scenes - 2} development scenes: {MAX_SCENE_DURATION_SEC}s max EACH | "
+            f"CTA (last scene): {MAX_SCENE_DURATION_SEC}s max "
+            f"| TOTAL ≈ {target_sec}s across {n_scenes} scenes (never exceed {MAX_SCENE_DURATION_SEC}s on any single scene)"
+        )
 
     # ── Extraction et validation JSON ──────────────────────────────────────────
 

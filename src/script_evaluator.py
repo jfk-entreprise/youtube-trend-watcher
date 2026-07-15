@@ -27,7 +27,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
-from src.script_engine import Script
+from src.script_engine import MAX_SCENE_DURATION_SECONDS, Script
 
 logger = logging.getLogger(__name__)
 
@@ -428,8 +428,8 @@ class ScriptEvaluator(BaseEvaluator):
         elif unique_durations >= 3:
             score += 1.0
 
-        # Pas de durée aberrante
-        outliers = sum(1 for d in durations if d > 45 or d < 3)
+        # Pas de durée aberrante — Sprint 37 : plafond Shorts strict (6s/scène)
+        outliers = sum(1 for d in durations if d > MAX_SCENE_DURATION_SECONDS)
         score -= min(outliers * 0.5, 2.0)
 
         # Nombre de scènes optimal
@@ -516,13 +516,13 @@ class ScriptEvaluator(BaseEvaluator):
         if len(set(descriptions)) >= len(descriptions) * 0.7:
             score += 1.0
 
-        # Durée optimale
+        # Durée optimale — Sprint 37 : budget Shorts strict (1 min max, 6s/scène)
         duration = script.estimated_duration
-        if 180 <= duration <= 600:  # 3-10 min
+        if 30 <= duration <= 60:  # cœur de cible Shorts
             score += 2.0
-        elif duration > 1200:  # > 20 min
+        elif duration > 60:  # dépasse le budget de production
             score -= 1.0
-        elif duration < 60:  # < 1 min
+        elif duration < 15:  # trop court pour développer une idée
             score -= 0.5
 
         # Progression narrative : présence de climax (recherché dans l'ensemble

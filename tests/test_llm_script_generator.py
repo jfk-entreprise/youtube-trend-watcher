@@ -300,9 +300,8 @@ class TestBuildUserPrompt:
         """Le prompt contient un exemple de répartition."""
         gen = LLMScriptGenerator()
         prompt = gen._build_user_prompt(sample_opportunity, sample_brief, sample_brand)
-        assert "Hook:" in prompt
-        assert "Intro:" in prompt
-        assert "CTA:" in prompt
+        assert "Hook (scene 1):" in prompt
+        assert "CTA (last scene):" in prompt
 
     @pytest.mark.parametrize("brief_duration", [45, 60, 90, 480, 600])
     def test_prompt_target_overrides_brief_duration(self, sample_opportunity, sample_brand, brief_duration):
@@ -391,24 +390,23 @@ class TestBuildUserPrompt:
 
 class TestBuildDurationBreakdown:
     def test_short_duration_60s(self):
-        """Répartition pour 60 secondes."""
+        """Répartition pour 60 secondes — plafond strict 6s/scène (Sprint 37)."""
         result = LLMScriptGenerator._build_duration_breakdown(60)
-        assert "Hook: 5s" in result
+        assert "Hook (scene 1): 6s max" in result
         assert "TOTAL" in result
 
     def test_medium_duration_90s(self):
-        """Répartition pour 90 secondes."""
+        """Répartition pour 90 secondes — toujours plafonnée à 10 scènes max."""
         result = LLMScriptGenerator._build_duration_breakdown(90)
-        assert "Hook:" in result
-        assert "Intro:" in result
-        assert "CTA:" in result
+        assert "Hook (scene 1):" in result
+        assert "CTA (last scene):" in result
 
     def test_long_duration_480s(self):
-        """Répartition pour 480 secondes."""
+        """Répartition pour 480 secondes — plafonnée au même format Shorts."""
         result = LLMScriptGenerator._build_duration_breakdown(480)
-        assert "Hook:" in result
+        assert "Hook (scene 1):" in result
         assert "scenes" in result.lower()
-        assert "CTA:" in result
+        assert "CTA (last scene):" in result
 
     def test_very_long_duration_600s(self):
         """Répartition pour 600 secondes."""
