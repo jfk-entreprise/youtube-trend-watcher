@@ -40,6 +40,7 @@ from src.creative_engine import CreativeBrief
 from src.llm import LLMMessage, build_llm
 from src.opportunity_engine import Opportunity
 from src.script_engine import (
+    MAX_SCENE_DURATION_SECONDS as MAX_SCENE_DURATION_SEC,
     Dialogue, Scene, SceneDescription, Script, ScriptGenerator, ScriptScene,
     cap_dialogues_to_duration, estimate_scene_duration,
 )
@@ -71,7 +72,13 @@ _DEEPSEEK_SCRIPT_MODEL = os.environ.get("DEEPSEEK_MODEL_SCRIPT", "deepseek-chat"
 # une histoire plus posee/cohérente, plutot que beaucoup de scenes tres
 # courtes. Le plafond par scene protege toujours contre un echec de
 # generation video (moins de details a faire tenir dans un seul clip).
-MAX_SCENE_DURATION_SEC = 10
+#
+# MAX_SCENE_DURATION_SEC est un ALIAS de src.script_engine.MAX_SCENE_DURATION_SECONDS
+# (importe ci-dessus) — SOURCE UNIQUE, jamais redefinie ici, pour que le
+# plafond demande au LLM et celui reellement applique par
+# cap_dialogues_to_duration() ne puissent plus jamais diverger (bug
+# Sprint 37.3 -> 37.5 : les scenes etaient tronquees a 6s alors que le LLM
+# visait 10s).
 _TARGET_DURATION_MIN_SEC = 40
 _TARGET_DURATION_MAX_SEC = 60
 _TARGET_DURATION_SEC = 55  # cible utilisee pour le calcul du nombre de mots

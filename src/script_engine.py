@@ -54,11 +54,16 @@ logger = logging.getLogger(__name__)
 NARRATION_WORDS_PER_MINUTE: float = 150.0
 _MIN_SCENE_DURATION_SECONDS = 2
 
-# Sprint 37 — budget vidéo 1 minute max, filet de sécurité pour le générateur
-# heuristique (sans LLM) : une scène ne doit jamais dépasser 6s, pour rester
-# cohérent avec la contrainte de production imposée au générateur LLM
-# (voir _TARGET_SCENE_DURATION_SEC dans llm_script_generator.py).
-MAX_SCENE_DURATION_SECONDS = 6
+# Sprint 37 — budget vidéo 1 minute max ; Sprint 37.3 — 10s/scène, 6 scènes
+# max. SOURCE UNIQUE DE VÉRITÉ pour le plafond par scène : llm_script_generator.py
+# (prompt/validation du LLM) importe CETTE constante au lieu d'en redéfinir
+# une localement — Sprint 37.1 avait laissé deux constantes distinctes
+# (MAX_SCENE_DURATION_SECONDS ici à 6, MAX_SCENE_DURATION_SEC à 10 côté LLM),
+# et cap_dialogues_to_duration() (qui tronque RÉELLEMENT le texte) utilisait
+# encore la valeur par défaut d'ici (6) alors que le LLM visait 10 — chaque
+# scène était donc coupée à 6s même quand le LLM en écrivait 10. Une seule
+# constante, importée partout, élimine ce risque de divergence.
+MAX_SCENE_DURATION_SECONDS = 10
 
 
 def _cap_narration_to_duration(
