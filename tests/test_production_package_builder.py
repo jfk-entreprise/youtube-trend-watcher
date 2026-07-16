@@ -202,7 +202,7 @@ class TestImagePromptMegaPrompt:
             "Subject:", "Appearance:", "Clothing:", "Accessories:", "Pose:", "Action:",
             "Facial Expression:", "Emotion:", "Environment:", "Background:", "Weather:",
             "Time of Day:", "Lighting:", "Camera Angle:", "Lens:", "Composition:", "Style:",
-            "Color Palette:", "Details:", "Text (optional):", "Language:",
+            "Color Palette:", "Character Reference:", "Details:", "Text (optional):", "Language:",
         ):
             assert label in prompt, f"Libellé manquant : {label}"
 
@@ -261,7 +261,7 @@ class TestAnimationPromptMegaPromptBothLanguages:
             "Character Action:", "Secondary Actions:", "Facial Expression:", "Emotion:",
             "Environment:", "Background:", "Weather:", "Time of Day:", "Lighting:",
             "Camera Shot:", "Camera Angle:", "Camera Movement:", "Lens:", "Composition:",
-            "Visual Style:", "Animation Style:", "Scene Duration:", "Frame Rate:",
+            "Visual Style:", "Character Reference:", "Animation Style:", "Scene Duration:", "Frame Rate:",
             "Dialogue:", "Speaker:", "Narration:", "Language:", "Voice:", "Lip Sync:",
             "Sound Effects:", "Ambient Sounds:", "Background Music:", "Atmosphere:",
             "Ending Scene:",
@@ -310,6 +310,147 @@ class TestAnimationPromptMegaPromptBothLanguages:
             assert "deepseek" not in raw
             assert "cost_usd" not in raw
             assert "987" not in raw
+
+
+def _two_scene_script(language, repliques) -> Script:
+    scenes = [
+        ScriptScene(
+            scene=Scene(number=i + 1, type="hook" if i == 0 else "development", description=_description()),
+            dialogues=[Dialogue(personnage="NARRATOR", replique=repliques[i])],
+            transition="Fade.", duration_seconds=10,
+        )
+        for i in range(len(repliques))
+    ]
+    return Script(title="Title", scenes=scenes, estimated_duration=sum(s.duration_seconds for s in scenes),
+                  language=language, target_audience="Curious", style="Bold", metadata={"generator": "llm_v1"})
+
+
+def _image_prompt_with_characters(characters, subject="scene subject") -> ImagePrompt:
+    metadata = {
+        "goal": "g", "emotion": "e", "characters": characters,
+        "appearance": "n/a", "clothing": "n/a", "accessories": "n/a", "pose": "n/a",
+        "facial_expression": "n/a", "weather": "N/A", "time_of_day": "night", "background": "n/a",
+        "provider": "deepseek", "model": "deepseek-chat", "time_ms": 1000, "cost_usd": 0.001,
+    }
+    return ImagePrompt(subject=subject, scene_description="scene", style="cinematic",
+                        prompt="show the scene", negative_prompt="blurry", metadata=metadata)
+
+
+def _result_with_characters(characters_by_scene) -> NicheProductionResult:
+    """Construit un NicheProductionResult à N scènes, chacune avec sa propre
+    liste `characters` (metadata d'ImagePrompt) — pour tester le suivi des
+    personnages récurrents entre scènes."""
+    n = len(characters_by_scene)
+    repliques_en = [f"Line {i + 1}" for i in range(n)]
+    repliques_fr = [f"Ligne {i + 1}" for i in range(n)]
+    images = [
+        {"scene_order": i + 1, "image_prompt": _image_prompt_with_characters(characters_by_scene[i]), "shot_plan": None}
+        for i in range(n)
+    ]
+    animations_en = [
+        {"scene_order": i + 1, "animation_prompt": _animation_prompt(repliques_en[i])} for i in range(n)
+    ]
+    animations_fr = [
+        {"scene_order": i + 1, "animation_prompt": _animation_prompt(repliques_fr[i])} for i in range(n)
+    ]
+    return NicheProductionResult(
+        niche=_niche(), brand_en=_brand_en(), brand_fr=_brand_fr(),
+        final_script_en=_two_scene_script("en", repliques_en),
+        final_script_fr=_two_scene_script("fr", repliques_fr),
+        images=images, animations_en=animations_en, animations_fr=animations_fr,
+        rewrite_result=None,
+    )
+
+
+class TestCharacterNameTokens:
+    """Sprint 37.3 — extraction du nom probable d'un personnage depuis une
+    entrée de la liste `characters` (format libre, nom généralement en tête)."""
+
+    def test_extracts_leading_proper_name(self):
+        from src.production_package_builder import _character_name_tokens
+        tokens = _character_name_tokens("Maya Hart, late 40s, short gray hair, director's cap")
+        assert tokens == {"maya", "hart"}
+
+    def test_single_word_name(self):
+        from src.production_package_builder import _character_name_tokens
+        tokens = _character_name_tokens("Ravi, middle-aged jeweler, warm brown skin")
+        assert tokens == {"ravi"}
+
+    def test_generic_descriptive_lead_returns_empty(self):
+        """Sprint 37.3 — 'Young woman...' n'est pas un nom propre, juste une
+        description générique : aucun token ne doit en être extrait."""
+        from src.production_package_builder import _character_name_tokens
+        tokens = _character_name_tokens("Young woman, early 20s, focused expression")
+        assert tokens == set()
+
+    def test_no_characters_returns_empty(self):
+        from src.production_package_builder import _character_name_tokens
+        assert _character_name_tokens("") == set()
+
+
+class TestCharacterReferenceTracking:
+    """Sprint 37.3 — un personnage nommé qui réapparaît dans une scène
+    ultérieure doit renvoyer vers la première scène où il est apparu, pour
+    que l'utilisateur fournisse l'image déjà générée comme référence
+    visuelle (même visage/coiffure/tenue) à son outil de génération."""
+
+    def test_first_appearance_has_no_reference(self, tmp_path):
+        builder = ProductionPackageBuilder()
+        result = _result_with_characters([
+            ["Maya Hart, late 40s, short gray hair, director's cap"],
+        ])
+        package_dir = builder.build(tmp_path, niche_index=1, result=result)
+        data = json.loads((package_dir / "image_prompts" / "scene_01.json").read_text(encoding="utf-8"))
+        assert "Character Reference: None" in data["prompt"]
+
+    def test_recurring_character_references_first_scene(self, tmp_path):
+        builder = ProductionPackageBuilder()
+        result = _result_with_characters([
+            ["Maya Hart, late 40s, short gray hair, director's cap"],
+            ["Maya Hart, director, tense expression, casual jacket"],
+        ])
+        package_dir = builder.build(tmp_path, niche_index=1, result=result)
+
+        scene1 = json.loads((package_dir / "image_prompts" / "scene_01.json").read_text(encoding="utf-8"))
+        scene2 = json.loads((package_dir / "image_prompts" / "scene_02.json").read_text(encoding="utf-8"))
+
+        assert "Character Reference: None" in scene1["prompt"]
+        assert "Maya Hart" in scene2["prompt"]
+        assert "scene_01" in scene2["prompt"]
+        assert "image_prompts/scene_01.json" in scene2["prompt"]
+
+    def test_reference_also_present_in_animation_prompts(self, tmp_path):
+        builder = ProductionPackageBuilder()
+        result = _result_with_characters([
+            ["Maya Hart, late 40s, short gray hair"],
+            ["Maya Hart, tense expression"],
+        ])
+        package_dir = builder.build(tmp_path, niche_index=1, result=result)
+
+        for lang_dir in ("animation_prompts_en", "animation_prompts_fr"):
+            scene2 = json.loads((package_dir / lang_dir / "scene_02.json").read_text(encoding="utf-8"))
+            assert "scene_01" in scene2["prompt"]
+
+    def test_unrelated_characters_get_no_reference(self, tmp_path):
+        builder = ProductionPackageBuilder()
+        result = _result_with_characters([
+            ["Maya Hart, late 40s, short gray hair"],
+            ["Ravi, middle-aged jeweler, warm brown skin"],
+        ])
+        package_dir = builder.build(tmp_path, niche_index=1, result=result)
+        scene2 = json.loads((package_dir / "image_prompts" / "scene_02.json").read_text(encoding="utf-8"))
+        assert "Character Reference: None" in scene2["prompt"]
+
+    def test_three_scenes_all_reference_earliest_appearance(self, tmp_path):
+        builder = ProductionPackageBuilder()
+        result = _result_with_characters([
+            ["Maya Hart, late 40s, short gray hair"],
+            ["Some unrelated background extra"],
+            ["Maya Hart, tense, gripping the table"],
+        ])
+        package_dir = builder.build(tmp_path, niche_index=1, result=result)
+        scene3 = json.loads((package_dir / "image_prompts" / "scene_03.json").read_text(encoding="utf-8"))
+        assert "scene_01" in scene3["prompt"]
 
 
 class TestReportTechnicalMetrics:

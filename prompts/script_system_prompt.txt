@@ -964,18 +964,31 @@ rewrite it until it is.
 STORY ARC
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-The script must have:
+The script now has AT MOST 6 scenes total (see the exact scene-count
+requirement in the user prompt) — every beat below must fit inside that
+budget, so several beats are deliberately merged into a single scene:
 
-1. Hook (0–3 seconds, first scene)
-2. Introduction (4–8 seconds)
-3. Main discovery / turning point
-4. Escalating stakes
-5. Climax / final revelation
-6. Satisfying conclusion
-7. Call to action (last scene)
+1. Hook (first scene — opens the curiosity gap immediately)
+2. Setup + main discovery / turning point (combined into one scene)
+3. Escalating stakes
+4. Climax / final revelation
+5. Conclusion + call to action (combined into the last scene)
 
-Each scene should advance the story.
-No exceptions.
+That is 5 narrative beats across at most 6 scenes — if you are given 6
+scenes, use the extra one to give the climax more room; never add a beat
+that does not fit the count.
+
+Each scene should advance the story. No exceptions.
+
+With so few scenes, NARRATIVE COHERENCE matters more than ever:
+
+- Every scene must follow logically from the one before it — no unexplained
+  jumps in time, place, or character knowledge.
+- Any character introduced in an early scene and reused later must keep the
+  exact same identity (name, role, appearance) — see CHARACTER CONSISTENCY.
+- The story must read as ONE complete, satisfying arc even compressed this
+  tightly — never leave a thread introduced in scene 1 unresolved by the
+  final scene.
 
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

@@ -65,18 +65,18 @@ _DEEPSEEK_SCRIPT_MODEL = os.environ.get("DEEPSEEK_MODEL_SCRIPT", "deepseek-chat"
 # quelle que soit la duree suggeree par CreativeBrief.duration_seconds.
 #
 # Sprint 37 : la generation video (outil externe) coute cher par scene — le
-# script cible desormais 1 minute MAXIMUM, avec un plafond STRICT de 6s par
-# scene (~15 mots a 150 mots/minute), pour que chaque scene ait le maximum
-# de chances d'etre generee correctement du premier coup (moins de details a
-# faire tenir = moins de risque d'echec/regeneration payante). Le nombre de
-# scenes reste plafonne a 10 (10 x 6s = 60s pile) ; en dessous de 10, c'est
-# encore mieux (video plus courte, moins chere a produire).
-MAX_SCENE_DURATION_SEC = 6
+# script cible 1 minute MAXIMUM au total. Sprint 37.3 : l'outil externe
+# accepte desormais des clips de 10s (au lieu de 8s) — on privilegie donc
+# MOINS de scenes, plus longues chacune (6 scenes x 10s = 60s pile), pour
+# une histoire plus posee/cohérente, plutot que beaucoup de scenes tres
+# courtes. Le plafond par scene protege toujours contre un echec de
+# generation video (moins de details a faire tenir dans un seul clip).
+MAX_SCENE_DURATION_SEC = 10
 _TARGET_DURATION_MIN_SEC = 40
 _TARGET_DURATION_MAX_SEC = 60
 _TARGET_DURATION_SEC = 55  # cible utilisee pour le calcul du nombre de mots
-_TARGET_SCENES_MIN = 8
-_TARGET_SCENES_MAX = 10
+_TARGET_SCENES_MIN = 4
+_TARGET_SCENES_MAX = 6
 
 # Nom complet de chaque langue supportée — utilisé pour interpoler l'instruction
 # de langue du prompt (Sprint 34 : la langue des repliques suit la marque,
@@ -600,7 +600,7 @@ class LLMScriptGenerator(ScriptGenerator):
         brand_profile: BrandProfile,
     ) -> str:
         """Construit le prompt utilisateur à partir des données d'entrée (en anglais, Sprint 32.1)."""
-        # Sprint 20.1 : cible fixe format Shorts (100-130s / 8-10 scenes),
+        # Sprint 20.1 : cible fixe format Shorts (Sprint 37.3 : 40-60s / 4-6 scenes),
         # independamment de creative_brief.duration_seconds (format long/standard).
         target_sec = _TARGET_DURATION_SEC
         target_words = round(target_sec * 150 / 60)

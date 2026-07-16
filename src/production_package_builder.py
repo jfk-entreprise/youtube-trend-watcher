@@ -68,11 +68,15 @@ _INSTRUCTION_FORMAT = "Respond STRICTLY in valid JSON. Do not include any explan
 # chacun une tranche de dialogue distincte, à assembler bout à bout au montage.
 #
 # Sprint 37 — le budget de production (coût par génération de clip) impose
-# désormais une cible native de 6s/scène dès l'écriture du script (voir
+# désormais une cible native par scène dès l'écriture du script (voir
 # MAX_SCENE_DURATION_SEC dans llm_script_generator.py) : ce découpage ne
 # devrait donc plus jamais se déclencher en pratique — il reste ici comme
 # filet de sécurité si un script dépasse malgré tout la cible.
-MAX_CLIP_DURATION_SECONDS = 6
+#
+# Sprint 37.3 — l'outil de génération vidéo accepte désormais des clips de
+# 10s (au lieu de 8s) ; le budget est réparti en MOINS de scènes, plus
+# longues chacune (6 scènes x 10s = 60s), pour une histoire plus posée.
+MAX_CLIP_DURATION_SECONDS = 10
 _CLIP_SUFFIXES = string.ascii_lowercase
 
 _SENTENCE_SPLIT_RE = re.compile(r"(?<=[.!?])\s+")
@@ -150,8 +154,83 @@ def _s(value: Any, default: str = "unspecified") -> str:
     return text or default
 
 
+# ── Cohérence des personnages récurrents (Sprint 37.3) ──────────────────────
+# Sur un format court à peu de scènes, un même personnage nommé réapparaît
+# souvent (ex: "Maya Hart" en scène 2, 3, 5, 7, 10). Les générateurs
+# d'image/vidéo texte-vers-image n'ont aucune mémoire d'une scène à l'autre :
+# sans référence explicite, chaque scène réinvente un visage différent pour
+# le "même" personnage. On repère ici, dans l'ordre des scènes, la première
+# apparition de chaque personnage nommé et on ajoute un renvoi explicite dans
+# les scènes suivantes ("Character Reference: utiliser l'image de la scène
+# XX comme référence visuelle") — l'utilisateur fournit alors cette image en
+# entrée de son outil de génération, en plus du prompt, pour garder le même
+# visage/coiffure/tenue sur tout le personnage.
+
+_NAME_TOKEN_RE = re.compile(r"\b[A-Z][a-zA-Z'’-]+(?:\s+[A-Z][a-zA-Z'’-]+){0,2}\b")
+_GENERIC_NAME_LEAD_WORDS = {
+    "young", "old", "elderly", "middle-aged", "teenage", "a", "an", "the",
+    "male", "female", "man", "woman", "boy", "girl", "narrator", "n/a", "none",
+}
+
+
+def _character_name_tokens(character_desc: str) -> set:
+    """
+    Extrait, depuis une entrée de la liste "characters" d'un ImagePrompt
+    (ex: "Maya Hart, late 40s, short gray hair..."), les mots qui composent
+    probablement un nom propre — le premier groupe de mots capitalisés du
+    texte, en écartant les adjectifs descriptifs capitalisés en début de
+    phrase (ex: une entrée commençant par "Young woman..." n'a pas de nom).
+    """
+    match = _NAME_TOKEN_RE.search(character_desc or "")
+    if not match:
+        return set()
+    words = [w for w in match.group(0).split() if len(w) >= 3]
+    if not words or words[0].lower() in _GENERIC_NAME_LEAD_WORDS:
+        return set()
+    return {w.lower() for w in words}
+
+
+def _track_character_references(images: List[Dict[str, Any]]) -> Dict[int, str]:
+    """
+    Parcourt les images dans l'ordre des scènes et construit, pour chaque
+    scene_order, le texte "Character Reference" à inclure dans le prompt —
+    vide si aucun personnage de cette scène n'est déjà apparu avant.
+    """
+    known: List[Dict[str, Any]] = []  # [{"tokens": set, "name": str, "scene": int}]
+    references: Dict[int, str] = {}
+
+    for entry in sorted(images, key=lambda e: e["scene_order"]):
+        scene_order = entry["scene_order"]
+        meta = entry["image_prompt"].metadata or {}
+        characters = meta.get("characters") or []
+        notes: List[str] = []
+
+        for character_desc in characters:
+            tokens = _character_name_tokens(character_desc)
+            if not tokens:
+                continue
+            match = next((k for k in known if k["tokens"] & tokens), None)
+            if match is not None:
+                notes.append(
+                    f"{match['name']} already appeared in scene_{match['scene']:02d} — "
+                    f"use the image generated for scene_{match['scene']:02d} "
+                    "(image_prompts/scene_"
+                    f"{match['scene']:02d}.json) as the visual reference for this "
+                    "character: keep the exact same face, hairstyle, clothing, and body type."
+                )
+            else:
+                name = " ".join(w.capitalize() for w in sorted(tokens, key=lambda w: character_desc.lower().index(w)))
+                known.append({"tokens": tokens, "name": name, "scene": scene_order})
+
+        references[scene_order] = (
+            " ".join(notes) if notes else "None (no recurring named character in this scene)."
+        )
+    return references
+
+
 def _build_image_prompt_file(
     image_prompt: Any, shot_plan: Optional[Any], description: Any, brand: BrandProfile,
+    character_reference: str = "None (no recurring named character in this scene).",
 ) -> Dict[str, Any]:
     """
     Construit le fichier image_prompts/scene_XX.json (Sprint 34.6) : un
@@ -188,6 +267,7 @@ def _build_image_prompt_file(
         ("Composition", composition),
         ("Style", image_prompt.style),
         ("Color Palette", color_palette),
+        ("Character Reference", character_reference),
         ("Details", details),
         ("Text (optional)", "None"),
         ("Language", "None (no on-screen text)"),
@@ -223,6 +303,7 @@ def _dialogue_fields(dialogues: List[Any]) -> Dict[str, str]:
 
 def _build_animation_prompt_file(
     animation_prompt: Any, image_prompt: Any, shot_plan: Optional[Any], description: Any, language: str,
+    character_reference: str = "None (no recurring named character in this scene).",
 ) -> Dict[str, Any]:
     """
     Construit le fichier animation_prompts/scene_XX.json (Sprint 34.6) — même
@@ -259,6 +340,7 @@ def _build_animation_prompt_file(
         ("Lens", lens),
         ("Composition", composition),
         ("Visual Style", image_prompt.style),
+        ("Character Reference", character_reference),
         ("Animation Style", meta.get("animation_style")),
         ("Scene Duration", f"{animation_prompt.duration}s"),
         ("Frame Rate", "24 fps"),
@@ -405,6 +487,7 @@ class ProductionPackageBuilder:
         # (final_script_en/final_script_fr ont les mêmes scene.number).
         scenes_by_number = {s.scene.number: s for s in result.final_script_en.scenes}
         images_by_order = {e["scene_order"]: e for e in result.images}
+        character_references = _track_character_references(result.images)
 
         for entry in sorted(result.images, key=lambda e: e["scene_order"]):
             script_scene = scenes_by_number.get(entry["scene_order"])
@@ -413,6 +496,7 @@ class ProductionPackageBuilder:
                 image_dir / f"scene_{entry['scene_order']:02d}.json",
                 _build_image_prompt_file(
                     entry["image_prompt"], entry.get("shot_plan"), description, result.brand_en,
+                    character_references.get(entry["scene_order"], "None (no recurring named character in this scene)."),
                 ),
             )
 
@@ -434,6 +518,9 @@ class ProductionPackageBuilder:
                         len(clips), MAX_CLIP_DURATION_SECONDS,
                         ", ".join(f"{c.duration}s" for c in clips),
                     )
+                character_reference = character_references.get(
+                    entry["scene_order"], "None (no recurring named character in this scene)."
+                )
                 for idx, clip in enumerate(clips):
                     suffix = _CLIP_SUFFIXES[idx] if len(clips) > 1 else ""
                     _write_json(
@@ -441,6 +528,7 @@ class ProductionPackageBuilder:
                         _build_animation_prompt_file(
                             clip, image_entry.get("image_prompt"),
                             image_entry.get("shot_plan"), description, language,
+                            character_reference,
                         ),
                     )
 

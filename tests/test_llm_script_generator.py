@@ -127,18 +127,16 @@ def _json_scene(number, replique, scene_type="hook", transition=None, setting=No
 
 @pytest.fixture
 def valid_llm_json() -> Dict[str, Any]:
-    """JSON valide genere par un LLM — storyboard cinematographique (Sprint 32.1, 8+ scenes)."""
+    """JSON valide genere par un LLM — storyboard cinematographique (Sprint 37.3, 4-6 scenes)."""
     return {
         "title": "5 metiers developpeur transformes par l'IA en 2027",
         "scenes": [
             _json_scene(1, "Voici pourquoi 80% des developpeurs sous-estiment l'IA.", scene_type="hook"),
-            _json_scene(2, "Aujourd'hui, on va decouvrir les 5 metiers les plus impactes.", scene_type="introduction"),
+            _json_scene(2, "Aujourd'hui, on va decouvrir les metiers les plus impactes.", scene_type="introduction"),
             _json_scene(3, "Premier metier: le developpeur full-stack va etre transforme.", scene_type="development"),
-            _json_scene(4, "Deuxieme metier: le data scientist doit s'adapter aux nouveaux outils.", scene_type="development"),
-            _json_scene(5, "Troisieme metier: le DevOps automatise de nouvelles taches.", scene_type="development"),
-            _json_scene(6, "Quatrieme metier: le designer UX utilise l'IA pour generer des maquettes.", scene_type="development"),
-            _json_scene(7, "Cinquieme metier: l'architecte cloud orchestre des infrastructures intelligentes.", scene_type="twist"),
-            _json_scene(8, "Pour finir, voici comment se preparer a ces transformations.", scene_type="cta"),
+            _json_scene(4, "Deuxieme metier: le data scientist doit s'adapter aux nouveaux outils.", scene_type="twist"),
+            _json_scene(5, "Troisieme metier: le designer UX utilise l'IA pour generer des maquettes.", scene_type="development"),
+            _json_scene(6, "Pour finir, voici comment se preparer a ces transformations.", scene_type="cta"),
         ],
         "language": "fr",
         "target_audience": "Developpeurs curieux de l'IA",
@@ -390,9 +388,9 @@ class TestBuildUserPrompt:
 
 class TestBuildDurationBreakdown:
     def test_short_duration_60s(self):
-        """Répartition pour 60 secondes — plafond strict 6s/scène (Sprint 37)."""
+        """Répartition pour 60 secondes — plafond strict 10s/scène (Sprint 37.3)."""
         result = LLMScriptGenerator._build_duration_breakdown(60)
-        assert "Hook (scene 1): 6s max" in result
+        assert "Hook (scene 1): 10s max" in result
         assert "TOTAL" in result
 
     def test_medium_duration_90s(self):
@@ -836,7 +834,7 @@ class TestBuildScriptFromJson:
         assert script.title == valid_llm_json["title"]
         assert script.hook == valid_llm_json["scenes"][0]["dialogues"][0]["replique"]
         assert script.call_to_action == valid_llm_json["scenes"][-1]["dialogues"][0]["replique"]
-        assert len(script.scenes) == 8  # valid_llm_json a 8 scenes (contrainte Sprint 21)
+        assert len(script.scenes) == 6  # valid_llm_json a 6 scenes (contrainte Sprint 37.3)
 
     def test_build_scenes(self, valid_llm_json, sample_opportunity, sample_brief, sample_brand):
         """Chaque scene est bien construite."""
