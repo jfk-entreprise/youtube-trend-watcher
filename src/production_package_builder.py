@@ -75,8 +75,8 @@ _INSTRUCTION_FORMAT = "Respond STRICTLY in valid JSON. Do not include any explan
 # filet de sécurité si un script dépasse malgré tout la cible.
 #
 # Sprint 37.3 — l'outil de génération vidéo accepte désormais des clips de
-# 10s (au lieu de 8s) ; le budget est réparti en MOINS de scènes, plus
-# longues chacune (6 scènes x 10s = 60s), pour une histoire plus posée.
+# 10s (au lieu de 8s). Sprint 37.5 — budget total porté à 90s (jusqu'à
+# 9 scènes de 10s), pour une histoire plus développée/cohérente.
 MAX_CLIP_DURATION_SECONDS = 10
 _CLIP_SUFFIXES = string.ascii_lowercase
 

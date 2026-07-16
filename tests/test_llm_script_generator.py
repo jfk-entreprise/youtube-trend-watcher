@@ -127,7 +127,7 @@ def _json_scene(number, replique, scene_type="hook", transition=None, setting=No
 
 @pytest.fixture
 def valid_llm_json() -> Dict[str, Any]:
-    """JSON valide genere par un LLM — storyboard cinematographique (Sprint 37.3, 4-6 scenes)."""
+    """JSON valide genere par un LLM — storyboard cinematographique (Sprint 37.5, 6-9 scenes)."""
     return {
         "title": "5 metiers developpeur transformes par l'IA en 2027",
         "scenes": [
@@ -834,7 +834,7 @@ class TestBuildScriptFromJson:
         assert script.title == valid_llm_json["title"]
         assert script.hook == valid_llm_json["scenes"][0]["dialogues"][0]["replique"]
         assert script.call_to_action == valid_llm_json["scenes"][-1]["dialogues"][0]["replique"]
-        assert len(script.scenes) == 6  # valid_llm_json a 6 scenes (contrainte Sprint 37.3)
+        assert len(script.scenes) == 6  # valid_llm_json a 6 scenes (dans la fourchette 6-9, Sprint 37.5)
 
     def test_build_scenes(self, valid_llm_json, sample_opportunity, sample_brief, sample_brand):
         """Chaque scene est bien construite."""

@@ -61,29 +61,28 @@ logger = logging.getLogger(__name__)
 _DEEPSEEK_SCRIPT_MODEL = os.environ.get("DEEPSEEK_MODEL_SCRIPT", "deepseek-chat")
 
 
-# ── Format cible (Sprint 20.1 — qualite Shorts ; Sprint 37 — budget 60s) ────
+# ── Format cible (Sprint 20.1 — qualite Shorts ; Sprint 37.5 — budget 90s) ──
 # Format court et percutant impose pour tous les scripts generes par LLM,
 # quelle que soit la duree suggeree par CreativeBrief.duration_seconds.
 #
-# Sprint 37 : la generation video (outil externe) coute cher par scene — le
-# script cible 1 minute MAXIMUM au total. Sprint 37.3 : l'outil externe
-# accepte desormais des clips de 10s (au lieu de 8s) — on privilegie donc
-# MOINS de scenes, plus longues chacune (6 scenes x 10s = 60s pile), pour
-# une histoire plus posee/cohérente, plutot que beaucoup de scenes tres
-# courtes. Le plafond par scene protege toujours contre un echec de
-# generation video (moins de details a faire tenir dans un seul clip).
+# Sprint 37 : la generation video (outil externe) coute cher par scene, d'ou
+# un budget total plafonne. Sprint 37.5 : porte a 90s MAXIMUM (au lieu de
+# 60s) pour laisser plus de place a une histoire developpee/coherente avec
+# plusieurs personnages, tout en gardant le plafond de 10s/scene (l'outil de
+# generation video ne fait pas de clips plus longs) -> 9 scenes maximum pile
+# (9 x 10s = 90s).
 #
 # MAX_SCENE_DURATION_SEC est un ALIAS de src.script_engine.MAX_SCENE_DURATION_SECONDS
 # (importe ci-dessus) — SOURCE UNIQUE, jamais redefinie ici, pour que le
 # plafond demande au LLM et celui reellement applique par
 # cap_dialogues_to_duration() ne puissent plus jamais diverger (bug
 # Sprint 37.3 -> 37.5 : les scenes etaient tronquees a 6s alors que le LLM
-# visait 10s).
-_TARGET_DURATION_MIN_SEC = 40
-_TARGET_DURATION_MAX_SEC = 60
-_TARGET_DURATION_SEC = 55  # cible utilisee pour le calcul du nombre de mots
-_TARGET_SCENES_MIN = 4
-_TARGET_SCENES_MAX = 6
+# visait 10s, faute d'une constante unique).
+_TARGET_DURATION_MIN_SEC = 60
+_TARGET_DURATION_MAX_SEC = 90
+_TARGET_DURATION_SEC = 85  # cible utilisee pour le calcul du nombre de mots
+_TARGET_SCENES_MIN = 6
+_TARGET_SCENES_MAX = 9
 
 # Nom complet de chaque langue supportée — utilisé pour interpoler l'instruction
 # de langue du prompt (Sprint 34 : la langue des repliques suit la marque,
@@ -607,7 +606,7 @@ class LLMScriptGenerator(ScriptGenerator):
         brand_profile: BrandProfile,
     ) -> str:
         """Construit le prompt utilisateur à partir des données d'entrée (en anglais, Sprint 32.1)."""
-        # Sprint 20.1 : cible fixe format Shorts (Sprint 37.3 : 40-60s / 4-6 scenes),
+        # Sprint 20.1 : cible fixe format Shorts (Sprint 37.5 : 60-90s / 6-9 scenes),
         # independamment de creative_brief.duration_seconds (format long/standard).
         target_sec = _TARGET_DURATION_SEC
         target_words = round(target_sec * 150 / 60)
@@ -667,7 +666,7 @@ class LLMScriptGenerator(ScriptGenerator):
             "=== MANDATORY REQUIREMENTS (Shorts format) ===",
             f"  - SCENE COUNT: between {_TARGET_SCENES_MIN} and {_TARGET_SCENES_MAX} scenes MAXIMUM. Fewer is fine, never more.",
             f"  - WORD COUNT: About {target_words} words total across all repliques combined (~{round(target_words / 2.5)}s of speech), "
-            f"NEVER above {round(_TARGET_DURATION_MAX_SEC * 2.5)} words (that would exceed the 1-minute hard limit).",
+            f"NEVER above {round(_TARGET_DURATION_MAX_SEC * 2.5)} words (that would exceed the {_TARGET_DURATION_MAX_SEC}-second hard limit).",
             f"  - MAX {MAX_SCENE_DURATION_SEC} SECONDS PER SCENE (HARD LIMIT): the repliques of ANY SINGLE scene must never "
             f"add up to more than ~{round(MAX_SCENE_DURATION_SEC * 2.5)} words (150 words/minute). This is a production "
             "constraint — the video-generation tool can fail or need a costly retry if one scene carries too much dialogue. "

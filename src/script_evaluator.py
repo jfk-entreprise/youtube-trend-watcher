@@ -516,13 +516,13 @@ class ScriptEvaluator(BaseEvaluator):
         if len(set(descriptions)) >= len(descriptions) * 0.7:
             score += 1.0
 
-        # Durée optimale — Sprint 37 : budget Shorts strict (1 min max, 6s/scène)
+        # Durée optimale — Sprint 37.5 : budget Shorts strict (90s max, 10s/scène)
         duration = script.estimated_duration
-        if 30 <= duration <= 60:  # cœur de cible Shorts
+        if 45 <= duration <= 90:  # cœur de cible Shorts
             score += 2.0
-        elif duration > 60:  # dépasse le budget de production
+        elif duration > 90:  # dépasse le budget de production
             score -= 1.0
-        elif duration < 15:  # trop court pour développer une idée
+        elif duration < 20:  # trop court pour développer une idée
             score -= 0.5
 
         # Progression narrative : présence de climax (recherché dans l'ensemble

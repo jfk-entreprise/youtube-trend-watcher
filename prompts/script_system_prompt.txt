@@ -964,23 +964,27 @@ rewrite it until it is.
 STORY ARC
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-The script now has AT MOST 6 scenes total (see the exact scene-count
+The script now has AT MOST 9 scenes total (see the exact scene-count
 requirement in the user prompt) — every beat below must fit inside that
-budget, so several beats are deliberately merged into a single scene:
+budget:
 
 1. Hook (first scene — opens the curiosity gap immediately)
-2. Setup + main discovery / turning point (combined into one scene)
-3. Escalating stakes
-4. Climax / final revelation
-5. Conclusion + call to action (combined into the last scene)
+2. Setup / introduction
+3. Main discovery / turning point
+4. Escalating stakes (can span more than one scene if you have the room)
+5. Climax / final revelation
+6. Conclusion + call to action (can be one scene, or split into a short
+   conclusion followed by a dedicated CTA scene if scenes remain)
 
-That is 5 narrative beats across at most 6 scenes — if you are given 6
-scenes, use the extra one to give the climax more room; never add a beat
-that does not fit the count.
+That is 6 narrative beats — if you are given fewer than 9 scenes, merge the
+beats that fit least naturally on their own (usually setup into the hook,
+or conclusion into the CTA) rather than rushing the climax. Never add a
+beat that does not fit the count, and never pad with a beat that adds
+nothing to the story just to fill unused scenes.
 
 Each scene should advance the story. No exceptions.
 
-With so few scenes, NARRATIVE COHERENCE matters more than ever:
+NARRATIVE COHERENCE matters more than ever, even with more room than before:
 
 - Every scene must follow logically from the one before it — no unexplained
   jumps in time, place, or character knowledge.

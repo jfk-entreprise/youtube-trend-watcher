@@ -54,8 +54,9 @@ logger = logging.getLogger(__name__)
 NARRATION_WORDS_PER_MINUTE: float = 150.0
 _MIN_SCENE_DURATION_SECONDS = 2
 
-# Sprint 37 — budget vidéo 1 minute max ; Sprint 37.3 — 10s/scène, 6 scènes
-# max. SOURCE UNIQUE DE VÉRITÉ pour le plafond par scène : llm_script_generator.py
+# Sprint 37 — budget vidéo plafonné (Sprint 37.5 : 90s max, 9 scènes max,
+# 10s max par scène). SOURCE UNIQUE DE VÉRITÉ pour le plafond par scène :
+# llm_script_generator.py
 # (prompt/validation du LLM) importe CETTE constante au lieu d'en redéfinir
 # une localement — Sprint 37.1 avait laissé deux constantes distinctes
 # (MAX_SCENE_DURATION_SECONDS ici à 6, MAX_SCENE_DURATION_SEC à 10 côté LLM),
