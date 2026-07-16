@@ -56,7 +56,7 @@ from typing import Any, Dict, List, Optional
 
 from src.brand_engine import BrandProfile
 from src.niche_intelligence import Niche
-from src.script_engine import Dialogue, Script, estimate_scene_duration
+from src.script_engine import Dialogue, Script, estimate_scene_duration, split_dialogues_by_duration
 
 logger = logging.getLogger(__name__)
 
@@ -79,8 +79,6 @@ _INSTRUCTION_FORMAT = "Respond STRICTLY in valid JSON. Do not include any explan
 # 9 scènes de 10s), pour une histoire plus développée/cohérente.
 MAX_CLIP_DURATION_SECONDS = 10
 _CLIP_SUFFIXES = string.ascii_lowercase
-
-_SENTENCE_SPLIT_RE = re.compile(r"(?<=[.!?])\s+")
 
 
 # ── Contrat d'entrée ──────────────────────────────────────────────────────────
@@ -366,68 +364,17 @@ def _build_animation_prompt_file(
     }
 
 
-def _split_single_dialogue(dialogue: Dialogue, max_seconds: int) -> List[Dialogue]:
-    """
-    Scinde UNE réplique trop longue pour tenir seule dans max_seconds, en
-    coupant sur les frontières de phrases (jamais au milieu d'une phrase),
-    et en dernier recours sur les mots si une phrase unique dépasse déjà
-    max_seconds à elle seule.
-    """
-    if estimate_scene_duration([dialogue]) <= max_seconds:
-        return [dialogue]
-
-    sentences = [s for s in _SENTENCE_SPLIT_RE.split(dialogue.replique.strip()) if s]
-    if len(sentences) <= 1:
-        words = dialogue.replique.split()
-        words_per_second = estimate_scene_duration.__globals__["NARRATION_WORDS_PER_MINUTE"] / 60.0
-        max_words = max(1, int(max_seconds * words_per_second))
-        return [
-            Dialogue(personnage=dialogue.personnage, replique=" ".join(words[i : i + max_words]))
-            for i in range(0, len(words), max_words)
-        ] or [dialogue]
-
-    parts: List[Dialogue] = []
-    current: List[str] = []
-    for sentence in sentences:
-        candidate = " ".join(current + [sentence])
-        if current and estimate_scene_duration([Dialogue(dialogue.personnage, candidate)]) > max_seconds:
-            parts.append(Dialogue(personnage=dialogue.personnage, replique=" ".join(current)))
-            current = [sentence]
-        else:
-            current.append(sentence)
-    if current:
-        parts.append(Dialogue(personnage=dialogue.personnage, replique=" ".join(current)))
-    return parts
-
-
 def _split_dialogues_for_clip_limit(
     dialogues: List[Dialogue], max_seconds: int = MAX_CLIP_DURATION_SECONDS,
 ) -> List[List[Dialogue]]:
     """
     Regroupe les répliques d'une scène en clips consécutifs dont la durée
     estimée ne dépasse jamais max_seconds — nécessaire car l'outil de
-    génération vidéo cible ne produit que des clips de 8s maximum. Une seule
-    réplique déjà trop longue est elle-même scindée (voir _split_single_dialogue).
+    génération vidéo cible ne produit que des clips de max_seconds maximum.
+    Délègue à script_engine.split_dialogues_by_duration() (source unique de
+    la logique de découpage sentence-safe, Sprint 37.6).
     """
-    atomic: List[Dialogue] = []
-    for d in dialogues:
-        atomic.extend(_split_single_dialogue(d, max_seconds))
-
-    if not atomic:
-        return [[]]
-
-    groups: List[List[Dialogue]] = []
-    current: List[Dialogue] = []
-    for d in atomic:
-        candidate = current + [d]
-        if current and estimate_scene_duration(candidate) > max_seconds:
-            groups.append(current)
-            current = [d]
-        else:
-            current = candidate
-    if current:
-        groups.append(current)
-    return groups
+    return split_dialogues_by_duration(dialogues, max_seconds)
 
 
 def _split_animation_for_clip_limit(animation_prompt: Any, max_seconds: int = MAX_CLIP_DURATION_SECONDS) -> List[Any]:

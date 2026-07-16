@@ -19,7 +19,7 @@ import pytest
 from src.script_engine import (
     Dialogue, Scene, SceneDescription, ScriptScene, Script, ScriptGenerator,
     HeuristicScriptGenerator, ScriptEngine, estimate_scene_duration,
-    NARRATION_WORDS_PER_MINUTE,
+    NARRATION_WORDS_PER_MINUTE, cap_dialogues_to_duration, split_dialogues_by_duration,
 )
 
 # ── Imports des contrats (uniquement ce que le moteur est censé connaître) ───
@@ -283,6 +283,73 @@ class TestEstimateSceneDuration:
         combined = estimate_scene_duration(dialogues)
         single = estimate_scene_duration([Dialogue(personnage="A", replique=" ".join(["mot"] * 10))])
         assert combined > single
+
+
+# ── cap_dialogues_to_duration / split_dialogues_by_duration (Sprint 37.6) ────
+
+class TestCapDialoguesToDuration:
+    def test_returns_unchanged_if_within_budget(self):
+        dialogues = [Dialogue(personnage="NARRATEUR", replique="Une phrase courte.")]
+        assert cap_dialogues_to_duration(dialogues, max_seconds=10) == dialogues
+
+    def test_never_cuts_mid_sentence(self):
+        """Régression Sprint 37.6 : la coupe doit toujours tomber sur une
+        frontière de phrase, jamais en plein milieu (bug rapporté par
+        l'utilisateur : 'il l'a envoyé pour' coupé sans complément)."""
+        long_text = " ".join(f"Ceci est la phrase numero {i}." for i in range(1, 20))
+        dialogues = [Dialogue(personnage="NARRATEUR", replique=long_text)]
+        result = cap_dialogues_to_duration(dialogues, max_seconds=5)
+        for d in result:
+            assert d.replique.strip().endswith((".", "!", "?"))
+
+    def test_truncates_when_over_budget(self):
+        dialogues = [Dialogue(personnage="NARRATEUR", replique=" ".join(["mot"] * 100))]
+        result = cap_dialogues_to_duration(dialogues, max_seconds=2)
+        assert estimate_scene_duration(result) <= 2
+
+    def test_preserves_multiple_dialogues_within_budget(self):
+        dialogues = [
+            Dialogue(personnage="A", replique="Bonjour."),
+            Dialogue(personnage="B", replique="Salut."),
+        ]
+        assert cap_dialogues_to_duration(dialogues, max_seconds=10) == dialogues
+
+
+class TestSplitDialoguesByDuration:
+    def test_single_group_when_within_budget(self):
+        dialogues = [Dialogue(personnage="NARRATEUR", replique="Une phrase courte.")]
+        groups = split_dialogues_by_duration(dialogues, max_seconds=10)
+        assert groups == [dialogues]
+
+    def test_splits_into_multiple_groups_preserving_all_content(self):
+        sentences = [f"Ceci est la phrase numero {i}." for i in range(1, 20)]
+        dialogues = [Dialogue(personnage="NARRATEUR", replique=" ".join(sentences))]
+        groups = split_dialogues_by_duration(dialogues, max_seconds=5)
+        assert len(groups) > 1
+        for group in groups:
+            assert estimate_scene_duration(group) <= 5
+        # Aucun mot n'est perdu — tout le texte d'origine se retrouve dans les groupes.
+        rebuilt = " ".join(d.replique for group in groups for d in group)
+        for sentence in sentences:
+            assert sentence in rebuilt
+
+    def test_never_cuts_mid_sentence(self):
+        sentences = [f"Ceci est la phrase numero {i}." for i in range(1, 20)]
+        dialogues = [Dialogue(personnage="NARRATEUR", replique=" ".join(sentences))]
+        groups = split_dialogues_by_duration(dialogues, max_seconds=5)
+        for group in groups:
+            for d in group:
+                assert d.replique.strip().endswith((".", "!", "?"))
+
+    def test_empty_dialogues_returns_single_empty_group(self):
+        assert split_dialogues_by_duration([], max_seconds=10) == [[]]
+
+    def test_first_group_matches_cap_dialogues_to_duration(self):
+        sentences = [f"Ceci est la phrase numero {i}." for i in range(1, 20)]
+        dialogues = [Dialogue(personnage="NARRATEUR", replique=" ".join(sentences))]
+        groups = split_dialogues_by_duration(dialogues, max_seconds=5)
+        capped = cap_dialogues_to_duration(dialogues, max_seconds=5)
+        assert groups[0] == capped
 
 
 # ── Script ───────────────────────────────────────────────────────────────────

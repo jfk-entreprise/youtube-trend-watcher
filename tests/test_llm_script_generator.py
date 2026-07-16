@@ -40,6 +40,7 @@ from src.llm_script_generator import (
     _TARGET_DURATION_SEC,
     _TARGET_SCENES_MIN,
     _TARGET_SCENES_MAX,
+    MAX_SCENE_DURATION_SEC,
 )
 from src.script_engine import Dialogue, Scene, SceneDescription, Script, ScriptScene, ScriptGenerator, estimate_scene_duration
 from src.opportunity_engine import Opportunity
@@ -921,6 +922,107 @@ class TestBuildScriptFromJson:
         )
         assert script.language == sample_brand.primary_language
         assert script.style == sample_brand.tone
+
+
+class TestBuildScriptFromJsonSceneSplitting:
+    """
+    Sprint 37.6 — quand une scène dépasse MAX_SCENE_DURATION_SEC, elle est
+    scindée en scènes supplémentaires (au lieu d'être tronquée) tant que le
+    budget total de scènes (_TARGET_SCENES_MAX) le permet — plus aucun
+    dialogue n'est perdu dans ce cas.
+    """
+
+    @staticmethod
+    def _long_replique(n_sentences=8):
+        return " ".join(f"Ceci est la phrase numero {i} de la scene." for i in range(1, n_sentences + 1))
+
+    def test_oversized_scene_is_split_not_truncated(
+        self, valid_llm_json, sample_opportunity, sample_brief, sample_brand,
+    ):
+        """valid_llm_json a 6 scenes -> budget de 3 scenes supplementaires
+        disponible (max 9). Une scene trop longue doit etre scindee."""
+        data = dict(valid_llm_json)
+        long_replique = self._long_replique()
+        data["scenes"] = [dict(s) for s in valid_llm_json["scenes"]]
+        data["scenes"][2] = dict(data["scenes"][2])
+        data["scenes"][2]["dialogues"] = [{"personnage": "NARRATEUR", "replique": long_replique}]
+
+        script = LLMScriptGenerator._build_script_from_json(
+            data, sample_opportunity, sample_brief, sample_brand, 1000, 500, 0.001,
+        )
+
+        # Plus de scenes qu'avant la scission, mais jamais au-dela du plafond.
+        assert len(script.scenes) > len(valid_llm_json["scenes"])
+        assert len(script.scenes) <= _TARGET_SCENES_MAX
+        # Aucune scene individuelle ne depasse le plafond par scene.
+        for scene in script.scenes:
+            assert scene.duration_seconds <= MAX_SCENE_DURATION_SEC
+        # Tout le texte d'origine se retrouve dans le script final (rien de perdu).
+        full_text = " ".join(d.replique for s in script.scenes for d in s.dialogues)
+        assert long_replique in full_text or all(
+            sentence.strip() in full_text
+            for sentence in long_replique.split(". ") if sentence.strip()
+        )
+
+    def test_split_scenes_are_renumbered_sequentially(
+        self, valid_llm_json, sample_opportunity, sample_brief, sample_brand,
+    ):
+        data = dict(valid_llm_json)
+        data["scenes"] = [dict(s) for s in valid_llm_json["scenes"]]
+        data["scenes"][2] = dict(data["scenes"][2])
+        data["scenes"][2]["dialogues"] = [
+            {"personnage": "NARRATEUR", "replique": self._long_replique()}
+        ]
+
+        script = LLMScriptGenerator._build_script_from_json(
+            data, sample_opportunity, sample_brief, sample_brand, 1000, 500, 0.001,
+        )
+        numbers = [s.scene.number for s in script.scenes]
+        assert numbers == list(range(1, len(numbers) + 1))
+
+    def test_no_split_when_scene_budget_already_exhausted(
+        self, sample_opportunity, sample_brief, sample_brand,
+    ):
+        """Si le JSON contient deja _TARGET_SCENES_MAX scenes, aucune scene
+        supplementaire n'est disponible -> retombe sur la troncature
+        (comportement historique), jamais au-dela du plafond."""
+        data = {
+            "title": "Test",
+            "scenes": [
+                _json_scene(i, f"Scene numero {i}.", scene_type="development")
+                for i in range(1, _TARGET_SCENES_MAX + 1)
+            ],
+            "language": "fr",
+            "target_audience": "Tous",
+            "style": "Neutre",
+        }
+        long_replique = self._long_replique()
+        data["scenes"][2]["dialogues"] = [{"personnage": "NARRATEUR", "replique": long_replique}]
+
+        script = LLMScriptGenerator._build_script_from_json(
+            data, sample_opportunity, sample_brief, sample_brand, 1000, 500, 0.001,
+        )
+        assert len(script.scenes) == _TARGET_SCENES_MAX
+        assert script.scenes[2].duration_seconds <= MAX_SCENE_DURATION_SEC
+        # Le texte de la scene tronquee est bien un prefixe du texte d'origine.
+        assert long_replique.startswith(script.scenes[2].narration_text)
+
+    def test_split_scenes_never_cut_mid_sentence(
+        self, valid_llm_json, sample_opportunity, sample_brief, sample_brand,
+    ):
+        data = dict(valid_llm_json)
+        data["scenes"] = [dict(s) for s in valid_llm_json["scenes"]]
+        data["scenes"][2] = dict(data["scenes"][2])
+        data["scenes"][2]["dialogues"] = [
+            {"personnage": "NARRATEUR", "replique": self._long_replique()}
+        ]
+
+        script = LLMScriptGenerator._build_script_from_json(
+            data, sample_opportunity, sample_brief, sample_brand, 1000, 500, 0.001,
+        )
+        for scene in script.scenes:
+            for d in scene.dialogues:
+                assert d.replique.strip().endswith((".", "!", "?"))
 
 
 # ── Tests : generate (fallback) ─────────────────────────────────────────────

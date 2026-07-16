@@ -42,7 +42,7 @@ from src.opportunity_engine import Opportunity
 from src.script_engine import (
     MAX_SCENE_DURATION_SECONDS as MAX_SCENE_DURATION_SEC,
     Dialogue, Scene, SceneDescription, Script, ScriptGenerator, ScriptScene,
-    cap_dialogues_to_duration, estimate_scene_duration,
+    estimate_scene_duration, split_dialogues_by_duration,
 )
 
 logger = logging.getLogger(__name__)
@@ -827,7 +827,19 @@ class LLMScriptGenerator(ScriptGenerator):
         """
         scenes_raw: List[Dict[str, Any]] = data["scenes"]
 
+        # Sprint 37.6 — quand une scène écrite par le LLM dépasse
+        # MAX_SCENE_DURATION_SEC, on ne coupe plus le dialogue en le
+        # tronquant (perte de contenu / histoire incohérente) : on la scinde
+        # en scènes supplémentaires consécutives (mêmes setting/camera/
+        # description, dialogue réparti en entier) — tant que le budget
+        # total de scènes (_TARGET_SCENES_MAX) le permet. Une scène qui ne
+        # peut plus être scindée (budget épuisé) retombe sur l'ancien
+        # comportement de troncature, désormais toujours sentence-safe
+        # (voir split_dialogues_by_duration()).
+        extra_scene_budget = max(0, _TARGET_SCENES_MAX - len(scenes_raw))
+
         scenes: List[ScriptScene] = []
+        next_number = 1
         for scene_data in scenes_raw:
             dialogues = [
                 Dialogue(personnage=str(d["personnage"]), replique=str(d["replique"]))
@@ -841,29 +853,55 @@ class LLMScriptGenerator(ScriptGenerator):
                     "mood", "symbolism", "director_notes", "viewer_emotion",
                 )
             })
-            scene_number = int(scene_obj["number"])
-            capped_dialogues = cap_dialogues_to_duration(dialogues)
-            if len(capped_dialogues) != len(dialogues) or any(
-                a.replique != b.replique for a, b in zip(capped_dialogues, dialogues)
-            ):
-                logger.warning(
-                    "Scène %d : le LLM a dépassé le budget de %ds — répliques tronquées "
-                    "(%ds -> %ds).",
-                    scene_number, MAX_SCENE_DURATION_SEC,
-                    estimate_scene_duration(dialogues), estimate_scene_duration(capped_dialogues),
+            original_number = int(scene_obj["number"])
+            groups = split_dialogues_by_duration(dialogues, MAX_SCENE_DURATION_SEC)
+
+            if len(groups) > 1 and extra_scene_budget > 0:
+                usable_groups = groups[: 1 + extra_scene_budget]
+                extra_scene_budget -= len(usable_groups) - 1
+                if len(usable_groups) < len(groups):
+                    logger.warning(
+                        "Scène %d : le LLM a dépassé le budget de %ds et le budget de scènes "
+                        "restant (%d) ne permet pas de tout préserver — reste tronqué.",
+                        original_number, MAX_SCENE_DURATION_SEC, len(usable_groups) - 1,
+                    )
+            else:
+                usable_groups = groups[:1]
+                if len(groups) > 1:
+                    logger.warning(
+                        "Scène %d : le LLM a dépassé le budget de %ds mais aucune scène "
+                        "supplémentaire n'est disponible (max %d scènes) — répliques tronquées "
+                        "(%ds -> %ds).",
+                        original_number, MAX_SCENE_DURATION_SEC, _TARGET_SCENES_MAX,
+                        estimate_scene_duration(dialogues), estimate_scene_duration(usable_groups[0]),
+                    )
+
+            n_parts = len(usable_groups)
+            if n_parts > 1:
+                logger.info(
+                    "Scène %d (%ds) scindée en %d scènes pour préserver l'intégralité du "
+                    "dialogue (%s).",
+                    original_number, estimate_scene_duration(dialogues), n_parts,
+                    ", ".join(f"{estimate_scene_duration(g)}s" for g in usable_groups),
                 )
 
-            scene = ScriptScene(
-                scene=Scene(
-                    number=scene_number,
-                    type=str(scene_obj["type"]),
-                    description=description,
-                ),
-                dialogues=capped_dialogues,
-                transition=str(scene_data["transition"]),
-                duration_seconds=estimate_scene_duration(capped_dialogues),
-            )
-            scenes.append(scene)
+            for idx, group_dialogues in enumerate(usable_groups):
+                is_last_part = idx == n_parts - 1
+                scene = ScriptScene(
+                    scene=Scene(
+                        number=next_number,
+                        type=str(scene_obj["type"]),
+                        description=description,
+                    ),
+                    dialogues=group_dialogues,
+                    transition=(
+                        str(scene_data["transition"]) if is_last_part
+                        else "Continuous shot — same scene continues immediately, hard cut to the next part."
+                    ),
+                    duration_seconds=estimate_scene_duration(group_dialogues),
+                )
+                scenes.append(scene)
+                next_number += 1
 
         estimated_duration = sum(s.duration_seconds for s in scenes)
 

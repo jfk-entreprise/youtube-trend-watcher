@@ -34,6 +34,7 @@ Sprint 32.1 — Cinematic Storyboard Contract (final_script.json v2) :
 """
 
 import logging
+import re
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
@@ -65,6 +66,8 @@ _MIN_SCENE_DURATION_SECONDS = 2
 # scène était donc coupée à 6s même quand le LLM en écrivait 10. Une seule
 # constante, importée partout, élimine ce risque de divergence.
 MAX_SCENE_DURATION_SECONDS = 10
+
+_SENTENCE_SPLIT_RE = re.compile(r"(?<=[.!?])\s+")
 
 
 def _cap_narration_to_duration(
@@ -112,6 +115,85 @@ class Dialogue:
     replique: str
 
 
+def _split_single_dialogue(
+    dialogue: Dialogue, max_seconds: int, words_per_minute: float,
+) -> List[Dialogue]:
+    """
+    Scinde UNE réplique trop longue pour tenir seule dans max_seconds, en
+    coupant sur les frontières de phrases (jamais au milieu d'une phrase),
+    et en dernier recours sur les mots si une phrase unique dépasse déjà
+    max_seconds à elle seule.
+    """
+    if estimate_scene_duration([dialogue], words_per_minute) <= max_seconds:
+        return [dialogue]
+
+    sentences = [s for s in _SENTENCE_SPLIT_RE.split(dialogue.replique.strip()) if s]
+    if len(sentences) <= 1:
+        words = dialogue.replique.split()
+        words_per_second = words_per_minute / 60.0
+        max_words = max(1, int(max_seconds * words_per_second))
+        return [
+            Dialogue(personnage=dialogue.personnage, replique=" ".join(words[i : i + max_words]))
+            for i in range(0, len(words), max_words)
+        ] or [dialogue]
+
+    parts: List[Dialogue] = []
+    current: List[str] = []
+    for sentence in sentences:
+        candidate = " ".join(current + [sentence])
+        if current and estimate_scene_duration(
+            [Dialogue(dialogue.personnage, candidate)], words_per_minute,
+        ) > max_seconds:
+            parts.append(Dialogue(personnage=dialogue.personnage, replique=" ".join(current)))
+            current = [sentence]
+        else:
+            current.append(sentence)
+    if current:
+        parts.append(Dialogue(personnage=dialogue.personnage, replique=" ".join(current)))
+    return parts
+
+
+def split_dialogues_by_duration(
+    dialogues: List[Dialogue],
+    max_seconds: int = MAX_SCENE_DURATION_SECONDS,
+    words_per_minute: float = NARRATION_WORDS_PER_MINUTE,
+) -> List[List[Dialogue]]:
+    """
+    Regroupe une liste de dialogues (dans l'ordre) en groupes consécutifs
+    dont la durée estimée ne dépasse jamais max_seconds — en coupant
+    TOUJOURS sur une frontière de phrase, jamais en plein milieu d'une
+    phrase (sauf dernier recours si une phrase unique dépasse déjà
+    max_seconds à elle seule, alors coupée au mot).
+
+    Le premier groupe est ce que cap_dialogues_to_duration() renvoie
+    (troncature stricte). Les groupes suivants contiennent le reste du
+    dialogue, jamais perdu — utilisés par LLMScriptGenerator pour scinder
+    une scène trop longue en plusieurs ScriptScene plutôt que de couper le
+    texte, dans la limite du budget de scènes disponible (Sprint 37.6), et
+    par le filet de sécurité clip-splitting en aval
+    (voir production_package_builder.MAX_CLIP_DURATION_SECONDS).
+    """
+    atomic: List[Dialogue] = []
+    for d in dialogues:
+        atomic.extend(_split_single_dialogue(d, max_seconds, words_per_minute))
+
+    if not atomic:
+        return [[]]
+
+    groups: List[List[Dialogue]] = []
+    current: List[Dialogue] = []
+    for d in atomic:
+        candidate = current + [d]
+        if current and estimate_scene_duration(candidate, words_per_minute) > max_seconds:
+            groups.append(current)
+            current = [d]
+        else:
+            current = candidate
+    if current:
+        groups.append(current)
+    return groups
+
+
 def cap_dialogues_to_duration(
     dialogues: List[Dialogue],
     max_seconds: int = MAX_SCENE_DURATION_SECONDS,
@@ -121,31 +203,21 @@ def cap_dialogues_to_duration(
     Tronque une liste de dialogues (dans l'ordre) pour qu'elle tienne
     strictement dans max_seconds de parole — garantie APPLIQUÉE, pas
     seulement demandée au LLM (Sprint 37) : un LLM qui ignore la consigne de
-    6s/scène ne doit jamais produire un ScriptScene qui la dépasse quand
-    même. Coupe un dialogue individuel si besoin (dernier recours), jamais
-    au-delà du budget de mots restant.
+    durée par scène ne doit jamais produire un ScriptScene qui la dépasse
+    quand même. La coupe se fait toujours sur une frontière de phrase
+    (jamais en plein milieu d'une phrase — bug corrigé Sprint 37.6, voir
+    split_dialogues_by_duration()), sauf dernier recours si une phrase
+    unique dépasse déjà max_seconds à elle seule.
 
-    Appelée par TOUS les points de construction d'un ScriptScene (LLM,
-    heuristique, traduction FR) — voir MAX_SCENE_DURATION_SECONDS.
+    Appelée par les points de construction d'un ScriptScene qui ne peuvent
+    pas ajouter de scène supplémentaire (traduction FR, réécriture) — voir
+    MAX_SCENE_DURATION_SECONDS. LLMScriptGenerator, lui, préfère scinder en
+    plusieurs scènes (split_dialogues_by_duration()) quand le budget de
+    scènes le permet, pour ne jamais perdre de contenu.
     """
     if estimate_scene_duration(dialogues, words_per_minute) <= max_seconds:
         return dialogues
-
-    max_words = max(1, int(max_seconds * words_per_minute / 60.0))
-    result: List[Dialogue] = []
-    words_used = 0
-    for d in dialogues:
-        words = d.replique.split()
-        remaining = max_words - words_used
-        if remaining <= 0:
-            break
-        if len(words) <= remaining:
-            result.append(d)
-            words_used += len(words)
-        else:
-            result.append(Dialogue(personnage=d.personnage, replique=" ".join(words[:remaining])))
-            break
-    return result
+    return split_dialogues_by_duration(dialogues, max_seconds, words_per_minute)[0]
 
 
 # ── SceneDescription / Scene (Sprint 32.1 — storyboard cinématographique) ───
