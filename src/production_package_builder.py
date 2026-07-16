@@ -14,6 +14,7 @@ attendu en sortie quotidienne du pipeline :
         animation_prompts_en/
         animation_prompts_fr/
         report.md
+        story.txt                 (Sprint 37.4 — résumé narratif lisible, scène par scène)
 
 Les dossiers techniques internes (shot_plans, .cache, benchmark.json) restent
 écrits ailleurs par le pipeline (scripts/run_daily_pipeline.py) — ce module ne
@@ -533,6 +534,7 @@ class ProductionPackageBuilder:
                     )
 
         (package_dir / "report.md").write_text(self._build_report(result, clip_counts), encoding="utf-8")
+        (package_dir / "story.txt").write_text(self._build_story_text(result), encoding="utf-8")
 
         logger.info("Package de production créé : %s", package_dir)
         return package_dir
@@ -548,6 +550,23 @@ class ProductionPackageBuilder:
         time_ms = metadata.get("time_ms", 0)
         cost = metadata.get("cost_usd", 0.0)
         return (provider, status, f"{time_ms} ms", f"${cost:.6f}")
+
+    @staticmethod
+    def _build_story_text(result: NicheProductionResult) -> str:
+        """
+        Construit story.txt (Sprint 37.4) : uniquement l'histoire, en
+        français, telle que racontée par la narration/les dialogues du
+        script FR — aucun élément technique du storyboard (caméra,
+        transition, durée, type de scène...) n'y figure. Construit à partir
+        des dialogues déjà traduits (DialogueTranslator) : aucune nouvelle
+        génération ni traduction ici.
+        """
+        paragraphs = [
+            scene.narration_text
+            for scene in result.final_script_fr.scenes
+            if scene.narration_text
+        ]
+        return "\n\n".join(paragraphs)
 
     @staticmethod
     def _build_report(result: NicheProductionResult, clip_counts: Optional[Dict[str, int]] = None) -> str:

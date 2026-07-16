@@ -132,6 +132,7 @@ class TestPackageStructure:
         assert (package_dir / "animation_prompts_en" / "scene_01.json").exists()
         assert (package_dir / "animation_prompts_fr" / "scene_01.json").exists()
         assert (package_dir / "report.md").exists()
+        assert (package_dir / "story.txt").exists()
         assert not (package_dir / "final_script.json").exists()
         assert not (package_dir / "animation_prompts").exists()
 
@@ -451,6 +452,49 @@ class TestCharacterReferenceTracking:
         package_dir = builder.build(tmp_path, niche_index=1, result=result)
         scene3 = json.loads((package_dir / "image_prompts" / "scene_03.json").read_text(encoding="utf-8"))
         assert "scene_01" in scene3["prompt"]
+
+
+class TestStoryText:
+    """Sprint 37.4 — story.txt : uniquement l'histoire, en français, via la
+    narration/les dialogues du script FR déjà traduit — aucun élément
+    technique du storyboard (caméra, transition, durée, type de scène,
+    metadata) ne doit y apparaître."""
+
+    def test_story_file_is_plain_text_in_french(self, tmp_path):
+        builder = ProductionPackageBuilder()
+        result = _result()
+        package_dir = builder.build(tmp_path, niche_index=1, result=result)
+
+        story = (package_dir / "story.txt").read_text(encoding="utf-8")
+        assert story.strip() == "Bonjour"
+        assert "Hello" not in story  # jamais la version anglaise
+
+    def test_multi_scene_story_joins_narrations_in_order(self, tmp_path):
+        builder = ProductionPackageBuilder()
+        result = _result_with_characters([
+            ["Maya Hart, late 40s, short gray hair"],
+            ["Some unrelated background extra"],
+            ["Maya Hart, tense, gripping the table"],
+        ])
+        package_dir = builder.build(tmp_path, niche_index=1, result=result)
+
+        story = (package_dir / "story.txt").read_text(encoding="utf-8")
+        assert story == "Ligne 1\n\nLigne 2\n\nLigne 3"
+
+    def test_no_technical_storyboard_fields_in_story(self, tmp_path):
+        """Ni caméra/transition/durée/type de scène, ni les libellés
+        techniques du storyboard (setting/mood/symbolism en anglais) ne
+        doivent fuiter dans story.txt — uniquement l'histoire elle-même."""
+        builder = ProductionPackageBuilder()
+        result = _result()
+        package_dir = builder.build(tmp_path, niche_index=1, result=result)
+
+        story = (package_dir / "story.txt").read_text(encoding="utf-8")
+        for leaked in (
+            "Transition", "Fade.", "duration_seconds", "hook",
+            "A futuristic lab", "Curiosity.", "camera", "Scene 1",
+        ):
+            assert leaked not in story
 
 
 class TestReportTechnicalMetrics:
