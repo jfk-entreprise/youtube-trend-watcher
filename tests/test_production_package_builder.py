@@ -128,13 +128,14 @@ class TestPackageStructure:
         assert package_dir == tmp_path / "niche_01"
         assert (package_dir / "final_script_en.json").exists()
         assert (package_dir / "final_script_fr.json").exists()
-        assert (package_dir / "image_prompts" / "scene_01.json").exists()
-        assert (package_dir / "animation_prompts_en" / "scene_01.json").exists()
-        assert (package_dir / "animation_prompts_fr" / "scene_01.json").exists()
+        assert (package_dir / "image_prompts" / "scene_01.txt").exists()
+        assert (package_dir / "animation_prompts_en" / "scene_01.txt").exists()
+        assert (package_dir / "animation_prompts_fr" / "scene_01.txt").exists()
         assert (package_dir / "report.md").exists()
         assert (package_dir / "story.txt").exists()
         assert not (package_dir / "final_script.json").exists()
         assert not (package_dir / "animation_prompts").exists()
+        assert not (package_dir / "image_prompts" / "scene_01.json").exists()
 
     def test_final_script_content_matches_source(self, tmp_path):
         """Sprint 32.1 : final_script_*.json adopte le contrat storyboard
@@ -177,137 +178,93 @@ class TestPackageStructure:
         assert result.final_script_en.title in report
 
 
-class TestImagePromptMegaPrompt:
-    """Sprint 34.6/35 — image_prompts/scene_XX.json (UNIQUE, partagé entre
-    les 2 langues) adopte un format compact à 3 clés {prompt, negative_prompt,
-    instruction_format} : "prompt" concatène des libellés riches
-    (Subject/Appearance/.../Language), construits à partir du contenu déjà
-    généré (ImagePrompt, ShotPlan, SceneDescription, BrandProfile) — aucune
-    nouvelle génération LLM."""
+class TestImagePromptText:
+    """Sprint 38 — image_prompts/scene_XX.txt (UNIQUE, partagé entre les 2
+    langues) est un paragraphe de texte brut unique : image_prompt.prompt,
+    déjà écrit et garanti conforme (format Google Veo3/Imagen) par
+    LLMImageGenerator — complété seulement par la référence de personnage
+    récurrent le cas échéant. Aucun JSON, aucun label, aucun negative_prompt."""
 
-    def test_file_has_exactly_three_keys(self, tmp_path):
+    def test_file_is_plain_text_not_json(self, tmp_path):
         builder = ProductionPackageBuilder()
         package_dir = builder.build(tmp_path, niche_index=1, result=_result())
 
-        data = json.loads((package_dir / "image_prompts" / "scene_01.json").read_text(encoding="utf-8"))
-        assert set(data.keys()) == {"prompt", "negative_prompt", "instruction_format"}
+        raw = (package_dir / "image_prompts" / "scene_01.txt").read_text(encoding="utf-8")
+        assert not raw.strip().startswith("{")
 
-    def test_prompt_contains_expected_labels_and_content(self, tmp_path):
+    def test_content_is_the_image_prompt_text(self, tmp_path):
         builder = ProductionPackageBuilder()
         result = _result()
         package_dir = builder.build(tmp_path, niche_index=1, result=result)
 
-        data = json.loads((package_dir / "image_prompts" / "scene_01.json").read_text(encoding="utf-8"))
-        prompt = data["prompt"]
-        for label in (
-            "Subject:", "Appearance:", "Clothing:", "Accessories:", "Pose:", "Action:",
-            "Facial Expression:", "Emotion:", "Environment:", "Background:", "Weather:",
-            "Time of Day:", "Lighting:", "Camera Angle:", "Lens:", "Composition:", "Style:",
-            "Color Palette:", "Character Reference:", "Details:", "Text (optional):", "Language:",
-        ):
-            assert label in prompt, f"Libellé manquant : {label}"
+        raw = (package_dir / "image_prompts" / "scene_01.txt").read_text(encoding="utf-8")
+        assert raw == result.images[0]["image_prompt"].prompt
 
-        image_prompt = result.images[0]["image_prompt"]
-        assert image_prompt.subject in prompt
-        assert image_prompt.metadata["appearance"] in prompt
-        assert image_prompt.metadata["clothing"] in prompt
-        assert image_prompt.style in prompt
-        # Color Palette retombe sur brand_en (aucun ShotPlan fourni) — c'est
-        # cette marque qui sert de packaging/référence pour l'image partagée.
-        assert "#0A0A0A" in prompt
-
-    def test_negative_prompt_and_instruction_format(self, tmp_path):
+    def test_no_negative_prompt_or_labels_in_file(self, tmp_path):
         builder = ProductionPackageBuilder()
         result = _result()
         package_dir = builder.build(tmp_path, niche_index=1, result=result)
 
-        data = json.loads((package_dir / "image_prompts" / "scene_01.json").read_text(encoding="utf-8"))
-        assert data["negative_prompt"] == result.images[0]["image_prompt"].negative_prompt
-        assert data["instruction_format"] == (
-            "Respond STRICTLY in valid JSON. Do not include any explanation or markdown."
-        )
+        raw = (package_dir / "image_prompts" / "scene_01.txt").read_text(encoding="utf-8")
+        assert result.images[0]["image_prompt"].negative_prompt not in raw
+        for label in ("Subject:", "Appearance:", "Camera Angle:", "Character Reference:"):
+            assert label not in raw
 
     def test_no_technical_metadata_leaks_into_prompt(self, tmp_path):
         builder = ProductionPackageBuilder()
         package_dir = builder.build(tmp_path, niche_index=1, result=_result())
 
-        raw = (package_dir / "image_prompts" / "scene_01.json").read_text(encoding="utf-8")
+        raw = (package_dir / "image_prompts" / "scene_01.txt").read_text(encoding="utf-8")
         assert "deepseek" not in raw
         assert "cost_usd" not in raw
         assert "1234" not in raw
 
 
-class TestAnimationPromptMegaPromptBothLanguages:
-    """Sprint 35 — animation_prompts_en/ et animation_prompts_fr/ : mêmes
-    "mega-prompts" sauf Dialogue/Speaker/Narration/Language/Scene Duration,
-    qui suivent la langue. Aucun second appel LLM pour la version FR."""
+class TestAnimationPromptTextBothLanguages:
+    """Sprint 38/35 — animation_prompts_en/ et animation_prompts_fr/ sont du
+    texte brut : le paragraphe motion/son partagé (animation_prompt.prompt,
+    identique pour les 2 langues — aucun second appel LLM pour le FR) suivi
+    de la ligne Audio/Narration déterministe (dialogues verbatim, langue
+    correcte). Aucun JSON, aucun label."""
 
-    def test_both_folders_have_exactly_three_keys(self, tmp_path):
+    def test_both_folders_are_plain_text(self, tmp_path):
         builder = ProductionPackageBuilder()
         package_dir = builder.build(tmp_path, niche_index=1, result=_result())
 
         for lang_dir in ("animation_prompts_en", "animation_prompts_fr"):
-            data = json.loads((package_dir / lang_dir / "scene_01.json").read_text(encoding="utf-8"))
-            assert set(data.keys()) == {"prompt", "negative_prompt", "instruction_format"}
+            raw = (package_dir / lang_dir / "scene_01.txt").read_text(encoding="utf-8")
+            assert not raw.strip().startswith("{")
 
-    def test_prompt_contains_expected_labels(self, tmp_path):
+    def test_motion_prompt_shared_between_en_and_fr(self, tmp_path):
         builder = ProductionPackageBuilder()
         result = _result()
         package_dir = builder.build(tmp_path, niche_index=1, result=result)
 
-        data_en = json.loads((package_dir / "animation_prompts_en" / "scene_01.json").read_text(encoding="utf-8"))
-        prompt = data_en["prompt"]
-        for label in (
-            "Subject:", "Appearance:", "Clothing:", "Accessories:", "Initial Pose:",
-            "Character Action:", "Secondary Actions:", "Facial Expression:", "Emotion:",
-            "Environment:", "Background:", "Weather:", "Time of Day:", "Lighting:",
-            "Camera Shot:", "Camera Angle:", "Camera Movement:", "Lens:", "Composition:",
-            "Visual Style:", "Character Reference:", "Animation Style:", "Scene Duration:", "Frame Rate:",
-            "Dialogue:", "Speaker:", "Narration:", "Language:", "Voice:", "Lip Sync:",
-            "Sound Effects:", "Ambient Sounds:", "Background Music:", "Atmosphere:",
-            "Ending Scene:",
-        ):
-            assert label in prompt, f"Libellé manquant : {label}"
+        data_en = (package_dir / "animation_prompts_en" / "scene_01.txt").read_text(encoding="utf-8")
+        data_fr = (package_dir / "animation_prompts_fr" / "scene_01.txt").read_text(encoding="utf-8")
+        motion = result.animations_en[0]["animation_prompt"].prompt
+        assert motion in data_en
+        assert motion in data_fr
 
     def test_dialogue_and_language_differ_between_en_and_fr(self, tmp_path):
         builder = ProductionPackageBuilder()
         package_dir = builder.build(tmp_path, niche_index=1, result=_result())
 
-        data_en = json.loads((package_dir / "animation_prompts_en" / "scene_01.json").read_text(encoding="utf-8"))
-        data_fr = json.loads((package_dir / "animation_prompts_fr" / "scene_01.json").read_text(encoding="utf-8"))
+        data_en = (package_dir / "animation_prompts_en" / "scene_01.txt").read_text(encoding="utf-8")
+        data_fr = (package_dir / "animation_prompts_fr" / "scene_01.txt").read_text(encoding="utf-8")
 
-        assert "Hello" in data_en["prompt"]
-        assert "Bonjour" not in data_en["prompt"]
-        assert "Language: English" in data_en["prompt"]
+        assert "Narrator voiceover in English: Hello" in data_en
+        assert "Bonjour" not in data_en
 
-        assert "Bonjour" in data_fr["prompt"]
-        assert "Hello" not in data_fr["prompt"]
-        assert "Language: French" in data_fr["prompt"]
-
-    def test_everything_else_identical_between_en_and_fr(self, tmp_path):
-        """Camera/Lighting/Composition/Visual Style/Atmosphere/etc. viennent
-        des mêmes objets partagés (ImagePrompt, ShotPlan, SceneDescription) —
-        seul le dialogue/la langue doit changer."""
-        builder = ProductionPackageBuilder()
-        result = _result()
-        package_dir = builder.build(tmp_path, niche_index=1, result=result)
-
-        data_en = json.loads((package_dir / "animation_prompts_en" / "scene_01.json").read_text(encoding="utf-8"))
-        data_fr = json.loads((package_dir / "animation_prompts_fr" / "scene_01.json").read_text(encoding="utf-8"))
-
-        assert data_en["negative_prompt"] == data_fr["negative_prompt"]
-        image_prompt = result.images[0]["image_prompt"]
-        assert image_prompt.style in data_en["prompt"]
-        assert image_prompt.style in data_fr["prompt"]
-        assert "Curiosity." in data_en["prompt"]  # Atmosphere (mood), partagé
-        assert "Curiosity." in data_fr["prompt"]
+        assert "Narrator voiceover in French: Bonjour" in data_fr
+        assert "Hello" not in data_fr
 
     def test_no_technical_metadata_leaks_into_prompt(self, tmp_path):
         builder = ProductionPackageBuilder()
         package_dir = builder.build(tmp_path, niche_index=1, result=_result())
 
         for lang_dir in ("animation_prompts_en", "animation_prompts_fr"):
-            raw = (package_dir / lang_dir / "scene_01.json").read_text(encoding="utf-8")
+            raw = (package_dir / lang_dir / "scene_01.txt").read_text(encoding="utf-8")
             assert "deepseek" not in raw
             assert "cost_usd" not in raw
             assert "987" not in raw
@@ -401,8 +358,9 @@ class TestCharacterReferenceTracking:
             ["Maya Hart, late 40s, short gray hair, director's cap"],
         ])
         package_dir = builder.build(tmp_path, niche_index=1, result=result)
-        data = json.loads((package_dir / "image_prompts" / "scene_01.json").read_text(encoding="utf-8"))
-        assert "Character Reference: None" in data["prompt"]
+        raw = (package_dir / "image_prompts" / "scene_01.txt").read_text(encoding="utf-8")
+        assert raw == result.images[0]["image_prompt"].prompt
+        assert "already appeared" not in raw
 
     def test_recurring_character_references_first_scene(self, tmp_path):
         builder = ProductionPackageBuilder()
@@ -412,13 +370,13 @@ class TestCharacterReferenceTracking:
         ])
         package_dir = builder.build(tmp_path, niche_index=1, result=result)
 
-        scene1 = json.loads((package_dir / "image_prompts" / "scene_01.json").read_text(encoding="utf-8"))
-        scene2 = json.loads((package_dir / "image_prompts" / "scene_02.json").read_text(encoding="utf-8"))
+        scene1 = (package_dir / "image_prompts" / "scene_01.txt").read_text(encoding="utf-8")
+        scene2 = (package_dir / "image_prompts" / "scene_02.txt").read_text(encoding="utf-8")
 
-        assert "Character Reference: None" in scene1["prompt"]
-        assert "Maya Hart" in scene2["prompt"]
-        assert "scene_01" in scene2["prompt"]
-        assert "image_prompts/scene_01.json" in scene2["prompt"]
+        assert "already appeared" not in scene1
+        assert "Maya Hart" in scene2
+        assert "scene_01" in scene2
+        assert "image_prompts/scene_01.txt" in scene2
 
     def test_reference_also_present_in_animation_prompts(self, tmp_path):
         builder = ProductionPackageBuilder()
@@ -429,8 +387,8 @@ class TestCharacterReferenceTracking:
         package_dir = builder.build(tmp_path, niche_index=1, result=result)
 
         for lang_dir in ("animation_prompts_en", "animation_prompts_fr"):
-            scene2 = json.loads((package_dir / lang_dir / "scene_02.json").read_text(encoding="utf-8"))
-            assert "scene_01" in scene2["prompt"]
+            scene2 = (package_dir / lang_dir / "scene_02.txt").read_text(encoding="utf-8")
+            assert "scene_01" in scene2
 
     def test_unrelated_characters_get_no_reference(self, tmp_path):
         builder = ProductionPackageBuilder()
@@ -439,8 +397,8 @@ class TestCharacterReferenceTracking:
             ["Ravi, middle-aged jeweler, warm brown skin"],
         ])
         package_dir = builder.build(tmp_path, niche_index=1, result=result)
-        scene2 = json.loads((package_dir / "image_prompts" / "scene_02.json").read_text(encoding="utf-8"))
-        assert "Character Reference: None" in scene2["prompt"]
+        scene2 = (package_dir / "image_prompts" / "scene_02.txt").read_text(encoding="utf-8")
+        assert "already appeared" not in scene2
 
     def test_three_scenes_all_reference_earliest_appearance(self, tmp_path):
         builder = ProductionPackageBuilder()
@@ -450,8 +408,8 @@ class TestCharacterReferenceTracking:
             ["Maya Hart, tense, gripping the table"],
         ])
         package_dir = builder.build(tmp_path, niche_index=1, result=result)
-        scene3 = json.loads((package_dir / "image_prompts" / "scene_03.json").read_text(encoding="utf-8"))
-        assert "scene_01" in scene3["prompt"]
+        scene3 = (package_dir / "image_prompts" / "scene_03.txt").read_text(encoding="utf-8")
+        assert "scene_01" in scene3
 
 
 class TestStoryText:

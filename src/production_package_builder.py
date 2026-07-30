@@ -1,8 +1,9 @@
 """
 Production Package Builder — Sprint 28 (Studio de production autonome),
 mis à jour Sprint 31.1 (Storyboard JSON + nettoyage des métadonnées techniques),
-Sprint 34.6 (prompts image/vidéo au format riche "mega-prompt"), puis
-Sprint 35 (1 niche/jour déclinée en 2 langues, visuels partagés).
+Sprint 34.6 (prompts image/vidéo au format riche "mega-prompt"), Sprint 35
+(1 niche/jour déclinée en 2 langues, visuels partagés), puis Sprint 38
+(prompts texte brut fluides, format Google Veo3/Imagen, plus de JSON/labels).
 
 Construit, pour LA niche/histoire du jour, le package de production "propre"
 attendu en sortie quotidienne du pipeline :
@@ -26,19 +27,23 @@ Sprint 31.1 :
     (title + scenes[{order, scene, dialogues, transition, duration_seconds}])
     — aucun champ interne (metadata, language, style...) n'y est écrit.
 
-Sprint 34.6 :
-  - image_prompts/scene_XX.json et animation_prompts_*/scene_XX.json adoptent
-    un format "mega-prompt" à 3 clés {prompt, negative_prompt, instruction_format}
-    — le champ "prompt" concatène des libellés riches ("Subject: ... Clothing:
-    ... Camera Angle: ...") construits à partir du contenu déjà généré
-    (ImagePrompt/AnimationPrompt, ShotPlan, SceneDescription, BrandProfile) —
-    aucune nouvelle génération LLM ici, uniquement une reformulation.
+Sprint 38 (remplace le format "mega-prompt" JSON du Sprint 34.6) :
+  - image_prompts/scene_XX.txt et animation_prompts_*/scene_XX.txt sont du
+    texte brut — UN paragraphe fluide unique, déjà écrit et garanti conforme
+    par LLMImageGenerator/LLMAnimationGenerator (voir leurs
+    _finalize_final_prompt : format Google Veo3/Imagen/Nano Banana, sans
+    JSON, sans negative_prompt, sans mots bannis "8K"/"HDR"/"AAA quality"/
+    "photorealistic", ≤80 mots image / ≤70 mots vidéo). Ce module se limite
+    à écrire ce texte tel quel, y ajouter la ligne Audio/Narration
+    déterministe (dialogues verbatim, voir _build_audio_line) pour la vidéo,
+    et la note de référence de personnage récurrent le cas échéant — aucune
+    reformulation, aucune concaténation de labels ici.
 
 Sprint 35 :
   - Une seule niche/histoire est produite chaque jour, déclinée en 2 vidéos
     (anglais + français) qui partagent EXACTEMENT le même contenu visuel —
     un seul `image_prompts/`, deux `animation_prompts_en/`/`animation_prompts_fr/`
-    identiques sauf Dialogue/Speaker/Narration/Language/Scene Duration.
+    identiques sauf la ligne Audio/Narration et la langue.
 
 Ne dépend d'aucun autre moteur créatif : il consomme uniquement les objets
 déjà produits (Script, ImagePrompt, AnimationPrompt, ShotPlan) via
@@ -60,11 +65,9 @@ from src.script_engine import Dialogue, Script, estimate_scene_duration, split_d
 
 logger = logging.getLogger(__name__)
 
-_INSTRUCTION_FORMAT = "Respond STRICTLY in valid JSON. Do not include any explanation or markdown."
-
 # Sprint 36 — l'outil de génération vidéo de l'utilisateur ne produit jamais
 # plus de 8 secondes par clip. Une scène plus longue est donc exportée en
-# plusieurs fichiers animation_prompts_*/scene_XXa.json, scene_XXb.json...
+# plusieurs fichiers animation_prompts_*/scene_XXa.txt, scene_XXb.txt...
 # qui réutilisent tous la même image (même sujet/décor/style) mais couvrent
 # chacun une tranche de dialogue distincte, à assembler bout à bout au montage.
 #
@@ -106,6 +109,11 @@ def _write_json(path: Path, data: Any) -> None:
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
 
 
+def _write_text(path: Path, text: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(text, encoding="utf-8")
+
+
 def _serialize_script(script: Script) -> Dict[str, Any]:
     """
     Projette un Script sur le contrat storyboard cinématographique (Sprint 32.1) :
@@ -145,12 +153,6 @@ def _serialize_script(script: Script) -> Dict[str, Any]:
             for scene in script.scenes
         ],
     }
-
-
-def _s(value: Any, default: str = "unspecified") -> str:
-    """Normalise une valeur texte potentiellement absente/vide."""
-    text = str(value).strip() if value is not None else ""
-    return text or default
 
 
 # ── Cohérence des personnages récurrents (Sprint 37.3) ──────────────────────
@@ -214,7 +216,7 @@ def _track_character_references(images: List[Dict[str, Any]]) -> Dict[int, str]:
                     f"{match['name']} already appeared in scene_{match['scene']:02d} — "
                     f"use the image generated for scene_{match['scene']:02d} "
                     "(image_prompts/scene_"
-                    f"{match['scene']:02d}.json) as the visual reference for this "
+                    f"{match['scene']:02d}.txt) as the visual reference for this "
                     "character: keep the exact same face, hairstyle, clothing, and body type."
                 )
             else:
@@ -228,140 +230,68 @@ def _track_character_references(images: List[Dict[str, Any]]) -> Dict[int, str]:
 
 
 def _build_image_prompt_file(
-    image_prompt: Any, shot_plan: Optional[Any], description: Any, brand: BrandProfile,
+    image_prompt: Any,
     character_reference: str = "None (no recurring named character in this scene).",
-) -> Dict[str, Any]:
+) -> str:
     """
-    Construit le fichier image_prompts/scene_XX.json (Sprint 34.6) : un
-    "mega-prompt" texte unique regroupant des libellés riches, à partir du
-    contenu déjà généré par LLMImageGenerator (ImagePrompt), le VisualDirector
-    (ShotPlan, si disponible) et l'identité de marque (BrandProfile) — aucune
-    nouvelle génération ici, uniquement une reformulation.
+    Construit le contenu texte brut de image_prompts/scene_XX.txt (Sprint 38
+    — format Google Veo3/Imagen/Nano Banana) : le paragraphe fluide unique
+    déjà écrit par LLMImageGenerator (image_prompt.prompt — déjà garanti
+    conforme : format 9:16, identité stylisée, sans mots bannis, ≤80 mots,
+    voir llm_image_generator._finalize_final_prompt), complété par la note
+    de référence de personnage récurrent en une phrase naturelle. Aucun
+    JSON, aucun negative_prompt, aucun label — un texte prêt à être copié
+    tel quel dans l'outil de génération.
     """
-    meta = image_prompt.metadata or {}
-    camera_angle = shot_plan.camera_angle if shot_plan else description.camera
-    lens = shot_plan.lens if shot_plan else "unspecified"
-    composition = shot_plan.composition if shot_plan else description.composition
-    color_palette = shot_plan.color_palette if shot_plan else ", ".join(brand.color_palette)
-    details = " ".join(
-        part for part in (description.symbolism, description.director_notes) if part
-    )
-
-    fields = [
-        ("Subject", image_prompt.subject),
-        ("Appearance", meta.get("appearance")),
-        ("Clothing", meta.get("clothing")),
-        ("Accessories", meta.get("accessories")),
-        ("Pose", meta.get("pose")),
-        ("Action", image_prompt.prompt),
-        ("Facial Expression", meta.get("facial_expression")),
-        ("Emotion", meta.get("emotion")),
-        ("Environment", description.setting),
-        ("Background", meta.get("background")),
-        ("Weather", meta.get("weather")),
-        ("Time of Day", meta.get("time_of_day")),
-        ("Lighting", description.lighting),
-        ("Camera Angle", camera_angle),
-        ("Lens", lens),
-        ("Composition", composition),
-        ("Style", image_prompt.style),
-        ("Color Palette", color_palette),
-        ("Character Reference", character_reference),
-        ("Details", details),
-        ("Text (optional)", "None"),
-        ("Language", "None (no on-screen text)"),
-    ]
-    prompt = " ".join(f"{label}: {_s(value)}." for label, value in fields)
-
-    return {
-        "prompt": prompt,
-        "negative_prompt": image_prompt.negative_prompt,
-        "instruction_format": _INSTRUCTION_FORMAT,
-    }
+    text = image_prompt.prompt.strip()
+    if character_reference and not character_reference.startswith("None"):
+        text = f"{text} {character_reference}"
+    return text
 
 
-def _dialogue_fields(dialogues: List[Any]) -> Dict[str, str]:
-    """Dérive Dialogue/Speaker/Narration (verbatim) depuis les répliques de la scène."""
-    if not dialogues:
-        return {"dialogue": "None", "speaker": "None", "narration": "None"}
-    speakers = [
-        "NARRATOR" if not d.personnage.strip() or d.personnage.strip().upper() in ("NARRATEUR", "NARRATOR")
-        else d.personnage.strip()
-        for d in dialogues
-    ]
-    lines = [d.replique for d in dialogues]
-    narration = " ".join(
-        d.replique for d in dialogues if (d.personnage or "").strip().upper() in ("", "NARRATEUR", "NARRATOR")
-    )
-    return {
-        "dialogue": " / ".join(lines),
-        "speaker": " / ".join(speakers),
-        "narration": narration or "None",
-    }
+def _build_audio_line(dialogues: List[Any], language: str) -> str:
+    """
+    Construit la ligne Audio/Narration finale (Sprint 38 — format Google
+    Veo3) à partir des dialogues de la scène, VERBATIM — jamais reformulée
+    ni générée par un LLM. Un narrateur devient "Narrator voiceover in
+    {language}: ...", un personnage nommé devient "{Personnage} says: ..."
+    — sans guillemets autour du texte parlé, comme l'exige le format Google.
+    """
+    lines: List[str] = []
+    for d in dialogues:
+        speaker = (d.personnage or "").strip()
+        text = (d.replique or "").strip()
+        if not text:
+            continue
+        if not speaker or speaker.upper() in ("NARRATEUR", "NARRATOR"):
+            lines.append(f"Narrator voiceover in {language}: {text}")
+        else:
+            lines.append(f"{speaker} says: {text}")
+    return " ".join(lines)
 
 
 def _build_animation_prompt_file(
-    animation_prompt: Any, image_prompt: Any, shot_plan: Optional[Any], description: Any, language: str,
+    animation_prompt: Any, language: str,
     character_reference: str = "None (no recurring named character in this scene).",
-) -> Dict[str, Any]:
+) -> str:
     """
-    Construit le fichier animation_prompts/scene_XX.json (Sprint 34.6) — même
-    principe que _build_image_prompt_file, en réutilisant en plus l'ImagePrompt
-    de la même scène (apparence/vêtements déjà établis) et l'AnimationPrompt
-    (mouvement/son/transition déjà générés) : aucune nouvelle génération ici.
+    Construit le contenu texte brut de animation_prompts_*/scene_XX.txt
+    (Sprint 38 — format Google Veo3) : le paragraphe de mouvement/son déjà
+    écrit par LLMAnimationGenerator (animation_prompt.prompt — caméra/sujet/
+    lumière/son UNIQUEMENT, jamais le dialogue — déjà garanti conforme, voir
+    llm_animation_generator._finalize_final_prompt), suivi de la ligne
+    Audio/Narration construite déterministiquement depuis les dialogues
+    VERBATIM (_build_audio_line — jamais reformulés par un LLM), puis de la
+    note de référence de personnage récurrent le cas échéant. Aucun JSON,
+    aucun label.
     """
-    meta = animation_prompt.metadata or {}
-    img_meta = image_prompt.metadata or {}
-    camera_angle = shot_plan.camera_angle if shot_plan else description.camera
-    lens = shot_plan.lens if shot_plan else "unspecified"
-    composition = shot_plan.composition if shot_plan else description.composition
-    shot_type = shot_plan.shot_type if shot_plan else "unspecified"
-    dialogue_fields = _dialogue_fields(animation_prompt.dialogues)
-
-    fields = [
-        ("Subject", image_prompt.subject),
-        ("Appearance", img_meta.get("appearance")),
-        ("Clothing", img_meta.get("clothing")),
-        ("Accessories", img_meta.get("accessories")),
-        ("Initial Pose", img_meta.get("pose")),
-        ("Character Action", animation_prompt.subject_motion),
-        ("Secondary Actions", animation_prompt.environment_motion),
-        ("Facial Expression", img_meta.get("facial_expression")),
-        ("Emotion", meta.get("emotion")),
-        ("Environment", description.setting),
-        ("Background", img_meta.get("background")),
-        ("Weather", img_meta.get("weather")),
-        ("Time of Day", img_meta.get("time_of_day")),
-        ("Lighting", animation_prompt.lighting_changes),
-        ("Camera Shot", shot_type),
-        ("Camera Angle", camera_angle),
-        ("Camera Movement", animation_prompt.camera_motion),
-        ("Lens", lens),
-        ("Composition", composition),
-        ("Visual Style", image_prompt.style),
-        ("Character Reference", character_reference),
-        ("Animation Style", meta.get("animation_style")),
-        ("Scene Duration", f"{animation_prompt.duration}s"),
-        ("Frame Rate", "24 fps"),
-        ("Dialogue", dialogue_fields["dialogue"]),
-        ("Speaker", dialogue_fields["speaker"]),
-        ("Narration", dialogue_fields["narration"]),
-        ("Language", language),
-        ("Voice", meta.get("voice")),
-        ("Lip Sync", "Synced to spoken dialogue audio"),
-        ("Sound Effects", meta.get("sound_effects")),
-        ("Ambient Sounds", animation_prompt.sound_design),
-        ("Background Music", meta.get("background_music")),
-        ("Atmosphere", description.mood),
-        ("Ending Scene", animation_prompt.transition),
-    ]
-    prompt = " ".join(f"{label}: {_s(value)}." for label, value in fields)
-
-    return {
-        "prompt": prompt,
-        "negative_prompt": image_prompt.negative_prompt,
-        "instruction_format": _INSTRUCTION_FORMAT,
-    }
+    audio_line = _build_audio_line(animation_prompt.dialogues, language)
+    parts = [animation_prompt.prompt.strip()]
+    if audio_line:
+        parts.append(audio_line)
+    if character_reference and not character_reference.startswith("None"):
+        parts.append(character_reference)
+    return " ".join(parts)
 
 
 def _split_dialogues_for_clip_limit(
@@ -430,20 +360,13 @@ class ProductionPackageBuilder:
         _write_json(package_dir / "final_script_en.json", _serialize_script(result.final_script_en))
         _write_json(package_dir / "final_script_fr.json", _serialize_script(result.final_script_fr))
 
-        # Les descriptions de scène (setting/lighting/camera/mood...) sont
-        # partagées entre les 2 langues — seules les répliques diffèrent
-        # (final_script_en/final_script_fr ont les mêmes scene.number).
-        scenes_by_number = {s.scene.number: s for s in result.final_script_en.scenes}
-        images_by_order = {e["scene_order"]: e for e in result.images}
         character_references = _track_character_references(result.images)
 
         for entry in sorted(result.images, key=lambda e: e["scene_order"]):
-            script_scene = scenes_by_number.get(entry["scene_order"])
-            description = script_scene.scene.description if script_scene else None
-            _write_json(
-                image_dir / f"scene_{entry['scene_order']:02d}.json",
+            _write_text(
+                image_dir / f"scene_{entry['scene_order']:02d}.txt",
                 _build_image_prompt_file(
-                    entry["image_prompt"], entry.get("shot_plan"), description, result.brand_en,
+                    entry["image_prompt"],
                     character_references.get(entry["scene_order"], "None (no recurring named character in this scene)."),
                 ),
             )
@@ -454,9 +377,6 @@ class ProductionPackageBuilder:
             (animation_dir_fr, result.animations_fr, "French"),
         ):
             for entry in sorted(animations, key=lambda e: e["scene_order"]):
-                script_scene = scenes_by_number.get(entry["scene_order"])
-                description = script_scene.scene.description if script_scene else None
-                image_entry = images_by_order.get(entry["scene_order"], {})
                 clips = _split_animation_for_clip_limit(entry["animation_prompt"])
                 clip_counts[language] += len(clips)
                 if len(clips) > 1:
@@ -471,13 +391,9 @@ class ProductionPackageBuilder:
                 )
                 for idx, clip in enumerate(clips):
                     suffix = _CLIP_SUFFIXES[idx] if len(clips) > 1 else ""
-                    _write_json(
-                        animation_dir / f"scene_{entry['scene_order']:02d}{suffix}.json",
-                        _build_animation_prompt_file(
-                            clip, image_entry.get("image_prompt"),
-                            image_entry.get("shot_plan"), description, language,
-                            character_reference,
-                        ),
+                    _write_text(
+                        animation_dir / f"scene_{entry['scene_order']:02d}{suffix}.txt",
+                        _build_animation_prompt_file(clip, language, character_reference),
                     )
 
         (package_dir / "report.md").write_text(self._build_report(result, clip_counts), encoding="utf-8")
@@ -542,14 +458,14 @@ class ProductionPackageBuilder:
             f"{len(result.animations_en)} scènes → {clip_counts.get('English', len(result.animations_en))} "
             f"clips EN / {clip_counts.get('French', len(result.animations_fr))} clips FR "
             "(une scène plus longue que "
-            f"{MAX_CLIP_DURATION_SECONDS}s est exportée en plusieurs fichiers scene_XXa/b/c.json, "
+            f"{MAX_CLIP_DURATION_SECONDS}s est exportée en plusieurs fichiers scene_XXa/b/c.txt, "
             "même image, à recoller au montage)",
             "",
             "## Métriques techniques par scène",
             "",
             "Source unique des informations techniques (provider, modèle, temps, "
             "coût, statut, fallback) — ces champs n'apparaissent plus dans "
-            "`image_prompts/*.json` ni `animation_prompts_*/*.json` (Sprint 31.1). "
+            "`image_prompts/*.txt` ni `animation_prompts_*/*.txt` (textes bruts, Sprint 38). "
             "Les métriques d'animation ci-dessous portent sur la génération anglaise "
             "(seule à faire un appel LLM — la version française réutilise ses résultats).",
             "",

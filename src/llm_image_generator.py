@@ -110,9 +110,9 @@ _DEEPSEEK_IMAGE_MODEL = os.environ.get("DEEPSEEK_IMAGE_MODEL", "deepseek-chat")
 _REQUIRED_STRING_FIELDS = (
     "goal", "emotion",
     "subject", "scene_description", "style", "prompt", "negative_prompt",
-    # Sprint 34.6 — champs granulaires additionnels, utilisés pour construire
-    # le "prompt" riche exporté dans image_prompts/scene_XX.json (voir
-    # production_package_builder.py) sans dupliquer la logique de génération.
+    # Sprint 34.6 — champs granulaires additionnels, servant de matière
+    # première/continuité au paragraphe final "prompt" (Sprint 38 — écrit
+    # tel quel dans image_prompts/scene_XX.txt, voir production_package_builder.py).
     "appearance", "clothing", "accessories", "pose", "facial_expression",
     "weather", "time_of_day", "background",
 )
@@ -201,6 +201,71 @@ def _finalize_negative_prompt(negative_prompt: str) -> str:
     if not missing:
         return result
     return f"{result.rstrip(', ').strip()}, {', '.join(missing)}"
+
+
+# ── Garantie finale du paragraphe "prompt" (Sprint 38 — Google Veo3/Imagen) ──
+# Sprint 38 : "prompt" n'est plus un simple champ "action" reconcatené en
+# aval par le ProductionPackageBuilder — c'est désormais le paragraphe final
+# unique envoyé TEL QUEL à Google (Veo3/Imagen/Nano Banana), qui n'accepte
+# ni JSON, ni bloc negative_prompt, ni les mots-clés qualité "8K"/"HDR"/
+# "AAA quality"/"photorealistic" (risque de blocage). Cette garantie est
+# APPLIQUÉE, pas seulement demandée au system prompt — même philosophie que
+# script_engine.cap_dialogues_to_duration()/MAX_SCENE_DURATION_SECONDS.
+
+_FINAL_PROMPT_MAX_WORDS = 80
+
+_BANNED_PROMPT_TERMS_RE = re.compile(
+    r"[,;]?\s*\b(?:8k|hdr|aaa quality|photorealistic)\b[,;]?", re.IGNORECASE,
+)
+
+# Sous-ensemble de _RENDER_REQUIREMENTS pertinent pour le paragraphe final —
+# jamais HDR/8K (bannis par Google), toujours 9:16 et le registre stylisé
+# peint (identité de marque), pour que la garantie survive même si le LLM
+# oublie de les mentionner dans "prompt".
+_FINAL_PROMPT_REQUIRED_MARKERS = (
+    (("9:16", "vertical", "portrait orientation"), "vertical 9:16 portrait format"),
+    (
+        ("arcane", "painterly", "stylized illustration", "hand-painted"),
+        "painterly stylized illustration with hand-painted textures",
+    ),
+)
+
+
+def _cap_word_count(text: str, max_words: int) -> str:
+    """Tronque un texte à max_words mots, en coupant sur la dernière
+    frontière de phrase disponible plutôt qu'en plein milieu d'une phrase."""
+    words = text.split()
+    if len(words) <= max_words:
+        return text
+    truncated = " ".join(words[:max_words])
+    last_end = max(truncated.rfind(". "), truncated.rfind("! "), truncated.rfind("? "))
+    if last_end > 0:
+        return truncated[: last_end + 1].strip()
+    return f"{truncated.rstrip(',;. ')}."
+
+
+def _finalize_final_prompt(prompt: str, max_words: int = _FINAL_PROMPT_MAX_WORDS) -> str:
+    """
+    Garantit, sans dépendre de la discipline du LLM, que le paragraphe final
+    "prompt" (envoyé tel quel à Google) : ne contient jamais les mots bannis
+    "8K"/"HDR"/"AAA quality"/"photorealistic", mentionne toujours le format
+    vertical 9:16 et le registre stylisé/peint de la marque, et ne dépasse
+    jamais max_words mots (coupe sentence-safe si besoin).
+    """
+    result = _BANNED_PROMPT_TERMS_RE.sub("", prompt.strip())
+    result = re.sub(r"\s{2,}", " ", result).strip(" ,.")
+    if result and not result.endswith((".", "!", "?")):
+        result += "."
+
+    result = _cap_word_count(result, max_words)
+
+    lowered = result.lower()
+    for markers, clause in _FINAL_PROMPT_REQUIRED_MARKERS:
+        if any(marker in lowered for marker in markers):
+            continue
+        result = f"{result.rstrip('. ').strip()}, {clause}."
+        lowered = result.lower()
+    return result
 
 
 # ── Extraction/nettoyage JSON robustes (Sprint 24.5) ────────────────────────
@@ -764,7 +829,7 @@ class LLMImageGenerator(ImageGenerator):
             subject=data["subject"].strip(),
             scene_description=data["scene_description"].strip(),
             style=_finalize_style_for_render(data["style"]),
-            prompt=data["prompt"].strip(),
+            prompt=_finalize_final_prompt(data["prompt"]),
             negative_prompt=_finalize_negative_prompt(data["negative_prompt"]),
             metadata={
                 "goal": data["goal"].strip(),
@@ -812,7 +877,7 @@ class LLMImageGenerator(ImageGenerator):
             subject="",
             scene_description=generated_image.prompt,
             style=generated_image.style,
-            prompt=generated_image.prompt,
+            prompt=_finalize_final_prompt(generated_image.prompt),
             negative_prompt=generated_image.negative_prompt,
             metadata={
                 "goal": "",

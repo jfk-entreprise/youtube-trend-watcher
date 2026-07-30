@@ -124,9 +124,9 @@ _REQUIRED_STRING_FIELDS = (
     "goal", "emotion", "pace",
     "camera_motion", "subject_motion", "environment_motion",
     "lighting_changes", "effects", "sound_design", "transition",
-    # Sprint 34.6 — champs granulaires additionnels, utilisés pour construire
-    # le "prompt" riche exporté dans animation_prompts/scene_XX.json (voir
-    # production_package_builder.py).
+    # Sprint 34.6 — champs granulaires additionnels, servant de matière
+    # première/continuité au paragraphe final "prompt" (Sprint 38 — écrit
+    # tel quel dans animation_prompts_*/scene_XX.txt, voir production_package_builder.py).
     "animation_style", "voice", "sound_effects", "background_music",
     "prompt",
 )
@@ -138,6 +138,48 @@ _GENERIC_CHARACTER_LABELS = {"name", "nom", "personnage", "character", "characte
 _DEFAULT_DURATION_SECONDS = 5
 _MIN_DURATION_SECONDS = 2
 _MAX_DURATION_SECONDS = 10
+
+
+# ── Garantie finale du paragraphe "prompt" (Sprint 38 — Google Veo3) ────────
+# Même garantie que llm_image_generator._finalize_final_prompt() : "prompt"
+# est désormais le paragraphe final envoyé tel quel à Google Veo3 (motion +
+# son uniquement — pas de dialogue, ajouté séparément en aval), qui rejette
+# les mots-clés qualité "8K"/"HDR"/"AAA quality"/"photorealistic".
+
+_ANIMATION_PROMPT_MAX_WORDS = 70
+
+_BANNED_PROMPT_TERMS_RE = re.compile(
+    r"[,;]?\s*\b(?:8k|hdr|aaa quality|photorealistic)\b[,;]?", re.IGNORECASE,
+)
+
+
+def _cap_word_count(text: str, max_words: int) -> str:
+    """Tronque un texte à max_words mots, en coupant sur la dernière
+    frontière de phrase disponible plutôt qu'en plein milieu d'une phrase."""
+    words = text.split()
+    if len(words) <= max_words:
+        return text
+    truncated = " ".join(words[:max_words])
+    last_end = max(truncated.rfind(". "), truncated.rfind("! "), truncated.rfind("? "))
+    if last_end > 0:
+        return truncated[: last_end + 1].strip()
+    return f"{truncated.rstrip(',;. ')}."
+
+
+def _finalize_final_prompt(prompt: str, max_words: int = _ANIMATION_PROMPT_MAX_WORDS) -> str:
+    """
+    Garantit que le paragraphe final "prompt" (envoyé tel quel à Google Veo3,
+    motion/son uniquement) ne contient jamais les mots bannis "8K"/"HDR"/
+    "AAA quality"/"photorealistic", et ne dépasse jamais max_words mots
+    (coupe sentence-safe si besoin).
+    """
+    result = _BANNED_PROMPT_TERMS_RE.sub("", prompt.strip())
+    result = re.sub(r"\s{2,}", " ", result).strip(" ,.")
+    if not result:
+        return "Subtle, natural camera and environmental motion."
+    if not result.endswith((".", "!", "?")):
+        result += "."
+    return _cap_word_count(result, max_words)
 
 
 # ── Prompt système (Sprint 25) ───────────────────────────────────────────────
@@ -650,7 +692,7 @@ class LLMAnimationGenerator:
             dialogues=list(dialogues),
             transition=data["transition"].strip(),
             duration=cls._clamp_duration(data["duration"]),
-            prompt=data["prompt"].strip(),
+            prompt=_finalize_final_prompt(data["prompt"]),
             metadata={
                 "goal": data["goal"].strip(),
                 "emotion": data["emotion"].strip(),
@@ -704,7 +746,7 @@ class LLMAnimationGenerator:
             dialogues=list(script_scene.dialogues),
             transition=visual_scene.transition.strip() or "smooth cut",
             duration=duration,
-            prompt=prompt,
+            prompt=_finalize_final_prompt(prompt),
             metadata={
                 "goal": "",
                 "emotion": "",

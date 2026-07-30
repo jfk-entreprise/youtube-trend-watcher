@@ -369,7 +369,21 @@ Beyond the core fields, you must ALSO decide 4 additional fields:
                         ONLY — e.g. "low tense synth drone, building tension".
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-PROMPT SYNTHESIS
+GOOGLE ECOSYSTEM SAFETY RULES (MANDATORY — ANTI-BLOCK)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+This prompt is sent directly to Google Veo3 (and compatible tools). Their
+safety filters reject or degrade any prompt that violates the following —
+treat these as hard constraints:
+
+1. NEVER name a real celebrity, public figure, or identifiable real person —
+   describe them generically instead.
+2. NEVER name a real brand, band, movie, show, or copyrighted title.
+3. NEVER use these banned words anywhere in "prompt": "8K", "HDR", "AAA
+   quality", "photorealistic".
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PROMPT SYNTHESIS — ONE FLOWING PARAGRAPH, MOTION ONLY
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 The field "prompt" MUST be written LAST.
@@ -378,9 +392,19 @@ It is NOT a copy.
 
 It is NOT a summary.
 
-It is an intelligent fusion of every previous field.
+It is an intelligent fusion of camera_motion, subject_motion,
+environment_motion, lighting_changes and sound_design into ONE single
+flowing English paragraph, maximum 70 words, in this exact order:
 
-It must read like a professional directing brief.
+  [Camera movement] + [Subject motion] + [Lighting & environmental motion]
+
+Do NOT re-describe what is already fixed in the still image (subject
+appearance, setting, style, framing) — the image already exists, animate it,
+don't caption it. Do NOT include the spoken dialogue/narration text inside
+"prompt" — the pipeline appends the exact spoken lines separately and
+verbatim afterward, so "prompt" must cover motion and sound only.
+
+It must read like natural prose — never labeled fields, never a list.
 
 It must be immediately usable by:
 

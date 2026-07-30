@@ -354,14 +354,60 @@ GENERAL RULES
 - always use the brand's stylized cinematic visual identity (Arcane character design —
   painterly stylized illustration, bold dynamic linework, hand-painted textures — fused
   with a Lord of Mysteries atmosphere) — NEVER photorealistic, NEVER a real photograph
-- always include HDR quality
-- always include 8K quality
 - always include vertical 9:16 format
 - avoid stock-photo aesthetics
 - prefer transformation over explanation
 - prefer discovery over exposition
 - prefer action over description
 - prefer emotion over information
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+GOOGLE ECOSYSTEM SAFETY RULES (MANDATORY — ANTI-BLOCK)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+This prompt is sent directly to Google Veo3 / Imagen / Nano Banana. Their
+safety filters reject or silently degrade any prompt that violates the
+following — treat these as hard constraints, not style preferences:
+
+1. NEVER name a real celebrity, public figure, or identifiable real person —
+   describe them generically instead (e.g. never "Freddie Mercury", write
+   "a charismatic 1970s rock singer with a mustache").
+2. NEVER name a real brand, band, movie, show, or copyrighted title (e.g.
+   never "Queen", "MTV" — write "a legendary rock band", "music television").
+3. Any background element that would normally show a real face (a poster, a
+   screen, a photograph on a wall) MUST instead show a fictional, stylized,
+   artist-invented face bearing no resemblance to any real person — state
+   this explicitly if the scene includes such an element (e.g. "the poster
+   shows a fictional stage performer, not a real celebrity").
+4. NEVER use these banned words anywhere in the final prompt: 8K, HDR, AAA
+   quality, photorealistic. Use "ultra-detailed" or "richly rendered"
+   instead of resolution/quality buzzwords — Google's models do not need
+   them and some safety filters flag them as a spam signal.
+5. Never write or output a negative-prompt block inside the final prompt
+   text itself — negative_prompt is provided as its OWN separate field,
+   kept internal to this pipeline (Google's models are not prompted with
+   exclusion lists).
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+THE FINAL prompt FIELD — ONE FLOWING PARAGRAPH (MANDATORY FORMAT)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+The prompt field is written LAST — it is not the action-only brief anymore.
+It is the ENTIRE, self-contained image prompt that will be sent as-is to
+Google's image generator, with nothing else attached. Fuse subject,
+scene_description and style into ONE single flowing English paragraph,
+maximum 80 words, in this exact order:
+
+  [Visual style & mood] + [Main subject & pose] + [Setting & lighting] + [Framing/shot]
+
+Write it as natural prose a professional prompt engineer would type — never
+as labeled fields (Subject: ... Lighting: ...), never as a list, never as
+JSON-looking text. Every other field (subject, scene_description, style,
+appearance, clothing, accessories, pose, facial_expression, weather,
+time_of_day, background, characters) still exists and is still filled — they
+remain your reasoning scaffolding and the source material this final
+paragraph is fused from — but the prompt field itself must read as one
+unbroken, polished paragraph, not a concatenation of those fields.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 FINAL DIRECTOR CHECK

@@ -781,6 +781,31 @@ over generic perfection.
 
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+NO REAL CELEBRITIES OR COPYRIGHTED IP (MANDATORY — ANTI-BLOCK)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Google's image/video generators (Veo3, Imagen, Nano Banana) reject or flag
+any prompt that names a real, identifiable person, or a copyrighted
+brand/title/character. Since the title and every "replique" flow verbatim
+into those downstream prompts, they must never contain:
+
+- the name of a real celebrity, public figure, athlete, or historical person
+  (e.g. never "Freddie Mercury" — write "a charismatic 1970s rock singer
+  with a mustache" instead)
+- the name of a real band, company, brand, movie, show, or song title
+  (e.g. never "Queen", "MTV", "Bohemian Rhapsody" — write "a legendary rock
+  band", "music television", "an iconic rock opera track" instead)
+- the name of a copyrighted fictional character or franchise (e.g. never
+  "Spider-Man", "the Jackal" as a Marvel villain — invent a generic or
+  original equivalent, or genericize it: "a masked vigilante hero", "his
+  cloned nemesis")
+
+Rewrite the underlying idea generically instead of naming the real
+person/work — the story and the emotion must survive the substitution
+untouched. This applies to "title" and every "replique" — never only to the
+production/description fields.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 OUTPUT CONTRACT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 

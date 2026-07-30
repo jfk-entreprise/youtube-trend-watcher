@@ -41,6 +41,7 @@ from src.llm_image_generator import (
     _REQUIRED_LIST_FIELDS,
     _finalize_style_for_render,
     _finalize_negative_prompt,
+    _finalize_final_prompt,
     _build_repair_instruction,
     _JSON_REPAIR_INSTRUCTION,
 )
@@ -518,6 +519,54 @@ class TestFinalizeNegativePrompt:
         assert "cartoon" not in result
 
 
+class TestFinalizeFinalPrompt:
+    """
+    Sprint 38 — "prompt" est désormais le paragraphe final envoyé tel quel à
+    Google Veo3/Imagen : jamais les mots bannis "8K"/"HDR"/"AAA quality"/
+    "photorealistic", toujours le format 9:16 et le registre stylisé/peint,
+    jamais plus de 80 mots (coupe sentence-safe).
+    """
+
+    def test_strips_banned_terms(self):
+        result = _finalize_final_prompt("A hero shot, 8K, HDR, photorealistic rendering.")
+        low = result.lower()
+        assert "8k" not in low
+        assert "hdr" not in low
+        assert "photorealistic" not in low
+
+    def test_strips_aaa_quality(self):
+        result = _finalize_final_prompt("An AAA quality cinematic frame.")
+        assert "aaa quality" not in result.lower()
+
+    def test_adds_missing_format_and_style_markers(self):
+        result = _finalize_final_prompt("A moody scene with a lone figure.")
+        low = result.lower()
+        assert "9:16" in low
+        assert "arcane" in low or "painterly" in low
+        assert "photorealistic" not in low
+
+    def test_does_not_duplicate_present_markers(self):
+        prompt = (
+            "Vertical 9:16 painterly stylized illustration of a lone figure "
+            "in a dim room, medium shot."
+        )
+        result = _finalize_final_prompt(prompt)
+        assert result.lower().count("9:16") == 1
+
+    def test_caps_word_count_sentence_safe(self):
+        sentences = [f"This is sentence number {i} of the prompt." for i in range(1, 30)]
+        result = _finalize_final_prompt(" ".join(sentences), max_words=20)
+        assert result.strip().endswith((".", "!", "?"))
+        # Les marqueurs obligatoires restent garantis même après troncature.
+        low = result.lower()
+        assert "9:16" in low
+        assert "arcane" in low or "painterly" in low
+
+    def test_never_leaves_empty_after_stripping_banned_terms(self):
+        result = _finalize_final_prompt("8K, HDR, photorealistic.")
+        assert result.strip()
+
+
 # ── Tests : contrat ImagePrompt (Sprint 24.1) ─────────────────────────────────
 
 class _FakeResponse:
@@ -535,7 +584,9 @@ class TestBuildImagePrompt:
         assert image_prompt.scene_description == valid_llm_json["scene_description"]
         # Le style de la fixture couvre déjà tous les marqueurs de rendu → inchangé
         assert image_prompt.style == valid_llm_json["style"]
-        assert image_prompt.prompt == valid_llm_json["prompt"]
+        # Sprint 38 : prompt passe par _finalize_final_prompt (garantie 9:16 +
+        # registre stylisé) — le texte brut du LLM en est donc le préfixe.
+        assert image_prompt.prompt.startswith(valid_llm_json["prompt"].rstrip("."))
         assert valid_llm_json["negative_prompt"] in image_prompt.negative_prompt
 
     def test_metadata_shape_is_exact(self, valid_llm_json):
@@ -584,7 +635,9 @@ class TestFromGeneratedImage:
         generated = HeuristicImageGenerator().generate(visual_scene, plan)
         image_prompt = LLMImageGenerator._from_generated_image(generated, reason="validation_failed")
         assert image_prompt.prompt
-        assert image_prompt.prompt == generated.prompt
+        # Sprint 38 : prompt passe par _finalize_final_prompt (garantie 9:16 +
+        # registre stylisé) — le texte du fallback heuristique en est le préfixe.
+        assert image_prompt.prompt.startswith(generated.prompt.rstrip("."))
 
     def test_carries_fallback_detail(self, visual_scene, brand):
         plan = VisualPlan(title="T", style=brand.visual_style, scenes=[visual_scene])
