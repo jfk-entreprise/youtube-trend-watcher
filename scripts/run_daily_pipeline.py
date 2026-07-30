@@ -98,6 +98,7 @@ from src.brand_engine import BrandEngine, BrandProfile
 from src.content_understanding import ContentUnderstandingEngine
 from src.creative_engine import CreativeBrief, CreativeEngine
 from src.dialogue_translator import DialogueTranslator
+from src.story_narrator import StoryNarrator
 from src.knowledge_engine import KnowledgeEngine
 from src.llm_animation_generator import LLMAnimationGenerator
 from src.llm_image_generator import LLMImageGenerator
@@ -710,6 +711,7 @@ def produce_niche(
     final_script_fr = DialogueTranslator(provider_name=provider, max_retries=1).translate(
         final_script_en, target_language="fr",
     )
+    story_text = StoryNarrator(provider_name=provider, max_retries=1).narrate(final_script_fr)
 
     visual_plan = step_generate_visual_plan(final_script_en)
     shot_plans = step_generate_shot_plans(final_script_en, english_brand, provider)
@@ -739,6 +741,7 @@ def produce_niche(
         "rewrite_result": rewrite_result,
         "final_script_en": final_script_en,
         "final_script_fr": final_script_fr,
+        "story_text": story_text,
         "visual_plan": visual_plan,
         "shot_plans": shot_plans,
         "images": images,
@@ -777,6 +780,7 @@ def step_build_packages(
             animations_en=prod["animations_en"],
             animations_fr=prod["animations_fr"],
             rewrite_result=prod["rewrite_result"],
+            story_text=prod.get("story_text"),
         )
         package_dirs.append(builder.build(output_dir, idx, package_result))
 

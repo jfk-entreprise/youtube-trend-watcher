@@ -102,6 +102,7 @@ class NicheProductionResult:
     animations_en: List[Dict[str, Any]]    # [{"scene_order": int, "animation_prompt": AnimationPrompt}]
     animations_fr: List[Dict[str, Any]]    # mêmes AnimationPrompt que animations_en, dialogues/duration substitués
     rewrite_result: Optional[Dict[str, Any]] = None
+    story_text: Optional[str] = None       # Sprint 38.1 — récit fluide (StoryNarrator) ; None -> repli déterministe
 
 
 def _write_json(path: Path, data: Any) -> None:
@@ -417,13 +418,19 @@ class ProductionPackageBuilder:
     @staticmethod
     def _build_story_text(result: NicheProductionResult) -> str:
         """
-        Construit story.txt (Sprint 37.4) : uniquement l'histoire, en
-        français, telle que racontée par la narration/les dialogues du
-        script FR — aucun élément technique du storyboard (caméra,
-        transition, durée, type de scène...) n'y figure. Construit à partir
-        des dialogues déjà traduits (DialogueTranslator) : aucune nouvelle
-        génération ni traduction ici.
+        Construit le contenu de story.txt (Sprint 37.4, Sprint 38.1) :
+        uniquement l'histoire, en français — aucun élément technique du
+        storyboard (caméra, transition, durée, type de scène...) n'y figure.
+
+        Sprint 38.1 : si `result.story_text` est fourni (récit fluide déjà
+        écrit par StoryNarrator — voir scripts/run_daily_pipeline.py), il est
+        utilisé tel quel. Sinon (StoryNarrator non exécuté, ou son fallback
+        a lui-même déjà rempli ce champ), repli déterministe : les répliques
+        déjà traduites (DialogueTranslator) simplement enchaînées — aucune
+        nouvelle génération ni traduction ici.
         """
+        if result.story_text:
+            return result.story_text
         paragraphs = [
             scene.narration_text
             for scene in result.final_script_fr.scenes

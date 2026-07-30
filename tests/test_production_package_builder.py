@@ -454,6 +454,27 @@ class TestStoryText:
         ):
             assert leaked not in story
 
+    def test_story_text_takes_precedence_over_fallback_join(self, tmp_path):
+        """Sprint 38.1 — si result.story_text est fourni (StoryNarrator),
+        il est utilisé tel quel plutôt que le simple enchaînement des
+        narrations de scène."""
+        import dataclasses
+        builder = ProductionPackageBuilder()
+        result = dataclasses.replace(_result(), story_text="Un récit fluide déjà écrit par StoryNarrator.")
+        package_dir = builder.build(tmp_path, niche_index=1, result=result)
+
+        story = (package_dir / "story.txt").read_text(encoding="utf-8")
+        assert story == "Un récit fluide déjà écrit par StoryNarrator."
+
+    def test_falls_back_to_simple_join_when_story_text_is_none(self, tmp_path):
+        builder = ProductionPackageBuilder()
+        result = _result()
+        assert result.story_text is None
+        package_dir = builder.build(tmp_path, niche_index=1, result=result)
+
+        story = (package_dir / "story.txt").read_text(encoding="utf-8")
+        assert story.strip() == "Bonjour"
+
 
 class TestReportTechnicalMetrics:
     """Sprint 31.1 — report.md reste la source des métriques techniques
