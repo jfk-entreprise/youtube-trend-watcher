@@ -133,6 +133,8 @@ class TestPackageStructure:
         assert (package_dir / "animation_prompts_fr" / "scene_01.txt").exists()
         assert (package_dir / "report.md").exists()
         assert (package_dir / "story.txt").exists()
+        assert (package_dir / "montage_en.txt").exists()
+        assert (package_dir / "montage_fr.txt").exists()
         assert not (package_dir / "final_script.json").exists()
         assert not (package_dir / "animation_prompts").exists()
         assert not (package_dir / "image_prompts" / "scene_01.json").exists()
@@ -474,6 +476,75 @@ class TestStoryText:
 
         story = (package_dir / "story.txt").read_text(encoding="utf-8")
         assert story.strip() == "Bonjour"
+
+
+class TestMontageText:
+    """Sprint 38.2 — montage_en.txt/montage_fr.txt : brief de montage en
+    langage naturel, prêt pour une IA d'assemblage vidéo — ordre des clips,
+    durée, transition exacte entre chacun. Aucune génération LLM ici."""
+
+    def test_montage_files_are_plain_text_not_json(self, tmp_path):
+        builder = ProductionPackageBuilder()
+        package_dir = builder.build(tmp_path, niche_index=1, result=_result())
+
+        for filename in ("montage_en.txt", "montage_fr.txt"):
+            raw = (package_dir / filename).read_text(encoding="utf-8")
+            assert not raw.strip().startswith("{")
+
+    def test_lists_clip_with_folder_prefix_and_duration(self, tmp_path):
+        builder = ProductionPackageBuilder()
+        package_dir = builder.build(tmp_path, niche_index=1, result=_result())
+
+        montage_en = (package_dir / "montage_en.txt").read_text(encoding="utf-8")
+        montage_fr = (package_dir / "montage_fr.txt").read_text(encoding="utf-8")
+        assert "animation_prompts_en/scene_01.txt — 10s" in montage_en
+        assert "animation_prompts_fr/scene_01.txt — 10s" in montage_fr
+
+    def test_mentions_title_and_hook(self, tmp_path):
+        builder = ProductionPackageBuilder()
+        result = _result()
+        package_dir = builder.build(tmp_path, niche_index=1, result=result)
+
+        montage_en = (package_dir / "montage_en.txt").read_text(encoding="utf-8")
+        assert result.final_script_en.title in montage_en
+        assert result.final_script_en.hook in montage_en
+
+    def test_no_transition_line_after_the_last_clip(self, tmp_path):
+        builder = ProductionPackageBuilder()
+        package_dir = builder.build(tmp_path, niche_index=1, result=_result())
+
+        montage_en = (package_dir / "montage_en.txt").read_text(encoding="utf-8")
+        assert "Transition into the next clip" not in montage_en
+
+    def test_transition_between_multiple_scenes_matches_script(self, tmp_path):
+        builder = ProductionPackageBuilder()
+        result = _result_with_characters([
+            ["Maya Hart, late 40s, short gray hair"],
+            ["Ravi, middle-aged jeweler, warm brown skin"],
+        ])
+        package_dir = builder.build(tmp_path, niche_index=1, result=result)
+
+        montage_en = (package_dir / "montage_en.txt").read_text(encoding="utf-8")
+        transition = result.final_script_en.scenes[0].transition
+        assert f"Transition into the next clip: {transition}" in montage_en
+        assert "animation_prompts_en/scene_02.txt" in montage_en
+
+    def test_audio_and_format_instructions_present(self, tmp_path):
+        builder = ProductionPackageBuilder()
+        package_dir = builder.build(tmp_path, niche_index=1, result=_result())
+
+        montage_en = (package_dir / "montage_en.txt").read_text(encoding="utf-8")
+        assert "do not add" in montage_en.lower()
+        assert "9:16" in montage_en
+
+    def test_falls_back_to_default_visual_style_when_brand_style_empty(self, tmp_path):
+        builder = ProductionPackageBuilder()
+        result = _result()
+        assert result.brand_en.visual_style == ""
+        package_dir = builder.build(tmp_path, niche_index=1, result=result)
+
+        montage_en = (package_dir / "montage_en.txt").read_text(encoding="utf-8")
+        assert "stylized painterly illustration" in montage_en
 
 
 class TestReportTechnicalMetrics:

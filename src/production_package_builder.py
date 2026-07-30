@@ -15,7 +15,9 @@ attendu en sortie quotidienne du pipeline :
         animation_prompts_en/
         animation_prompts_fr/
         report.md
-        story.txt                 (Sprint 37.4 — résumé narratif lisible, scène par scène)
+        story.txt                 (Sprint 37.4/38.1 — récit fluide, en français)
+        montage_en.txt            (Sprint 38.2 — brief de montage, langage naturel, version EN)
+        montage_fr.txt            (Sprint 38.2 — brief de montage, langage naturel, version FR)
 
 Les dossiers techniques internes (shot_plans, .cache, benchmark.json) restent
 écrits ailleurs par le pipeline (scripts/run_daily_pipeline.py) — ce module ne
@@ -38,6 +40,15 @@ Sprint 38 (remplace le format "mega-prompt" JSON du Sprint 34.6) :
     déterministe (dialogues verbatim, voir _build_audio_line) pour la vidéo,
     et la note de référence de personnage récurrent le cas échéant — aucune
     reformulation, aucune concaténation de labels ici.
+
+Sprint 38.2 :
+  - montage_en.txt/montage_fr.txt : le brief de montage final, en langage
+    naturel (pas de JSON), prêt à être donné tel quel à une IA d'assemblage
+    vidéo — ordre des clips, durée de chacun, transition exacte entre eux
+    (reprise du champ `transition` du Script Engine), et consigne de ne pas
+    toucher à l'audio (déjà intégré à chaque clip). Aucune nouvelle
+    génération LLM : une simple mise en forme du contenu déjà produit
+    (voir _build_montage_text).
 
 Sprint 35 :
   - Une seule niche/histoire est produite chaque jour, déclinée en 2 vidéos
@@ -373,6 +384,7 @@ class ProductionPackageBuilder:
             )
 
         clip_counts: Dict[str, int] = {"English": 0, "French": 0}
+        clip_manifests: Dict[str, List[Dict[str, Any]]] = {"English": [], "French": []}
         for animation_dir, animations, language in (
             (animation_dir_en, result.animations_en, "English"),
             (animation_dir_fr, result.animations_fr, "French"),
@@ -390,15 +402,29 @@ class ProductionPackageBuilder:
                 character_reference = character_references.get(
                     entry["scene_order"], "None (no recurring named character in this scene)."
                 )
+                last_clip_index = len(clips) - 1
                 for idx, clip in enumerate(clips):
                     suffix = _CLIP_SUFFIXES[idx] if len(clips) > 1 else ""
+                    filename = f"scene_{entry['scene_order']:02d}{suffix}.txt"
                     _write_text(
-                        animation_dir / f"scene_{entry['scene_order']:02d}{suffix}.txt",
+                        animation_dir / filename,
                         _build_animation_prompt_file(clip, language, character_reference),
                     )
+                    clip_manifests[language].append({
+                        "scene_order": entry["scene_order"],
+                        "filename": f"{animation_dir.name}/{filename}",
+                        "duration": clip.duration,
+                        "is_final_part": idx == last_clip_index,
+                    })
 
         (package_dir / "report.md").write_text(self._build_report(result, clip_counts), encoding="utf-8")
         (package_dir / "story.txt").write_text(self._build_story_text(result), encoding="utf-8")
+        (package_dir / "montage_en.txt").write_text(
+            self._build_montage_text(result, clip_manifests["English"], "English"), encoding="utf-8",
+        )
+        (package_dir / "montage_fr.txt").write_text(
+            self._build_montage_text(result, clip_manifests["French"], "French"), encoding="utf-8",
+        )
 
         logger.info("Package de production créé : %s", package_dir)
         return package_dir
@@ -437,6 +463,66 @@ class ProductionPackageBuilder:
             if scene.narration_text
         ]
         return "\n\n".join(paragraphs)
+
+    @staticmethod
+    def _build_montage_text(
+        result: NicheProductionResult, manifest: List[Dict[str, Any]], language: str,
+    ) -> str:
+        """
+        Construit montage_en.txt / montage_fr.txt (Sprint 38.2) : le brief de
+        montage en langage naturel, prêt à être donné tel quel à une IA
+        d'assemblage vidéo — l'ordre des clips, leur durée, et la transition
+        exacte entre chacun (reprise du champ `transition` déjà écrit par le
+        Script Engine). Aucune nouvelle génération LLM ici : uniquement une
+        mise en forme du contenu déjà produit (Script, AnimationPrompt,
+        clip-splitting) — même philosophie que report.md/story.txt.
+
+        Un fichier par langue car les durées de scène peuvent différer entre
+        EN et FR (le français est souvent plus long à l'oral) — l'ordre des
+        clips et des transitions peut donc légèrement diverger.
+        """
+        script = result.final_script_en if language == "English" else result.final_script_fr
+        brand = result.brand_en if language == "English" else result.brand_fr
+        transitions_by_scene = {s.scene.number: s.transition for s in script.scenes}
+        total_duration = sum(item["duration"] for item in manifest)
+        visual_style = brand.visual_style.strip() if brand.visual_style else "stylized painterly illustration, cinematic"
+
+        lines: List[str] = [
+            f"This is the final edit brief for \"{script.title}\" ({language} version) — "
+            f"{script.hook}",
+            "",
+            f"Assemble the {len(manifest)} clips below into ONE continuous vertical Short, "
+            f"approximately {total_duration} seconds total, in this EXACT order — never reorder them. "
+            "Every clip already carries its own voiceover and ambient sound baked in: do not add "
+            "background music, do not re-cut or trim the narration audio, do not extend a clip beyond "
+            "its stated duration.",
+            "",
+            f"Visual identity throughout: {visual_style}. Vertical 9:16 format, consistent frame rate "
+            "across every clip — never change aspect ratio or color grading between clips.",
+            "",
+            "=== CLIP ORDER ===",
+        ]
+
+        last_index = len(manifest) - 1
+        for idx, item in enumerate(manifest):
+            lines.append(f"{idx + 1}. {item['filename']} — {item['duration']}s")
+            if idx == last_index:
+                continue
+            if not item["is_final_part"]:
+                lines.append(
+                    "   -> Same scene continues in the next clip: hard cut directly into it, "
+                    "no transition effect, treat both as one continuous shot."
+                )
+            else:
+                transition_text = transitions_by_scene.get(item["scene_order"], "Cut.")
+                lines.append(f"   -> Transition into the next clip: {transition_text}")
+
+        lines += [
+            "",
+            f"Final export: vertical 9:16, approximately {total_duration} seconds total, "
+            f"{len(manifest)} clips joined exactly in this order with these transitions.",
+        ]
+        return "\n".join(lines)
 
     @staticmethod
     def _build_report(result: NicheProductionResult, clip_counts: Optional[Dict[str, int]] = None) -> str:
