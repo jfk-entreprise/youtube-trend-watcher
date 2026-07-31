@@ -452,6 +452,45 @@ class TestParseAndValidate:
         data = LLMImageGenerator._parse_and_validate(_FakeLlmResponse(content))
         assert data["subject"] == valid_llm_json["subject"]
 
+    def test_french_leaking_into_prompt_is_wrong_language(self, valid_llm_json):
+        """Régression production (Sprint 38.3) : "prompt" ne doit jamais
+        contenir de français, même mélangé à de l'anglais."""
+        data = dict(valid_llm_json)
+        data["prompt"] = "Caméra portée en léger tremblement vers la console."
+        with pytest.raises(_ImageJsonError) as exc_info:
+            LLMImageGenerator._parse_and_validate(_FakeLlmResponse(json.dumps(data)))
+        assert exc_info.value.reason == "wrong_language"
+
+    def test_goal_and_emotion_may_stay_in_french(self, valid_llm_json):
+        data = dict(valid_llm_json)
+        data["goal"] = "Créer une tension immédiate."
+        data["emotion"] = "Curiosité, légère inquiétude."
+        # Ne doit pas lever — goal/emotion sont explicitement exemptés.
+        result = LLMImageGenerator._parse_and_validate(_FakeLlmResponse(json.dumps(data)))
+        assert result["goal"] == data["goal"]
+
+
+class TestValidateLanguage:
+    def test_passes_on_fully_english_data(self, valid_llm_json):
+        LLMImageGenerator._validate_language(valid_llm_json)
+
+    def test_raises_on_french_in_style(self, valid_llm_json):
+        data = dict(valid_llm_json)
+        data["style"] = "Illustration peinte stylisée, très détaillée."
+        with pytest.raises(_ImageJsonError) as exc_info:
+            LLMImageGenerator._validate_language(data)
+        assert exc_info.value.reason == "wrong_language"
+        assert "style" in str(exc_info.value)
+
+    def test_raises_on_french_in_appearance(self, valid_llm_json):
+        data = dict(valid_llm_json)
+        data["appearance"] = "Jeune femme, cheveux courts, très déterminée."
+        with pytest.raises(_ImageJsonError):
+            LLMImageGenerator._validate_language(data)
+
+    def test_english_text_with_no_accents_never_raises(self, valid_llm_json):
+        LLMImageGenerator._validate_language(valid_llm_json)
+
 
 # ── Tests : garanties déterministes de rendu ──────────────────────────────────
 
@@ -877,6 +916,13 @@ class TestBuildRepairInstruction:
         error = _ImageJsonError("json_invalid", "Expecting value: line 1 column 1 (char 0)")
         instruction = _build_repair_instruction(error)
         assert instruction == _JSON_REPAIR_INSTRUCTION
+
+    def test_wrong_language_gets_language_specific_instruction(self):
+        error = _ImageJsonError("wrong_language", "Le champ 'style' contient du français")
+        instruction = _build_repair_instruction(error)
+        assert "English" in instruction
+        assert "French" in instruction
+        assert instruction != _JSON_REPAIR_INSTRUCTION
 
 
 class TestCharactersObjectRegression:

@@ -34,6 +34,8 @@ from src.llm_animation_generator import (
     _REQUIRED_STRING_FIELDS,
     _REQUIRED_INT_FIELDS,
     _finalize_final_prompt,
+    _build_repair_instruction,
+    _JSON_REPAIR_INSTRUCTION,
 )
 from src.visual_engine import VisualScene
 from src.script_engine import Dialogue, Scene, SceneDescription, Script, ScriptScene
@@ -374,6 +376,60 @@ class TestParseAndValidate:
         with pytest.raises(_AnimationJsonError) as exc_info:
             LLMAnimationGenerator._parse_and_validate(response)
         assert exc_info.value.reason == "validation_failed"
+
+    def test_french_leaking_into_prompt_is_wrong_language(self, valid_llm_json):
+        """Régression production (Sprint 38.3) : le "prompt" motion/son
+        renvoyé par le LLM contenait du français mélangé à l'anglais
+        ("Caméra portée en léger tremblement... Narrator voiceover in
+        English: ...") — prompt est envoyé tel quel à Google Veo3."""
+        data = dict(valid_llm_json)
+        data["prompt"] = "Caméra portée en léger tremblement vers la console de mixage."
+        response = _make_llm_response(json.dumps(data))
+        with pytest.raises(_AnimationJsonError) as exc_info:
+            LLMAnimationGenerator._parse_and_validate(response)
+        assert exc_info.value.reason == "wrong_language"
+
+    def test_goal_emotion_pace_may_stay_in_french(self, valid_llm_json):
+        data = dict(valid_llm_json)
+        data["goal"] = "Créer une tension immédiate."
+        data["emotion"] = "Curiosité."
+        data["pace"] = "Lent puis brusque."
+        response = _make_llm_response(json.dumps(data))
+        result = LLMAnimationGenerator._parse_and_validate(response)
+        assert result["goal"] == data["goal"]
+
+
+class TestValidateLanguage:
+    def test_passes_on_fully_english_data(self, valid_llm_json):
+        LLMAnimationGenerator._validate_language(valid_llm_json)
+
+    def test_raises_on_french_in_camera_motion(self, valid_llm_json):
+        data = dict(valid_llm_json)
+        data["camera_motion"] = "Caméra portée en léger tremblement vers le sujet."
+        with pytest.raises(_AnimationJsonError) as exc_info:
+            LLMAnimationGenerator._validate_language(data)
+        assert exc_info.value.reason == "wrong_language"
+        assert "camera_motion" in str(exc_info.value)
+
+    def test_raises_on_french_in_sound_design(self, valid_llm_json):
+        data = dict(valid_llm_json)
+        data["sound_design"] = "Bourdonnement électronique grave et menaçant."
+        with pytest.raises(_AnimationJsonError):
+            LLMAnimationGenerator._validate_language(data)
+
+
+class TestBuildRepairInstructionAnimation:
+    def test_wrong_language_gets_language_specific_instruction(self):
+        error = _AnimationJsonError("wrong_language", "Le champ 'camera_motion' contient du français")
+        instruction = _build_repair_instruction(error)
+        assert "English" in instruction
+        assert "French" in instruction
+        assert instruction != _JSON_REPAIR_INSTRUCTION
+
+    def test_non_language_reason_keeps_generic_syntax_instruction(self):
+        error = _AnimationJsonError("json_invalid", "Expecting value: line 1 column 1 (char 0)")
+        instruction = _build_repair_instruction(error)
+        assert instruction == _JSON_REPAIR_INSTRUCTION
 
 
 # ── Tests : construction AnimationPrompt ──────────────────────────────────────

@@ -275,6 +275,38 @@ _JSON_REPAIR_INSTRUCTION = (
     "Respecte exactement le schema demande (tous les champs requis, dans le meme ordre, JSON valide et complet)."
 )
 
+# ── Garde-fou anti-mélange de langue (Sprint 38.3) ──────────────────────────
+# Constaté en production : "prompt" (envoyé tel quel à Google Veo3) contenait
+# du français mélangé à l'anglais ("Caméra portée en léger tremblement...
+# Narrator voiceover in English: ..."), alors que goal/emotion/pace sont les
+# SEULS champs autorisés en français — tous les autres (dont "prompt", qui
+# fusionne camera_motion/subject_motion/etc.) doivent être 100% anglais. La
+# simple consigne dans le system prompt ne suffisait pas (dérive du LLM) —
+# détection APPLIQUÉE via les diacritiques francophones (quasi absents de
+# l'anglais standard), qui déclenche une correction ciblée AVANT tout
+# fallback — même philosophie que le repair JSON.
+
+_FRENCH_MARKER_RE = re.compile(r"[àâäéèêëîïôöùûüÿçœæ]", re.IGNORECASE)
+_LANGUAGE_EXEMPT_FIELDS = {"goal", "emotion", "pace"}
+
+_LANGUAGE_REPAIR_INSTRUCTION = (
+    "Some fields in your previous JSON were written in French instead of English.\n"
+    "Rewrite EVERY field except 'goal', 'emotion' and 'pace' entirely in English — "
+    "camera_motion, subject_motion, environment_motion, lighting_changes, effects, "
+    "sound_design, animation_style, voice, sound_effects, background_music, transition, "
+    "and prompt must not contain a single French word.\n"
+    "Return the complete corrected JSON, respecting exactly the same schema."
+)
+
+
+def _build_repair_instruction(error: "_AnimationJsonError") -> str:
+    """Choisit l'instruction de réparation selon la cause réelle de l'échec
+    (Sprint 38.3 — un mélange de langue n'est pas une erreur de syntaxe JSON,
+    le message générique ne dit rien du vrai problème)."""
+    if error.reason == "wrong_language":
+        return _LANGUAGE_REPAIR_INSTRUCTION
+    return _JSON_REPAIR_INSTRUCTION
+
 
 class _AnimationJsonError(RuntimeError):
     """Erreur typée pour classifier précisément la cause d'un échec de génération."""
@@ -461,7 +493,7 @@ class LLMAnimationGenerator:
             self._stats["json_repair_attempts"] += 1
             repair_messages = messages + [
                 LLMMessage(role="assistant", content=response.content[:4000]),
-                LLMMessage(role="user", content=_JSON_REPAIR_INSTRUCTION),
+                LLMMessage(role="user", content=_build_repair_instruction(first_err)),
             ]
             repair_response, repair_elapsed_ms = self._call_llm(repair_messages)
             self._raise_if_api_error(repair_response)
@@ -541,7 +573,27 @@ class LLMAnimationGenerator:
         except ValueError as exc:
             raise _AnimationJsonError("validation_failed", str(exc)) from exc
 
+        cls._validate_language(data)
+
         return data
+
+    @staticmethod
+    def _validate_language(data: Dict[str, Any]) -> None:
+        """
+        Sprint 38.3 — garde-fou anti-mélange de langue : tous les champs
+        techniques (hors goal/emotion/pace, explicitement autorisés en
+        français) doivent être 100% en anglais — "prompt" est envoyé tel
+        quel à Google et ne doit jamais contenir de français.
+        """
+        for field_name in _REQUIRED_STRING_FIELDS:
+            if field_name in _LANGUAGE_EXEMPT_FIELDS:
+                continue
+            value = data.get(field_name)
+            if isinstance(value, str) and _FRENCH_MARKER_RE.search(value):
+                raise _AnimationJsonError(
+                    "wrong_language",
+                    f"Le champ '{field_name}' contient du français (interdit, doit être en anglais) : {value[:120]}",
+                )
 
     # ── Continuité narrative ──────────────────────────────────────────────────
 

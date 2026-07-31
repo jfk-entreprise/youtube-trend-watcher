@@ -370,14 +370,39 @@ _VALIDATION_REPAIR_INSTRUCTION_TEMPLATE = (
 )
 
 
+# ── Garde-fou anti-mélange de langue (Sprint 38.3) ──────────────────────────
+# Constaté en production sur LLMAnimationGenerator (même risque ici) :
+# "prompt" (envoyé tel quel à Google Imagen/Nano Banana) peut se retrouver
+# mélangé français/anglais alors que goal/emotion sont les SEULS champs
+# autorisés en français. La simple consigne du system prompt ne suffisait
+# pas (dérive du LLM) — détection APPLIQUÉE via les diacritiques
+# francophones (quasi absents de l'anglais standard), qui déclenche une
+# correction ciblée AVANT tout fallback.
+
+_FRENCH_MARKER_RE = re.compile(r"[àâäéèêëîïôöùûüÿçœæ]", re.IGNORECASE)
+_LANGUAGE_EXEMPT_FIELDS = {"goal", "emotion"}
+
+_LANGUAGE_REPAIR_INSTRUCTION = (
+    "Some fields in your previous JSON were written in French instead of English.\n"
+    "Rewrite EVERY field except 'goal' and 'emotion' entirely in English — subject, "
+    "scene_description, style, prompt, negative_prompt, appearance, clothing, "
+    "accessories, pose, facial_expression, weather, time_of_day and background must "
+    "not contain a single French word.\n"
+    "Return the complete corrected JSON, respecting exactly the same schema."
+)
+
+
 def _build_repair_instruction(error: "_ImageJsonError") -> str:
     """
     Choisit l'instruction de réparation selon la cause réelle de l'échec
-    (Sprint 30.2). Une correction de syntaxe JSON générique ne corrige rien
-    quand le JSON était déjà valide — seule sa structure était non conforme.
+    (Sprint 30.2, étendu Sprint 38.3). Une correction de syntaxe JSON
+    générique ne corrige rien quand le JSON était déjà valide — seule sa
+    structure ou sa langue était non conforme.
     """
     if error.reason == "validation_failed":
         return _VALIDATION_REPAIR_INSTRUCTION_TEMPLATE.format(detail=str(error))
+    if error.reason == "wrong_language":
+        return _LANGUAGE_REPAIR_INSTRUCTION
     return _JSON_REPAIR_INSTRUCTION
 
 
@@ -683,7 +708,27 @@ class LLMImageGenerator(ImageGenerator):
         except ValueError as exc:
             raise _ImageJsonError("validation_failed", str(exc)) from exc
 
+        cls._validate_language(data)
+
         return data
+
+    @staticmethod
+    def _validate_language(data: Dict[str, Any]) -> None:
+        """
+        Sprint 38.3 — garde-fou anti-mélange de langue : tous les champs
+        techniques (hors goal/emotion, explicitement autorisés en français)
+        doivent être 100% en anglais — "prompt" est envoyé tel quel à
+        Google et ne doit jamais contenir de français.
+        """
+        for field_name in _REQUIRED_STRING_FIELDS:
+            if field_name in _LANGUAGE_EXEMPT_FIELDS:
+                continue
+            value = data.get(field_name)
+            if isinstance(value, str) and _FRENCH_MARKER_RE.search(value):
+                raise _ImageJsonError(
+                    "wrong_language",
+                    f"Le champ '{field_name}' contient du français (interdit, doit être en anglais) : {value[:120]}",
+                )
 
     # ── Continuité narrative (Sprint 24.3) ───────────────────────────────────────
 
