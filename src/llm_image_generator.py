@@ -483,6 +483,15 @@ class LLMImageGenerator(ImageGenerator):
         """Bible de personnages verrouillée (lecture seule) — Sprint 24.3."""
         return dict(self._characters_bible)
 
+    def seed_character_specs(self, character_specs: List[Any]) -> None:
+        """Injecte les CharacterSpec d'une série dans la bible de personnages (Sprint 39)."""
+        for c in character_specs:
+            name = getattr(c, "name", None) or (c.get("name") if isinstance(c, dict) else None)
+            prompt = getattr(c, "permanent_visual_prompt", None) or (c.get("permanent_visual_prompt") if isinstance(c, dict) else None)
+            visual_desc = getattr(c, "visual_description", None) or (c.get("visual_description") if isinstance(c, dict) else None)
+            if name and (prompt or visual_desc):
+                self._characters_bible[name] = prompt or visual_desc
+
     def reset_continuity(self) -> None:
         """Vide la bible de personnages — à appeler entre deux scripts distincts."""
         self._characters_bible = {}

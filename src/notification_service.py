@@ -67,6 +67,9 @@ class ChannelSummary:
     duration_seconds: int
     scene_count: int
     storage_link: Optional[str] = None  # lien Supabase Storage de cette production, si uploadé avec succès
+    series_title: Optional[str] = None
+    episode_number: Optional[int] = None
+    total_episodes: Optional[int] = None
 
 
 @dataclass
@@ -103,7 +106,10 @@ def format_summary_text(summary: DailyProductionSummary) -> str:
         "📈 Active niches",
     ]
     for channel in summary.channels:
-        lines.append(f"• {channel.niche_name}")
+        if channel.series_title and channel.episode_number is not None and channel.total_episodes is not None:
+            lines.append(f"• {channel.niche_name} — 📺 {channel.series_title} (Ep. {channel.episode_number}/{channel.total_episodes})")
+        else:
+            lines.append(f"• {channel.niche_name}")
 
     lines += [
         "",

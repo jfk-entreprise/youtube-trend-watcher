@@ -311,6 +311,7 @@ class LLMScriptGenerator(ScriptGenerator):
         opportunity: Opportunity,
         creative_brief: CreativeBrief,
         brand_profile: BrandProfile,
+        series_context: Optional[Dict[str, Any]] = None,
     ) -> Script:
         """
         Génère un Script via LLM avec fallback automatique.
@@ -327,6 +328,7 @@ class LLMScriptGenerator(ScriptGenerator):
             opportunity: Opportunité détectée.
             creative_brief: Brief créatif.
             brand_profile: Profil de marque.
+            series_context: Contexte optionnel de série (Sprint 39).
 
         Returns:
             Script structuré (LLM ou heuristique).
@@ -339,6 +341,7 @@ class LLMScriptGenerator(ScriptGenerator):
                     opportunity=opportunity,
                     creative_brief=creative_brief,
                     brand_profile=brand_profile,
+                    series_context=series_context,
                     attempt=attempt,
                 )
             except Exception as exc:
@@ -367,6 +370,7 @@ class LLMScriptGenerator(ScriptGenerator):
         opportunity: Opportunity,
         creative_brief: CreativeBrief,
         brand_profile: BrandProfile,
+        series_context: Optional[Dict[str, Any]] = None,
         attempt: int = 1,
     ) -> Script:
         """Tente une génération via LLM. Lève une exception en cas d'échec."""
@@ -385,6 +389,7 @@ class LLMScriptGenerator(ScriptGenerator):
             opportunity=opportunity,
             creative_brief=creative_brief,
             brand_profile=brand_profile,
+            series_context=series_context,
         )
 
         messages = [
@@ -604,6 +609,7 @@ class LLMScriptGenerator(ScriptGenerator):
         opportunity: Opportunity,
         creative_brief: CreativeBrief,
         brand_profile: BrandProfile,
+        series_context: Optional[Dict[str, Any]] = None,
     ) -> str:
         """Construit le prompt utilisateur à partir des données d'entrée (en anglais, Sprint 32.1)."""
         # Sprint 20.1 : cible fixe format Shorts (Sprint 37.5 : 60-90s / 6-9 scenes),
@@ -625,37 +631,82 @@ class LLMScriptGenerator(ScriptGenerator):
             "Here is an example breakdown to guide you (adapt to your actual scene count):",
             self._build_duration_breakdown(target_sec),
             "",
-            "=== NICHE / TOPIC ===",
-            f"  Topic          : {opportunity.niche}",
-            f"  Source video title : {opportunity.title}",
-            f"  Potential score    : {opportunity.overall_score}/100",
-            "",
         ]
 
-        sequel_hint = opportunity.metadata.get("sequel_of")
-        if sequel_hint:
+        if series_context:
+            ep_outline = series_context.get("episode_outline", {})
+            char_bible = series_context.get("character_bible", [])
+            formatted_chars = "\n".join(
+                f"  - {c.get('name')} ({c.get('role')}): {c.get('visual_description')} | Tone: {c.get('voice_tone')} | Personality: {c.get('personality')}"
+                for c in char_bible
+            ) if char_bible else "  - No specific recurring characters defined."
+
             lines += [
-                "=== CONTINUATION CONTEXT (Sprint 33 — topic_history) ===",
-                f"A closely related topic was already covered recently: \"{sequel_hint.get('title', '')}\" "
-                f"(published {sequel_hint.get('date', 'recently')}).",
-                "Do NOT repeat that video. Write this one as an explicit CONTINUATION or a genuinely NEW ANGLE: "
-                "reference what was already covered only briefly (one sentence at most), then go further — "
-                "new facts, the next chapter, a deeper level, or a twist the previous video did not cover.",
-                "Make the continuation clear from the hook itself, without generic transition phrases like "
-                "'as promised' or 'as we said before'.",
+                "=== SERIES CONTEXT & CONTINUITY (Sprint 39) ===",
+                f"  Series Title         : {series_context.get('series_title', 'Untitled Series')} (Season {series_context.get('season_number', 1)})",
+                f"  Logline              : {series_context.get('series_logline', '')}",
+                f"  Episode              : {series_context.get('current_episode', 1)} of {series_context.get('total_episodes', 12)} (Remaining: {series_context.get('remaining_episodes', 0)})",
+                f"  Episode Title        : {ep_outline.get('title', '')}",
+                f"  Episode Synopsis     : {ep_outline.get('synopsis', '')}",
+                f"  Episode Cliffhanger  : {ep_outline.get('cliffhanger', '')}",
+                "",
+                "--- PREVIOUS EPISODES RECAP ---",
+                series_context.get("previous_episodes_recap", "None"),
+                "",
+                "--- CHARACTER BIBLE (MUST PRESERVE THESE RECURRING CHARACTERS & TONES) ---",
+                formatted_chars,
+                "",
+                "--- WORLD BUILDING & SETTING ---",
+                json.dumps(series_context.get("world_building", {}), ensure_ascii=False),
+                "",
+                "IMPORTANT FOR THIS EPISODE:",
+                f"1. This is Episode {series_context.get('current_episode', 1)} of {series_context.get('total_episodes', 12)}.",
+                "2. Maintain strict character consistency in roles, names, and personalities as specified in the Character Bible.",
+                "3. Ensure seamless plot continuity from previous episodes and lead into the designated cliffhanger for this episode.",
+                "",
+            ]
+
+        # Sprint 40 — quand une série est active, l'épisode (topic, synopsis,
+        # cliffhanger, personnages) fourni par SERIES CONTEXT ci-dessus est la
+        # SEULE source de contenu narratif : on n'injecte plus le sujet
+        # tendance du jour (opportunity/creative_brief) pour ne pas mélanger
+        # deux histoires différentes dans un même script.
+        if not series_context:
+            lines += [
+                "=== NICHE / TOPIC ===",
+                f"  Topic          : {opportunity.niche}",
+                f"  Source video title : {opportunity.title}",
+                f"  Potential score    : {opportunity.overall_score}/100",
+                "",
+            ]
+
+            sequel_hint = opportunity.metadata.get("sequel_of")
+            if sequel_hint:
+                lines += [
+                    "=== CONTINUATION CONTEXT (Sprint 33 — topic_history) ===",
+                    f"A closely related topic was already covered recently: \"{sequel_hint.get('title', '')}\" "
+                    f"(published {sequel_hint.get('date', 'recently')}).",
+                    "Do NOT repeat that video. Write this one as an explicit CONTINUATION or a genuinely NEW ANGLE: "
+                    "reference what was already covered only briefly (one sentence at most), then go further — "
+                    "new facts, the next chapter, a deeper level, or a twist the previous video did not cover.",
+                    "Make the continuation clear from the hook itself, without generic transition phrases like "
+                    "'as promised' or 'as we said before'.",
+                    "",
+                ]
+
+            lines += [
+                "=== INSPIRATION (adapt freely) ===",
+                f"  Suggested title : {creative_brief.title}",
+                f"  Suggested angle : {creative_brief.angle} (you MAY choose a different one if relevant)",
+                f"  Hook            : {creative_brief.hook}",
+                f"  Promise         : {creative_brief.promise}",
+                f"  Audience        : {creative_brief.audience}",
+                f"  Suggested CTA   : {creative_brief.cta} (rephrase it to be specific to the topic if it is generic)",
+                f"  Emotion         : {creative_brief.emotion}",
                 "",
             ]
 
         lines += [
-            "=== INSPIRATION (adapt freely) ===",
-            f"  Suggested title : {creative_brief.title}",
-            f"  Suggested angle : {creative_brief.angle} (you MAY choose a different one if relevant)",
-            f"  Hook            : {creative_brief.hook}",
-            f"  Promise         : {creative_brief.promise}",
-            f"  Audience        : {creative_brief.audience}",
-            f"  Suggested CTA   : {creative_brief.cta} (rephrase it to be specific to the topic if it is generic)",
-            f"  Emotion         : {creative_brief.emotion}",
-            "",
             "=== BRAND PROFILE ===",
             f"  Brand          : {brand_profile.name}",
             f"  Tone           : {brand_profile.tone}",

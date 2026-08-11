@@ -350,6 +350,25 @@ Avoid abrupt endings unless intentionally dramatic.
 Transitions should maintain narrative flow.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+VISUAL STYLE LOCK — MANDATORY, NEVER LIVE-ACTION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+The still image you received is a painterly, hand-illustrated, stylized
+animated artwork — NOT a photograph.
+
+This shot must remain a piece of animation from Frame A to Frame B.
+
+It must NEVER drift toward live-action, photorealistic, or "real footage"
+rendering — no realistic skin texture, no camera-sensor grain, no
+documentary/live-action look.
+
+Every field you write (camera_motion, subject_motion, environment_motion,
+lighting_changes, effects, animation_style, prompt) must describe motion
+that stays inside a painted/illustrated animated world, the same way a
+character in an animated film moves — not the way a filmed human actor
+moves.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ADDITIONAL GRANULAR FIELDS — MANDATORY
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -357,8 +376,12 @@ Beyond the core fields, you must ALSO decide 4 additional fields:
 
 - animation_style    : the overall motion/animation aesthetic ONLY — distinct
                         from camera_motion (which is camera movement only).
-                        E.g. "smooth 24fps cinematic motion, subtle parallax,
-                        naturalistic physics".
+                        MUST explicitly state that the shot preserves the
+                        source image's painterly/illustrated animated style
+                        (never live-action, never photorealistic).
+                        E.g. "smooth 24fps painterly animated motion, subtle
+                        parallax, hand-illustrated look preserved throughout,
+                        never live-action".
 - voice               : a short voice-casting descriptor for whoever speaks in
                         this shot (age range, tone, register) — e.g. "Male,
                         mid-30s, calm and authoritative documentary tone".
@@ -380,7 +403,7 @@ treat these as hard constraints:
    describe them generically instead.
 2. NEVER name a real brand, band, movie, show, or copyrighted title.
 3. NEVER use these banned words anywhere in "prompt": "8K", "HDR", "AAA
-   quality", "photorealistic".
+   quality", "photorealistic", "live-action", "realistic footage".
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 PROMPT SYNTHESIS — ONE FLOWING PARAGRAPH, MOTION ONLY

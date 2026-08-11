@@ -108,6 +108,7 @@ from src.niche_intelligence import Niche, NicheAnalyzer
 from src.niche_selector import NicheSelector
 from src.opportunity_engine import Opportunity, OpportunityEngine
 from src.production_package_builder import NicheProductionResult, ProductionPackageBuilder
+from src.series_engine import SeriesConcept, SeriesPlanner, build_series_store
 from src.topic_history import TopicHistoryFilter, TopicHistoryStore, TopicRecord, build_topic_history_store
 from src.supabase_storage_uploader import UploadResult, build_storage_uploader
 from src.notification_service import (
@@ -362,11 +363,21 @@ def step_generate_scripts(
     briefs_map: Dict[str, List[CreativeBrief]],
     brand: BrandProfile,
     provider: str,
+    series_context: Optional[Dict[str, Any]] = None,
 ) -> List[Dict[str, Any]]:
     """
     Génère plusieurs scripts LLM par opportunité (un par CreativeBrief,
     plafonné à MAX_SCRIPTS_PER_OPPORTUNITY). LLMScriptGenerator gère déjà
     lui-même son fallback heuristique en cas d'échec LLM — réutilisé tel quel.
+
+    Sprint 40 — quand une série est active (`series_context`), le sujet
+    tendance du jour n'alimente plus le contenu du script (voir
+    LLMScriptGenerator._build_user_prompt) : générer plusieurs variantes par
+    opportunité/brief produirait alors des scripts quasi identiques (seul
+    l'épisode de la série compte) pour un coût LLM inutile. On génère donc un
+    UNIQUE script, à partir de la première opportunité/brief disponible
+    (requis seulement comme paramètres techniques de l'appel, leur contenu
+    textuel n'est plus injecté dans le prompt).
     """
     generator = LLMScriptGenerator(provider_name=provider, max_retries=1)
     entries: List[Dict[str, Any]] = []
@@ -377,7 +388,7 @@ def step_generate_scripts(
             logger.warning("  Aucun brief pour '%s' — opportunité ignorée.", opp.title[:50])
             continue
         for brief in briefs:
-            script = generator.generate(opp, brief, brand)
+            script = generator.generate(opp, brief, brand, series_context=series_context)
             is_fallback = script.metadata.get("generator") != "llm_v1"
             logger.info(
                 "  [%s / %s] %s — %d scènes, %ds%s",
@@ -389,6 +400,11 @@ def step_generate_scripts(
                 "brief": brief,
                 "script": script,
             })
+            if series_context is not None:
+                logger.info("  [SeriesEngine] Série active — un seul script généré pour cet épisode.")
+                break
+        if series_context is not None and entries:
+            break
 
     if not entries:
         raise RuntimeError("Aucun script généré.")
@@ -540,16 +556,18 @@ def _apply_shot_plan_to_visual_scene(visual_scene: VisualScene, shot_plan: Optio
 # ── Étape 13 : Prompts image Nano Banana (dirigés par le ShotPlan) ──────────
 
 def step_generate_image_prompts(
-    script: Script, visual_plan, shot_plans: Dict[int, ShotPlan], brand: BrandProfile, provider: str
+    script: Script, visual_plan, shot_plans: Dict[int, ShotPlan], brand: BrandProfile, provider: str, character_specs: Optional[List[Any]] = None
 ) -> List[Dict[str, Any]]:
     """
     Génère un ImagePrompt (contrat Sprint 24.1) par scène, dans l'ordre du
     script, avec une seule instance de LLMImageGenerator pour que la bible
-    de personnages (Sprint 24.3) assure la cohérence visuelle d'une scène à
-    l'autre. Chaque VisualScene est d'abord « dirigée » par le ShotPlan
+    de personnages (Sprint 24.3 & Sprint 39) assure la cohérence visuelle d'une
+    scène à l'autre. Chaque VisualScene est d'abord « dirigée » par le ShotPlan
     correspondant (Sprint 26) avant d'être transmise au générateur.
     """
     generator = LLMImageGenerator(script=script, brand_profile=brand, provider_name=provider, max_retries=1)
+    if character_specs:
+        generator.seed_character_specs(character_specs)
     entries: List[Dict[str, Any]] = []
     ordered_scenes = sorted(visual_plan.scenes, key=lambda s: s.scene_order)
 
@@ -693,7 +711,29 @@ def produce_niche(
     english_brand = dataclasses.replace(brand_fr, primary_language="en")
 
     briefs_map = step_generate_briefs(opportunities)
-    entries = step_generate_scripts(opportunities, briefs_map, english_brand, provider)
+
+    # ── Series Engine (Sprint 39 — Séries épisodiques & bible de personnages) ──
+    series_store = build_series_store()
+    active_series = series_store.load_active_series(serie=niche.name, market="FR")
+    
+    from src.llm import build_llm
+    planner = SeriesPlanner(llm_provider=build_llm(provider=provider))
+
+    if active_series is None or active_series.is_completed:
+        best_opp = opportunities[0] if opportunities else None
+        logger.info("  [SeriesEngine] Aucune série active pour '%s' — pitch d'une nouvelle série (12 épisodes).", niche.name)
+        active_series = planner.pitch_new_series(best_opp, brand_fr, niche_name=niche.name, total_episodes=12)
+        series_store.save_series(active_series)
+        logger.info("  [SeriesEngine] Nouvelle série créée : '%s' (%s)", active_series.title, active_series.series_id)
+
+    series_context = planner.get_next_episode_context(active_series)
+    logger.info(
+        "  [SeriesEngine] Production Épisode %d/%d pour la série '%s' (%d restants)",
+        series_context["current_episode"], active_series.total_episodes,
+        active_series.title, series_context["remaining_episodes"],
+    )
+
+    entries = step_generate_scripts(opportunities, briefs_map, english_brand, provider, series_context=series_context)
     step_evaluate_scripts(entries, provider, use_llm_judge)
     best_entry = pick_best_entry(entries)
     logger.info(
@@ -715,7 +755,9 @@ def produce_niche(
 
     visual_plan = step_generate_visual_plan(final_script_en)
     shot_plans = step_generate_shot_plans(final_script_en, english_brand, provider)
-    images = step_generate_image_prompts(final_script_en, visual_plan, shot_plans, english_brand, provider)
+    images = step_generate_image_prompts(
+        final_script_en, visual_plan, shot_plans, english_brand, provider, character_specs=active_series.character_bible
+    )
     animations_en = step_generate_animation_prompts(final_script_en, visual_plan, shot_plans, images, provider)
 
     dialogues_fr_by_order = {s.scene.number: s.dialogues for s in final_script_fr.scenes}
@@ -732,10 +774,36 @@ def produce_niche(
         for entry in animations_en
     ]
 
+    # Enregistrer la réalisation de l'épisode courant — SAUF si le script
+    # retenu vient du fallback heuristique (HeuristicScriptGenerator ignore
+    # totalement series_context, voir llm_script_generator.LLMScriptGenerator.
+    # generate() phase 2) : le marquer 'produced' figerait dans le récap de la
+    # série un résumé qui n'a plus rien à voir avec l'épisode prévu (sujet du
+    # jour au lieu de la synopsis de la roadmap), corrompant la continuité de
+    # tous les épisodes suivants. On préfère retenter le même épisode au run
+    # suivant plutôt que d'avancer avec du contenu hors-série.
+    if best_entry["script"].metadata.get("generator") == "llm_v1":
+        summary_text = final_script_fr.description or final_script_en.title
+        active_series = planner.mark_episode_produced(
+            active_series,
+            episode_number=series_context["current_episode"],
+            script_summary=summary_text,
+        )
+        series_store.save_series(active_series)
+        logger.info("  [SeriesEngine] Épisode %d marqué 'produced' pour la série '%s'.", series_context["current_episode"], active_series.title)
+    else:
+        logger.warning(
+            "  [SeriesEngine] Script généré via fallback heuristique (série ignorée) — "
+            "épisode %d NON marqué 'produced', il sera retenté au prochain run.",
+            series_context["current_episode"],
+        )
+
     return {
         "niche": niche,
         "brand_fr": brand_fr,
         "brand_en": brand_en,
+        "active_series": active_series,
+        "series_context": series_context,
         "entries": entries,
         "best_entry": best_entry,
         "rewrite_result": rewrite_result,
@@ -1181,7 +1249,20 @@ def main() -> None:
                 # Le bucket Supabase Storage s'appelle déjà "production" — ne pas
                 # répéter ce nom dans le préfixe distant (Sprint 30.5 : cela
                 # produisait une clé dupliquée "production/production/...").
-                remote_folder_name = f"{date.today().isoformat()}/{package_dir.name}"
+                #
+                # Sprint 40 — une production rattachée à une série (cas normal
+                # depuis le Series Engine) est stockée à part, sous
+                # "series/{series_id}/episode_XX/", et non plus imbriquée sous
+                # le dossier de niche/date : la série est l'organisation
+                # principale du Storage, la niche/date n'est qu'un repère
+                # secondaire consultable via series_context/active_series.
+                active_series = prod.get("active_series")
+                series_context = prod.get("series_context")
+                if active_series is not None and series_context is not None:
+                    episode_number = series_context.get("current_episode", active_series.current_episode)
+                    remote_folder_name = f"series/{active_series.series_id}/episode_{episode_number:02d}"
+                else:
+                    remote_folder_name = f"{date.today().isoformat()}/{package_dir.name}"
                 result = storage_uploader.upload_package(package_dir, remote_folder_name)
                 logger.info(
                     "  Supabase Storage [%s] : success=%s uploaded=%d/%d error=%s",
@@ -1201,6 +1282,10 @@ def main() -> None:
             channels = []
             for i, prod in enumerate(niche_productions):
                 storage_link = storage_results[i].remote_url if storage_results[i].success else None
+                s_title = prod["active_series"].title if prod.get("active_series") else None
+                ep_num = prod.get("series_context", {}).get("current_episode") if prod.get("series_context") else None
+                tot_ep = prod.get("series_context", {}).get("total_episodes") if prod.get("series_context") else None
+
                 for brand_key, script_key in (("brand_fr", "final_script_fr"), ("brand_en", "final_script_en")):
                     channels.append(ChannelSummary(
                         niche_name=prod["niche"].name,
@@ -1209,6 +1294,9 @@ def main() -> None:
                         duration_seconds=prod[script_key].estimated_duration,
                         scene_count=len(prod[script_key].scenes),
                         storage_link=storage_link,
+                        series_title=s_title,
+                        episode_number=ep_num,
+                        total_episodes=tot_ep,
                     ))
             summary = DailyProductionSummary(
                 date=date.today().isoformat(),

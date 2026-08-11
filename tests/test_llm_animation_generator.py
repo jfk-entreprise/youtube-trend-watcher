@@ -34,6 +34,8 @@ from src.llm_animation_generator import (
     _REQUIRED_STRING_FIELDS,
     _REQUIRED_INT_FIELDS,
     _finalize_final_prompt,
+    _style_lock_clause,
+    _DEFAULT_STYLE_LOCK_CLAUSE,
     _build_repair_instruction,
     _JSON_REPAIR_INSTRUCTION,
 )
@@ -451,7 +453,7 @@ class TestBuildAnimationPrompt:
         assert animation_prompt.dialogues == sample_dialogues
         assert animation_prompt.transition == valid_llm_json["transition"]
         assert animation_prompt.duration == valid_llm_json["duration"]
-        assert animation_prompt.prompt == valid_llm_json["prompt"]
+        assert animation_prompt.prompt == f"{_DEFAULT_STYLE_LOCK_CLAUSE} {valid_llm_json['prompt']}"
 
     def test_metadata_exact_shape(self, valid_llm_json, sample_dialogues):
         response = _make_llm_response(json.dumps(valid_llm_json))
@@ -484,26 +486,43 @@ class TestFinalizeFinalPrompt:
     """
     Sprint 38 — "prompt" est le paragraphe final (motion/son uniquement)
     envoyé tel quel à Google Veo3 : jamais les mots bannis "8K"/"HDR"/
-    "AAA quality"/"photorealistic", jamais plus de 70 mots (coupe
-    sentence-safe).
+    "AAA quality"/"photorealistic"/"live-action" dans la partie mouvement,
+    jamais plus de 70 mots pour cette partie (coupe sentence-safe).
+
+    Sprint 40 — le paragraphe commence désormais TOUJOURS par une clause de
+    verrouillage du style animé (jamais live-action/photoréaliste),
+    indépendamment de ce que le LLM a écrit (voir _style_lock_clause).
     """
 
-    def test_strips_banned_terms(self):
+    def test_always_starts_with_style_lock_clause(self):
+        result = _finalize_final_prompt("Slow push-in on the subject.")
+        assert result.startswith(_DEFAULT_STYLE_LOCK_CLAUSE)
+
+    def test_style_lock_clause_reflects_painterly_image_style(self):
+        clause = _style_lock_clause("Arcane character design, painterly stylized illustration")
+        assert "painterly" in clause.lower()
+        assert "never live-action" in clause.lower()
+        assert "never photorealistic" in clause.lower()
+
+    def test_strips_banned_terms_from_motion_part(self):
         result = _finalize_final_prompt("Slow push-in, 8K, HDR, photorealistic motion.")
         low = result.lower()
         assert "8k" not in low
         assert "hdr" not in low
-        assert "photorealistic" not in low
+        # La clause de verrouillage mentionne légitimement "never photorealistic" —
+        # seule la partie mouvement écrite par le LLM doit en être purgée.
+        assert "photorealistic motion" not in low
 
-    def test_leaves_compliant_prompt_unchanged(self):
+    def test_leaves_compliant_prompt_unchanged_besides_style_lock(self):
         prompt = "Slow push-in on the subject as ambient light shifts and a soft drone builds."
-        assert _finalize_final_prompt(prompt) == prompt
+        assert _finalize_final_prompt(prompt) == f"{_DEFAULT_STYLE_LOCK_CLAUSE} {prompt}"
 
     def test_caps_word_count_sentence_safe(self):
         sentences = [f"The camera drifts during moment number {i}." for i in range(1, 30)]
         result = _finalize_final_prompt(" ".join(sentences), max_words=20)
         assert result.strip().endswith((".", "!", "?"))
-        assert len(result.split()) <= 25
+        lock_words = len(_DEFAULT_STYLE_LOCK_CLAUSE.split())
+        assert len(result.split()) <= lock_words + 25
 
     def test_never_leaves_empty_after_stripping_banned_terms(self):
         result = _finalize_final_prompt("8K, HDR, photorealistic.")

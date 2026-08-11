@@ -149,8 +149,42 @@ _MAX_DURATION_SECONDS = 10
 _ANIMATION_PROMPT_MAX_WORDS = 70
 
 _BANNED_PROMPT_TERMS_RE = re.compile(
-    r"[,;]?\s*\b(?:8k|hdr|aaa quality|photorealistic)\b[,;]?", re.IGNORECASE,
+    r"[,;]?\s*\b(?:8k|hdr|aaa quality|photorealistic|photo-realistic|live[\s-]?action|"
+    r"realistic footage|real footage|real life footage)\b[,;]?", re.IGNORECASE,
 )
+
+# ── Verrou de style animé (Sprint 40 — la vidéo générée devenait "réelle") ──
+# Constaté en production : les images sont bien stylisées (peintes/Arcane,
+# jamais photoréalistes — voir llm_image_generator._RENDER_REQUIREMENTS),
+# mais le paragraphe "prompt" envoyé à Veo3 ne mentionnait QUE le mouvement
+# (consigne volontaire : "ne pas re-décrire le style déjà fixé par l'image"),
+# donc rien n'empêchait le modèle vidéo de dériver vers un rendu réaliste
+# faute d'instruction contraire explicite. On force désormais, sans dépendre
+# de la discipline du LLM, une clause de verrouillage de style au début du
+# prompt final — même logique déterministe que
+# llm_image_generator._finalize_style_for_render().
+
+_STYLE_LOCK_MARKERS = ("arcane", "painterly", "stylized illustration", "hand-painted", "illustrated")
+_DEFAULT_STYLE_LOCK_CLAUSE = (
+    "Animated in the exact same painterly, hand-illustrated stylized art style as the "
+    "source image throughout — never live-action, never photorealistic footage."
+)
+
+
+def _style_lock_clause(style: str) -> str:
+    """
+    Construit la clause de verrouillage de style injectée en tête du prompt
+    final. Reprend le registre "peint/stylisé/Arcane" déjà garanti dans
+    `image_prompt.style` (voir llm_image_generator._finalize_style_for_render)
+    quand présent, sinon retombe sur une clause générique anti-photoréalisme.
+    """
+    lowered = (style or "").lower()
+    if any(marker in lowered for marker in _STYLE_LOCK_MARKERS):
+        return (
+            "Animated in the exact same painterly, hand-painted stylized illustration art "
+            "style as the source image throughout — never live-action, never photorealistic footage."
+        )
+    return _DEFAULT_STYLE_LOCK_CLAUSE
 
 
 def _cap_word_count(text: str, max_words: int) -> str:
@@ -166,20 +200,27 @@ def _cap_word_count(text: str, max_words: int) -> str:
     return f"{truncated.rstrip(',;. ')}."
 
 
-def _finalize_final_prompt(prompt: str, max_words: int = _ANIMATION_PROMPT_MAX_WORDS) -> str:
+def _finalize_final_prompt(prompt: str, style: str = "", max_words: int = _ANIMATION_PROMPT_MAX_WORDS) -> str:
     """
     Garantit que le paragraphe final "prompt" (envoyé tel quel à Google Veo3,
-    motion/son uniquement) ne contient jamais les mots bannis "8K"/"HDR"/
-    "AAA quality"/"photorealistic", et ne dépasse jamais max_words mots
-    (coupe sentence-safe si besoin).
+    motion/son uniquement) :
+      1. ne contient jamais les mots bannis "8K"/"HDR"/"AAA quality"/
+         "photorealistic"/"live-action" ;
+      2. commence TOUJOURS par une clause de verrouillage du style animé
+         (Sprint 40) — indépendamment de ce que le LLM a écrit, pour que le
+         générateur vidéo ne dérive jamais vers un rendu réaliste ;
+      3. ne dépasse jamais max_words mots pour la partie mouvement/son
+         (coupe sentence-safe si besoin) — la clause de style est ajoutée
+         APRÈS ce plafond et n'est jamais tronquée.
     """
     result = _BANNED_PROMPT_TERMS_RE.sub("", prompt.strip())
     result = re.sub(r"\s{2,}", " ", result).strip(" ,.")
     if not result:
-        return "Subtle, natural camera and environmental motion."
+        result = "Subtle, natural camera and environmental motion."
     if not result.endswith((".", "!", "?")):
         result += "."
-    return _cap_word_count(result, max_words)
+    result = _cap_word_count(result, max_words)
+    return f"{_style_lock_clause(style)} {result}"
 
 
 # ── Prompt système (Sprint 25) ───────────────────────────────────────────────
@@ -512,7 +553,9 @@ class LLMAnimationGenerator:
                 visual_scene.scene_order,
             )
 
-        animation_prompt = self._build_animation_prompt(data, response, elapsed_ms, script_scene.dialogues)
+        animation_prompt = self._build_animation_prompt(
+            data, response, elapsed_ms, script_scene.dialogues, image_style=image_prompt.style,
+        )
 
         self._stats["llm_success"] += 1
         logger.info(
@@ -727,6 +770,7 @@ class LLMAnimationGenerator:
     @classmethod
     def _build_animation_prompt(
         cls, data: Dict[str, Any], response: Any, elapsed_ms: int, dialogues: List[Dialogue],
+        image_style: str = "",
     ) -> AnimationPrompt:
         """
         Construit l'AnimationPrompt (contrat Sprint 25/31.1) à partir du JSON
@@ -744,7 +788,7 @@ class LLMAnimationGenerator:
             dialogues=list(dialogues),
             transition=data["transition"].strip(),
             duration=cls._clamp_duration(data["duration"]),
-            prompt=_finalize_final_prompt(data["prompt"]),
+            prompt=_finalize_final_prompt(data["prompt"], style=image_style),
             metadata={
                 "goal": data["goal"].strip(),
                 "emotion": data["emotion"].strip(),
@@ -798,7 +842,7 @@ class LLMAnimationGenerator:
             dialogues=list(script_scene.dialogues),
             transition=visual_scene.transition.strip() or "smooth cut",
             duration=duration,
-            prompt=_finalize_final_prompt(prompt),
+            prompt=_finalize_final_prompt(prompt, style=image_prompt.style),
             metadata={
                 "goal": "",
                 "emotion": "",
