@@ -783,7 +783,10 @@ def produce_niche(
     # tous les épisodes suivants. On préfère retenter le même épisode au run
     # suivant plutôt que d'avancer avec du contenu hors-série.
     if best_entry["script"].metadata.get("generator") == "llm_v1":
-        summary_text = final_script_fr.description or final_script_en.title
+        # `Script` n'a pas de champ `description` (Sprint 32.1 — voir
+        # script_engine.Script) — `story_text` (StoryNarrator, calculé
+        # juste au-dessus) est déjà le résumé narratif fluide de l'épisode.
+        summary_text = story_text.strip() or final_script_en.title
         active_series = planner.mark_episode_produced(
             active_series,
             episode_number=series_context["current_episode"],
