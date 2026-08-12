@@ -365,46 +365,59 @@ class SeriesPlanner:
         total_episodes: int,
         season_number: int,
     ) -> SeriesConcept:
-        """Générateur heuristique de secours (robuste, zéro dépendance API)."""
+        """
+        Générateur heuristique de secours (robuste, zéro dépendance API).
+
+        Sprint 40 — TOUT le contenu textuel ici est volontairement en ANGLAIS,
+        y compris les champs qui semblent purement internes (personality,
+        visual_description, world_building...) : ce concept de série est
+        injecté tel quel dans le prompt du LLMScriptGenerator, qui écrit le
+        script anglais d'abord (traduit en français seulement après, par
+        DialogueTranslator). Un seul mot français ici suffisait à faire
+        recopier du français par le LLM dans les scènes du script, qui se
+        propageait ensuite en cascade dans les prompts image/animation
+        (déclenchant leur garde-fou anti-mélange de langue, fallback massif
+        observé en production).
+        """
         niche_label = niche_name
-        topic = getattr(opportunity, "topic", "Les Mystères du Futur")
+        topic = getattr(opportunity, "topic", "The Mysteries of the Future")
         brand_id = getattr(brand_profile, "id", "brand_default")
         market = getattr(brand_profile, "market", "FR")
 
         series_id = f"series_{brand_id}_{niche_label.lower()}_s{season_number}_{int(datetime.now(timezone.utc).timestamp())}"
-        title = f"{niche_label} : La Saga de {topic[:30]}"
-        logline = f"Une immersion captivante en {total_episodes} épisodes pour percer les secrets de {topic}."
+        title = f"{niche_label}: The Saga of {topic[:30]}"
+        logline = f"A gripping {total_episodes}-episode journey to uncover the secrets of {topic}."
 
         main_story_arc = {
-            "intro": f"Découverte des enjeux initiaux de {topic}.",
-            "development": f"Montée en puissance des révélations et conflits centraux.",
-            "climax": f"La grande confrontation et le tournant majeur de la saison.",
-            "resolution": f"Résolution et ouverture vers les perspectives futures."
+            "intro": f"Discovery of the initial stakes surrounding {topic}.",
+            "development": "Rising tension as revelations and central conflicts escalate.",
+            "climax": "The grand confrontation and the major turning point of the season.",
+            "resolution": "Resolution and a glimpse of what lies ahead.",
         }
 
         character_bible = [
             CharacterSpec(
                 name="Alex Vance",
-                role="Protagoniste & Enquêteur",
-                visual_description="Homme de 32 ans, veste en cuir brun sombre, regard déterminé, cheveux courts châtains.",
-                personality="Curieux, tenace, sceptique mais passionné.",
-                voice_tone="Voix captivante, posée et assertive.",
+                role="Protagonist & Investigator",
+                visual_description="32-year-old man, dark brown leather jacket, determined gaze, short chestnut hair.",
+                personality="Curious, tenacious, skeptical yet passionate.",
+                voice_tone="Captivating voice, calm and assertive.",
                 permanent_visual_prompt="32 year old man, dark brown leather jacket, short chestnut hair, determined intense eyes, Arcane character design, painterly stylized illustration, hand-painted textures, cinematic lighting"
             ),
             CharacterSpec(
                 name="Dr. Elena Rostova",
-                role="Experte & Mentore",
-                visual_description="Femme de 45 ans, lunettes fines à monture métallique, manteau élégant gris, cheveux poivre et sel tirés en arrière.",
-                personality="Brillante, méthodique, mystérieuse.",
-                voice_tone="Voix calme, docte et rassurante.",
+                role="Expert & Mentor",
+                visual_description="45-year-old woman, thin metal-frame glasses, elegant grey coat, salt-and-pepper hair tied back.",
+                personality="Brilliant, methodical, mysterious.",
+                voice_tone="Calm, learned, and reassuring voice.",
                 permanent_visual_prompt="45 year old woman, thin metal frame glasses, elegant grey coat, salt and pepper hair tied back, intellectual aesthetic, soft studio lighting"
             )
         ]
 
         world_building = {
-            "setting": f"Un univers immersif au cœur des coulisses de {niche_label}.",
-            "visual_theme": "Ambiance cinématographique, tons sombres contrastés avec éclairages néon bleus et ambrés.",
-            "mood": "Mystérieux, haletant et instructif."
+            "setting": f"An immersive world behind the scenes of {niche_label}.",
+            "visual_theme": "Cinematic mood, dark contrasted tones with blue and amber neon lighting.",
+            "mood": "Mysterious, tense, and thought-provoking.",
         }
 
         episodes_roadmap: List[EpisodeOutline] = []
@@ -412,10 +425,10 @@ class SeriesPlanner:
             episodes_roadmap.append(
                 EpisodeOutline(
                     episode_number=i,
-                    title=f"Épisode {i} : Les Origines de {topic[:20]}" if i == 1 else f"Épisode {i} : Le Secret N°{i}",
-                    synopsis=f"Dans cet épisode {i}, la quête s'intensifie autour de {topic}.",
-                    key_events=[f"Révélation majeure N°{i}", f"Confrontation clé de l'épisode {i}"],
-                    cliffhanger=f"Comment faire face au rebondissement final de l'épisode {i} ?"
+                    title=f"Episode {i}: The Origins of {topic[:20]}" if i == 1 else f"Episode {i}: Secret No. {i}",
+                    synopsis=f"In this episode, the quest surrounding {topic} intensifies.",
+                    key_events=[f"Major revelation No. {i}", f"Key confrontation of episode {i}"],
+                    cliffhanger=f"How will they face the final twist of episode {i}?",
                 )
             )
 
@@ -450,56 +463,69 @@ class SeriesPlanner:
         from src.llm import LLMMessage
 
         niche_label = niche_name
-        topic = getattr(opportunity, "topic", "Intelligence artificielle & Futur")
+        topic = getattr(opportunity, "topic", "Artificial Intelligence & the Future")
         brand_id = getattr(brand_profile, "id", "brand_default")
         brand_name = getattr(brand_profile, "name", brand_id)
         market = getattr(brand_profile, "market", "FR")
 
-        system_prompt = """Tu es un Showrunner et Directeur de Création Senior pour YouTube.
-Ton objectif est d'inventer une série vidéo feuilletonnante de haute qualité pour une chaîne YouTube.
-Tu dois répondre STRICTEMENT en JSON respectant exactement la structure suivante :
+        # Sprint 40 — TOUT ce concept de série (y compris les champs qui
+        # semblent purement internes : personality, visual_description,
+        # world_building...) doit être écrit en ANGLAIS, sans exception. Il
+        # est injecté tel quel dans le prompt du LLMScriptGenerator, qui
+        # écrit le script anglais d'abord (traduction française seulement
+        # après, par DialogueTranslator) — un seul champ en français ici
+        # suffisait à faire recopier du français par le LLM dans les scènes
+        # du script, ce qui se propageait ensuite en cascade dans les
+        # prompts image/animation et déclenchait leur garde-fou anti-mélange
+        # de langue (fallback massif observé en production).
+        system_prompt = """You are a Senior Showrunner and Creative Director for YouTube.
+Your goal is to invent a high-quality, serialized video series for a YouTube channel.
+You must respond STRICTLY in JSON, matching exactly the following structure.
+EVERY field below must be written in ENGLISH — no exceptions, including
+personality, visual_description, world_building, and all narrative fields:
 
 {
-  "title": "Titre captivant de la série",
-  "logline": "Pitch en 2 phrases qui donne envie de tout regarder",
+  "title": "Catchy series title",
+  "logline": "A 2-sentence pitch that makes people want to watch everything",
   "main_story_arc": {
-    "intro": "Description du début de saison",
-    "development": "Description du milieu de saison",
-    "climax": "Description de la fin dramatique",
-    "resolution": "Conclusion et ouverture"
+    "intro": "Description of the beginning of the season",
+    "development": "Description of the middle of the season",
+    "climax": "Description of the dramatic ending",
+    "resolution": "Conclusion and what comes next"
   },
   "character_bible": [
     {
-      "name": "Nom du personnage",
-      "role": "Protagoniste / Rival / Mentor",
-      "visual_description": "Description physique détaillée en français",
-      "personality": "Traits de caractère",
-      "voice_tone": "Ton de voix",
-      "permanent_visual_prompt": "Description visuelle ultra précise en ANGLAIS pour Midjourney/Flux"
+      "name": "Character name",
+      "role": "Protagonist / Rival / Mentor",
+      "visual_description": "Detailed physical description, in ENGLISH",
+      "personality": "Personality traits, in ENGLISH",
+      "voice_tone": "Voice tone, in ENGLISH",
+      "permanent_visual_prompt": "Ultra-precise visual description in ENGLISH for Midjourney/Flux"
     }
   ],
   "world_building": {
-    "setting": "Décor et univers",
-    "visual_theme": "Style visuel et palette de couleurs",
-    "mood": "Ambiance générale"
+    "setting": "Setting and world, in ENGLISH",
+    "visual_theme": "Visual style and color palette, in ENGLISH",
+    "mood": "Overall mood, in ENGLISH"
   },
   "episodes_roadmap": [
     {
       "episode_number": 1,
-      "title": "Titre de l'épisode 1",
-      "synopsis": "Résumé de l'intrigue de cet épisode",
-      "key_events": ["Événement 1", "Événement 2"],
-      "cliffhanger": "Accroche suspense pour l'épisode suivant"
+      "title": "Episode 1 title",
+      "synopsis": "Summary of this episode's plot",
+      "key_events": ["Event 1", "Event 2"],
+      "cliffhanger": "Suspenseful hook for the next episode"
     }
   ]
 }
 """
 
-        user_prompt = f"""Conçois une série complète de {total_episodes} épisodes (Saison {season_number}) pour la chaîne '{brand_name}' ({market}).
-Niche source : {niche_label}
-Sujet d'opportunité source : {topic}
-Nombre d'épisodes requis dans la roadmap : EXACTEMENT {total_episodes}.
-Génère entre 2 et 3 personnages récurrents forts dans la character_bible.
+        user_prompt = f"""Design a complete {total_episodes}-episode series (Season {season_number}) for the channel '{brand_name}' ({market}).
+Source niche: {niche_label}
+Source opportunity topic: {topic}
+Required number of episodes in the roadmap: EXACTLY {total_episodes}.
+Generate 2 to 3 strong recurring characters in character_bible.
+Remember: every field must be written in ENGLISH, with no exceptions.
 """
 
         messages = [
