@@ -84,6 +84,13 @@ _TARGET_DURATION_SEC = 85  # cible utilisee pour le calcul du nombre de mots
 _TARGET_SCENES_MIN = 6
 _TARGET_SCENES_MAX = 9
 
+# Sprint 40 — nombre max de générations correctives de durée par tentative :
+# une seule correction pouvait échouer à rapprocher la durée de la cible
+# (observé en production : 28s -> 25s, pire qu'avant) et était pourtant
+# acceptée telle quelle. On retente jusqu'à cette limite, en conservant au
+# final la meilleure génération (la plus proche de _TARGET_DURATION_SEC).
+_MAX_DURATION_CORRECTIONS = 2
+
 # Nom complet de chaque langue supportée — utilisé pour interpoler l'instruction
 # de langue du prompt (Sprint 34 : la langue des repliques suit la marque,
 # elle n'est plus hardcodée en français). Mêmes codes que brand_engine._VALID_LANGUAGES.
@@ -463,79 +470,113 @@ class LLMScriptGenerator(ScriptGenerator):
             estimated_dur, dur_diff_pct, total_words, expected_words, word_diff_pct,
         )
 
-        # Si hors de la fourchette [100, 130]s ET qu'on n'a pas déjà fait une tentative de correction
+        # Si hors de la fourchette [60, 90]s ET qu'on n'a pas déjà fait une tentative de correction
+        # Sprint 40 — l'ancienne version n'acceptait qu'UNE seule correction,
+        # sans jamais vérifier si elle avait réellement rapproché la durée de
+        # la cible : en production, la correction pouvait même faire PIRE
+        # (28s -> 25s) et le script était accepté tel quel. On boucle
+        # désormais jusqu'à _MAX_DURATION_CORRECTIONS tentatives
+        # supplémentaires, et on retient au final la MEILLEURE (la plus
+        # proche de target_sec), jamais forcément la dernière.
+        best_data, best_response, best_elapsed_ms = data, response, elapsed_ms
+        best_dur_diff_pct = dur_diff_pct
         if (dur_out_of_range or word_diff_pct > 30.0) and attempt == 1:
-            logger.warning(
-                "Validation durée échouée (%ds hors de [%d, %d]s) — seconde génération corrective",
-                estimated_dur, _TARGET_DURATION_MIN_SEC, _TARGET_DURATION_MAX_SEC,
-            )
-            # Seconde génération avec un message correctif — Sprint 32.1 : la
-            # duree n'est plus un champ que le LLM ecrit, seul le nombre de
-            # mots des dialogues la determine (estimate_scene_duration()).
-            correction_msg = (
-                f"⚠️ CORRECTION : Le script precedent representait environ {estimated_dur} "
-                f"secondes de parole ({total_words} mots au total), mais la duree cible doit etre "
-                f"entre {_TARGET_DURATION_MIN_SEC} et {_TARGET_DURATION_MAX_SEC} secondes "
-                f"(environ {expected_words} mots).\n"
-                f"Reecris le script en respectant STRICTEMENT ces contraintes :\n"
-                f"- Total de mots parles (toutes repliques confondues) ≈ {expected_words}\n"
-                f"- Ajuste le nombre de scenes ({_TARGET_SCENES_MIN}-{_TARGET_SCENES_MAX}) et la longueur des dialogues.\n"
-                f"- Ne fournis toujours PAS de champ duration_seconds — il est calcule automatiquement."
-            )
-            # Ajouter le message de correction au prompt
-            messages.append(LLMMessage(role="user", content=correction_msg))
-
-            # Ré-appel LLM avec une temperature legerement plus creative pour debloquer
-            response2, elapsed_ms2 = self._call_llm(
-                messages, temperature=self._temperature + 0.1,
-            )
-            self._raise_if_api_error(response2)
-            # Sprint 40 — cette réponse corrective n'avait jusqu'ici AUCUN filet
-            # de repair JSON (contrairement à la réponse initiale, lignes
-            # ci-dessus) : un JSON tronqué ici (ex: max_tokens atteint sur un
-            # script riche en scènes) faisait échouer tout l'« attempt »
-            # d'un coup, précipitant vers le fallback heuristique (générique,
-            # sans continuité de série) au lieu de tenter une correction.
-            try:
-                data = self._parse_and_validate(response2)
-            except _ScriptJsonError as correction_err:
+            correction_rounds = 0
+            cur_estimated_dur, cur_total_words = estimated_dur, total_words
+            while (
+                (not (_TARGET_DURATION_MIN_SEC <= cur_estimated_dur <= _TARGET_DURATION_MAX_SEC))
+                and correction_rounds < _MAX_DURATION_CORRECTIONS
+            ):
+                correction_rounds += 1
                 logger.warning(
-                    "LLM Script Generator — JSON invalide après correction de durée (raison=%s) — "
-                    "tentative de correction intelligente.",
-                    correction_err.reason,
+                    "Validation durée échouée (%ds hors de [%d, %d]s) — génération corrective %d/%d",
+                    cur_estimated_dur, _TARGET_DURATION_MIN_SEC, _TARGET_DURATION_MAX_SEC,
+                    correction_rounds, _MAX_DURATION_CORRECTIONS,
                 )
-                self._stats["json_repair_attempts"] += 1
-                repair_messages = messages + [
-                    LLMMessage(role="assistant", content=response2.content[:4000]),
-                    LLMMessage(role="user", content=_JSON_REPAIR_INSTRUCTION),
-                ]
-                repair_response2, repair_elapsed_ms2 = self._call_llm(repair_messages)
-                self._raise_if_api_error(repair_response2)
-                data = self._parse_and_validate(repair_response2)
-                response2, elapsed_ms2 = repair_response2, elapsed_ms2 + repair_elapsed_ms2
-                self._stats["json_repairs_success"] += 1
-                logger.info("LLM Script Generator — JSON corrigé avec succès après correction de durée.")
-            elapsed_ms = elapsed_ms + elapsed_ms2
-
-            # Re-vérifier la durée après correction
-            estimated_dur2 = sum(
-                estimate_scene_duration(
-                    [Dialogue(personnage=str(d.get("personnage", "")), replique=str(d.get("replique", "")))
-                     for d in s.get("dialogues", [])]
+                # Sprint 32.1 : la duree n'est plus un champ que le LLM ecrit,
+                # seul le nombre de mots des dialogues la determine
+                # (estimate_scene_duration()).
+                direction = "RALLONGE-le (ajoute des scenes/repliques)" if cur_estimated_dur < target_sec else "RACCOURCIS-le (retire des scenes/repliques)"
+                correction_msg = (
+                    f"⚠️ CORRECTION : Le script precedent representait environ {cur_estimated_dur} "
+                    f"secondes de parole ({cur_total_words} mots au total), mais la duree cible doit etre "
+                    f"entre {_TARGET_DURATION_MIN_SEC} et {_TARGET_DURATION_MAX_SEC} secondes "
+                    f"(environ {expected_words} mots). {direction}.\n"
+                    f"Reecris le script ENTIER en respectant STRICTEMENT ces contraintes :\n"
+                    f"- Total de mots parles (toutes repliques confondues) ≈ {expected_words} — c'est la "
+                    f"contrainte la PLUS IMPORTANTE, plus importante que le style ou la brievete.\n"
+                    f"- Ajuste le nombre de scenes ({_TARGET_SCENES_MIN}-{_TARGET_SCENES_MAX}) et la longueur des dialogues.\n"
+                    f"- Ne fournis toujours PAS de champ duration_seconds — il est calcule automatiquement."
                 )
-                for s in data["scenes"]
-            )
-            total_words2 = sum(
-                len(d.get("replique", "").split())
-                for s in data["scenes"]
-                for d in s.get("dialogues", [])
-            )
+                messages.append(LLMMessage(role="user", content=correction_msg))
 
-            dur_diff_pct2 = abs(estimated_dur2 - target_sec) / max(target_sec, 1) * 100
-            logger.info(
-                "Correction durée : cible=%ds, estimée=%ds (écart=%.1f%%), mots=%d",
-                target_sec, estimated_dur2, dur_diff_pct2, total_words2,
-            )
+                # Ré-appel LLM avec une temperature legerement plus creative pour debloquer
+                response2, elapsed_ms2 = self._call_llm(
+                    messages, temperature=self._temperature + 0.1,
+                )
+                self._raise_if_api_error(response2)
+                # Sprint 40 — cette réponse corrective n'avait jusqu'ici AUCUN
+                # filet de repair JSON (contrairement à la réponse initiale,
+                # lignes ci-dessus) : un JSON tronqué ici (ex: max_tokens
+                # atteint sur un script riche en scènes) faisait échouer tout
+                # l'« attempt » d'un coup, précipitant vers le fallback
+                # heuristique (générique, sans continuité de série) au lieu
+                # de tenter une correction.
+                try:
+                    data2 = self._parse_and_validate(response2)
+                except _ScriptJsonError as correction_err:
+                    logger.warning(
+                        "LLM Script Generator — JSON invalide après correction de durée (raison=%s) — "
+                        "tentative de correction intelligente.",
+                        correction_err.reason,
+                    )
+                    self._stats["json_repair_attempts"] += 1
+                    repair_messages = messages + [
+                        LLMMessage(role="assistant", content=response2.content[:4000]),
+                        LLMMessage(role="user", content=_JSON_REPAIR_INSTRUCTION),
+                    ]
+                    repair_response2, repair_elapsed_ms2 = self._call_llm(repair_messages)
+                    self._raise_if_api_error(repair_response2)
+                    data2 = self._parse_and_validate(repair_response2)
+                    response2, elapsed_ms2 = repair_response2, elapsed_ms2 + repair_elapsed_ms2
+                    self._stats["json_repairs_success"] += 1
+                    logger.info("LLM Script Generator — JSON corrigé avec succès après correction de durée.")
+                elapsed_ms = elapsed_ms + elapsed_ms2
+
+                # Historiser la réponse pour que la prochaine correction (s'il
+                # y en a une) reparte de ce qui vient d'être généré.
+                messages.append(LLMMessage(role="assistant", content=response2.content[:4000]))
+
+                cur_estimated_dur = sum(
+                    estimate_scene_duration(
+                        [Dialogue(personnage=str(d.get("personnage", "")), replique=str(d.get("replique", "")))
+                         for d in s.get("dialogues", [])]
+                    )
+                    for s in data2["scenes"]
+                )
+                cur_total_words = sum(
+                    len(d.get("replique", "").split())
+                    for s in data2["scenes"]
+                    for d in s.get("dialogues", [])
+                )
+                cur_dur_diff_pct = abs(cur_estimated_dur - target_sec) / max(target_sec, 1) * 100
+                logger.info(
+                    "Correction durée %d/%d : cible=%ds, estimée=%ds (écart=%.1f%%), mots=%d",
+                    correction_rounds, _MAX_DURATION_CORRECTIONS,
+                    target_sec, cur_estimated_dur, cur_dur_diff_pct, cur_total_words,
+                )
+
+                data, response = data2, response2
+                if cur_dur_diff_pct < best_dur_diff_pct:
+                    best_data, best_response, best_elapsed_ms = data2, response2, elapsed_ms
+                    best_dur_diff_pct = cur_dur_diff_pct
+
+            if best_dur_diff_pct == dur_diff_pct and correction_rounds:
+                logger.warning(
+                    "Validation durée : aucune génération corrective n'a rapproché la durée de la "
+                    "cible — conservation du script initial (écart=%.1f%%).", dur_diff_pct,
+                )
+            data, response, elapsed_ms = best_data, best_response, best_elapsed_ms
 
         # ── Reconstruction du Script ───────────────────────────────────────────
         try:

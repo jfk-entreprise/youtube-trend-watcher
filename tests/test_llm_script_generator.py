@@ -722,12 +722,17 @@ class TestIntelligentRetry:
         Un premier JSON invalide est corrigé par un second appel — pas de
         fallback. `valid_llm_json` déclenche par ailleurs la correction de
         durée/mots préexistante (Sprint 20.1, indépendante du repair JSON) —
-        on fournit donc une 3e réponse scriptée identique pour ce cas, sans
-        pour autant exiger qu'elle soit consommée.
+        et comme cette durée ne s'améliore jamais (même script réutilisé à
+        chaque appel scripté), la boucle de correction (Sprint 40, jusqu'à
+        _MAX_DURATION_CORRECTIONS tentatives) va au bout : on fournit donc
+        assez de réponses scriptées identiques pour couvrir repair + toutes
+        les tentatives de correction, sans exiger qu'elles soient toutes
+        consommées.
         """
         gen = LLMScriptGenerator(max_retries=1)
         gen._provider = _ScriptedProvider([
             _make_llm_response('Sure! Here you go: {"title": "oops, truncated'),
+            _make_llm_response(json.dumps(valid_llm_json)),
             _make_llm_response(json.dumps(valid_llm_json)),
             _make_llm_response(json.dumps(valid_llm_json)),
         ])
@@ -737,7 +742,7 @@ class TestIntelligentRetry:
         assert isinstance(script, Script)
         assert script.title == valid_llm_json["title"]
         assert script.metadata["generator"] == "llm_v1"
-        assert gen._provider.calls in (2, 3)
+        assert gen._provider.calls in (2, 3, 4)
         assert gen.stats["json_repair_attempts"] == 1
         assert gen.stats["json_repairs_success"] == 1
         assert gen.stats["fallbacks"] == 0
