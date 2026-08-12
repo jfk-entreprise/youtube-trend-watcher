@@ -379,7 +379,13 @@ def step_generate_scripts(
     (requis seulement comme paramètres techniques de l'appel, leur contenu
     textuel n'est plus injecté dans le prompt).
     """
-    generator = LLMScriptGenerator(provider_name=provider, max_retries=1)
+    # Sprint 40 — quand une série est active, un seul script est généré (voir
+    # boucle ci-dessous) au lieu d'une variante par opportunité/brief : le
+    # budget max_retries=1 (hérité de l'ère multi-variantes, pour limiter le
+    # coût cumulé) peut donc être relevé sans risque de coût multiplié, et
+    # protège contre un fallback heuristique (hors-série) sur un simple
+    # accroc JSON isolé.
+    generator = LLMScriptGenerator(provider_name=provider, max_retries=2 if series_context else 1)
     entries: List[Dict[str, Any]] = []
 
     for opp in opportunities:

@@ -233,7 +233,7 @@ class LLMScriptGenerator(ScriptGenerator):
         provider_name: Optional[str] = None,
         model: Optional[str] = None,
         temperature: float = 0.7,
-        max_tokens: int = 4096,
+        max_tokens: int = 6144,
         max_retries: int = 2,
         fallback_generator: Optional[ScriptGenerator] = None,
     ) -> None:
@@ -242,7 +242,9 @@ class LLMScriptGenerator(ScriptGenerator):
             provider_name: Provider LLM à utiliser (None = auto-détection).
             model: Modèle spécifique (None = défaut du provider).
             temperature: Créativité [0.0 – 2.0].
-            max_tokens: Tokens max en sortie (les scripts sont longs).
+            max_tokens: Tokens max en sortie (les scripts sont longs — le
+                storyboard Sprint 32.1 porte 9 champs par scène, 4096 s'est
+                avéré insuffisant en pratique et tronquait le JSON, Sprint 40).
             max_retries: Nombre de tentatives LLM avant fallback (défaut: 2).
             fallback_generator: Générateur de repli (défaut: HeuristicScriptGenerator).
         """
@@ -488,7 +490,31 @@ class LLMScriptGenerator(ScriptGenerator):
                 messages, temperature=self._temperature + 0.1,
             )
             self._raise_if_api_error(response2)
-            data = self._parse_and_validate(response2)
+            # Sprint 40 — cette réponse corrective n'avait jusqu'ici AUCUN filet
+            # de repair JSON (contrairement à la réponse initiale, lignes
+            # ci-dessus) : un JSON tronqué ici (ex: max_tokens atteint sur un
+            # script riche en scènes) faisait échouer tout l'« attempt »
+            # d'un coup, précipitant vers le fallback heuristique (générique,
+            # sans continuité de série) au lieu de tenter une correction.
+            try:
+                data = self._parse_and_validate(response2)
+            except _ScriptJsonError as correction_err:
+                logger.warning(
+                    "LLM Script Generator — JSON invalide après correction de durée (raison=%s) — "
+                    "tentative de correction intelligente.",
+                    correction_err.reason,
+                )
+                self._stats["json_repair_attempts"] += 1
+                repair_messages = messages + [
+                    LLMMessage(role="assistant", content=response2.content[:4000]),
+                    LLMMessage(role="user", content=_JSON_REPAIR_INSTRUCTION),
+                ]
+                repair_response2, repair_elapsed_ms2 = self._call_llm(repair_messages)
+                self._raise_if_api_error(repair_response2)
+                data = self._parse_and_validate(repair_response2)
+                response2, elapsed_ms2 = repair_response2, elapsed_ms2 + repair_elapsed_ms2
+                self._stats["json_repairs_success"] += 1
+                logger.info("LLM Script Generator — JSON corrigé avec succès après correction de durée.")
             elapsed_ms = elapsed_ms + elapsed_ms2
 
             # Re-vérifier la durée après correction
